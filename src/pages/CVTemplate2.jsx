@@ -6,7 +6,7 @@ export default function CVTemplate2({ data }) {
   const sampleData = {
     name: 'Nguyễn Ngọc Vy',
     subtitle: 'Quản Trị Kinh Doanh Tổng Hợp',
-    photoUrl: 'https://i.pinimg.com/originals/c4/28/f1/c428f1822d619e3ce4ad0ef7fa30d009.jpg',
+    photoUrl: 'https://img6.thuthuatphanmem.vn/uploads/2022/11/18/anh-avatar-don-gian-cho-nu_081757692.jpg',
     contact: {
       phone: '085 234 3477',
       fax: '089 923 0449',

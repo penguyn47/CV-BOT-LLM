@@ -4,7 +4,7 @@ export default function CVTemplate1({ data }) {
   const sampleData = {
     name: 'Trần Nguyễn Tâm Đan',
     title: 'Nhân Viên Kinh Doanh',
-    photoUrl: 'https://i.pinimg.com/736x/d0/a2/1e/d0a21ec428e0aec29acb08a5cc2cb684.jpg',
+    photoUrl: 'https://img6.thuthuatphanmem.vn/uploads/2022/11/18/anh-avatar-don-gian-cho-nu_081757692.jpg',
     contact: {
       phone: '0321456987',
       email: 'trannguyentamdan@gmail.com',
