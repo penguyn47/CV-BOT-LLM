@@ -6,6 +6,7 @@ import Template1 from './pages/Template1'
 import Template2 from './pages/Template2'
 import CVTemplate1 from './pages/CVTemplate1'
 import CVTemplate2 from './pages/CVTemplate2'
+import CVInfo from './pages/CVInfo'
 
 function App() {
 	return (
@@ -23,6 +24,7 @@ function App() {
 					<Route path="/template2" element={<Template2></Template2>}></Route>
 					<Route path='/cvtemplate1' element={<CVTemplate1></CVTemplate1>}></Route>
 					<Route path='/cvtemplate2' element={<CVTemplate2></CVTemplate2>}></Route>
+					<Route path='/cvinfo' element={<CVInfo></CVInfo>}></Route>
 				</Routes>
 			</Router>
 		</>
