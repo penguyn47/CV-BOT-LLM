@@ -1,10 +1,47 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
+import data from '../../db/profile.json'
 
 export default function MyProfileCVPage() {
 	const navigate = useNavigate()
 	const [isEditing, setIsEditing] = useState(false)
 	const [avatarUrl, setAvatarUrl] = useState('./avatar.png')
+
+	type SectionKey = keyof typeof infoFormData
+	type FieldKey<T extends SectionKey> = keyof (typeof infoFormData)[T]
+	const [infoFormData, setFormData] = useState(data)
+
+	const handleNestedChange = <T extends SectionKey, K extends FieldKey<T>>(section: T, field: K, value: string) => {
+		setFormData((prev) => ({
+			...prev,
+			[section]: {
+				...prev[section],
+				[field]: value,
+			},
+		}))
+	}
+
+	const handleSave = async (formData: typeof infoFormData) => {
+		try {
+			console.log(formData)
+			const response = await fetch('http://localhost:5000/save-profile', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(formData),
+			})
+
+			if (!response.ok) {
+				const errorText = await response.text()
+				throw new Error(`Lưu thất bại: ${errorText}`)
+			}
+			alert('Dữ liệu đã được lưu thành công vào db/profile.json!')
+		} catch (error: any) {
+			console.error('Lỗi khi lưu dữ liệu:', error)
+			alert(`Lỗi khi lưu dữ liệu: ${error.message || 'Không xác định'}`)
+		}
+	}
 
 	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0]
@@ -66,7 +103,8 @@ export default function MyProfileCVPage() {
 							<input
 								type="text"
 								className="mt-2 w-full border border-gray-300 rounded p-2 font-normal"
-								defaultValue="Phạm Thanh Phong"
+								value={infoFormData.profile.name}
+								onChange={(e) => handleNestedChange('profile', 'name', e.target.value)}
 							/>
 						</div>
 						<div className="flex-1">
@@ -74,7 +112,8 @@ export default function MyProfileCVPage() {
 							<input
 								type="text"
 								className="mt-2 w-full border border-gray-300 rounded p-2 font-normal"
-								defaultValue="ptphong@gmail.com"
+								value={infoFormData.profile.email}
+								onChange={(e) => handleNestedChange('profile', 'email', e.target.value)}
 							/>
 						</div>
 					</div>
@@ -85,7 +124,8 @@ export default function MyProfileCVPage() {
 							<input
 								type="text"
 								className="mt-2 w-full border border-gray-300 rounded p-2 font-normal"
-								defaultValue="0123456789"
+								value={infoFormData.profile.phone}
+								onChange={(e) => handleNestedChange('profile', 'phone', e.target.value)}
 							/>
 						</div>
 						<div className="flex-1">
@@ -93,7 +133,8 @@ export default function MyProfileCVPage() {
 							<input
 								type="text"
 								className="mt-2 w-full border border-gray-300 rounded p-2 font-normal"
-								defaultValue="Hai Bà Trưng, Cầu Giấy, Hà Nội"
+								value={infoFormData.profile.address}
+								onChange={(e) => handleNestedChange('profile', 'address', e.target.value)}
 							/>
 						</div>
 					</div>
@@ -117,7 +158,14 @@ export default function MyProfileCVPage() {
 							>
 								Hủy
 							</button>
-							<button className="bg-black text-white px-4 py-2 rounded" onClick={() => setIsEditing(false)}>
+							<button
+								className="bg-black text-white px-4 py-2 rounded"
+								onClick={() => {
+									setIsEditing(false)
+									console.log(infoFormData)
+									handleSave(infoFormData)
+								}}
+							>
 								Lưu thay đổi
 							</button>
 						</div>
