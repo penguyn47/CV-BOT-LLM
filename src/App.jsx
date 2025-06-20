@@ -7,6 +7,9 @@ import Template2 from './pages/Template2'
 import CVTemplate1 from './pages/CVTemplate1'
 import CVTemplate2 from './pages/CVTemplate2'
 import CVInfo from './pages/CVInfo'
+import MyCVPage from './pages/MyCV'
+import MyRecentCVPage from './pages/RecentCV'
+import MyProfilePage from './pages/MyProfile'
 
 function App() {
 	return (
@@ -22,9 +25,12 @@ function App() {
 					<Route path="/cvpreview" element={<CVPreview></CVPreview>}></Route>
 					<Route path="/template1" element={<Template1></Template1>}></Route>
 					<Route path="/template2" element={<Template2></Template2>}></Route>
-					<Route path='/cvtemplate1' element={<CVTemplate1></CVTemplate1>}></Route>
-					<Route path='/cvtemplate2' element={<CVTemplate2></CVTemplate2>}></Route>
-					<Route path='/cvinfo' element={<CVInfo></CVInfo>}></Route>
+					<Route path="/cvtemplate1" element={<CVTemplate1></CVTemplate1>}></Route>
+					<Route path="/cvtemplate2" element={<CVTemplate2></CVTemplate2>}></Route>
+					<Route path="/cvinfo" element={<CVInfo></CVInfo>}></Route>
+					<Route path="/mycv" element={<MyCVPage></MyCVPage>}></Route>
+					<Route path="/recentcv" element={<MyRecentCVPage></MyRecentCVPage>}></Route>
+					<Route path="/myprofile" element={<MyProfilePage></MyProfilePage>}></Route>
 				</Routes>
 			</Router>
 		</>

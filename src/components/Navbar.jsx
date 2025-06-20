@@ -1,40 +1,25 @@
-import { NavLink } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 function Navbar() {
+	const navigate = useNavigate()
 	return (
 		<>
-			<div className="flex justify-between py-4 px-8 border-b-3 border-gray-300">
-				{/* PAGE ICON SECTION */}
-				<div className="flex justify-between gap-2 items-center">
-					<img src="/icon.png" className="h-[30px]" />
-					<div className="font-bold text-xl">CV Pro</div>
+			<div className=" flex justify-between items-center py-4 pl-17 pr-7 border-b">
+				<div onClick={() => navigate('/')} className=" cursor-pointer  flex items-center font-bold text-xl">
+					<img src="icon.png" alt="Logo" className="w-10 mr-1" />
+					CVPro
 				</div>
-
-				{/* NAV ITEMS SECTION */}
-				<div>
-					<ul className="flex justify-between gap-6 text-xl">
-						<li>
-							<NavLink className="hover:text-gray-400" to="/" end>
-								Trang chủ
-							</NavLink>
-						</li>
-						<li>
-							<NavLink className="hover:text-gray-400" to="/cvtemplate" end>
-								Mẫu CV
-							</NavLink>
-						</li>
-						<li>
-							<div>Hồ sơ của tôi</div>
-						</li>
-						<li>
-							<div>Hướng dẫn</div>
-						</li>
-					</ul>
-				</div>
-
-				{/* USER SECTION */}
-				<div>
-					<img src="/icon.png" className="h-[30px]" />
+				<nav className="flex gap-6">
+					<a className="cursor-pointer text-gray-600">Trang chủ</a>
+					<a className="cursor-pointer text-gray-600">Mẫu CV</a>
+					<a onClick={() => navigate('/recentcv')} className="cursor-pointer text-gray-600">
+						Hồ sơ của tôi
+					</a>
+					<a className="cursor-pointer text-gray-600">Hướng dẫn</a>
+				</nav>
+				<div className="flex gap-4">
+					<button className="border border-black px-4 py-2 rounded">Đăng nhập</button>
+					<button className="bg-black text-white px-7 py-2 rounded">Đăng ký</button>
 				</div>
 			</div>
 		</>
