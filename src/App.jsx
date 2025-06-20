@@ -10,6 +10,7 @@ import CVInfo from './pages/CVInfo'
 import MyCVPage from './pages/MyCV'
 import MyRecentCVPage from './pages/RecentCV'
 import MyProfilePage from './pages/MyProfile'
+import CVTemplate5 from './pages/CVTemplate5'
 
 function App() {
 	return (
@@ -31,6 +32,7 @@ function App() {
 					<Route path="/mycv" element={<MyCVPage></MyCVPage>}></Route>
 					<Route path="/recentcv" element={<MyRecentCVPage></MyRecentCVPage>}></Route>
 					<Route path="/myprofile" element={<MyProfilePage></MyProfilePage>}></Route>
+					<Route path="/cvtemplate5" element={<CVTemplate5></CVTemplate5>}></Route>
 				</Routes>
 			</Router>
 		</>
