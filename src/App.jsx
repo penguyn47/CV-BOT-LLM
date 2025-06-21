@@ -10,6 +10,7 @@ import CVInfo from './pages/CVInfo'
 import MyCVPage from './pages/MyCV'
 import MyRecentCVPage from './pages/RecentCV'
 import MyProfilePage from './pages/MyProfile'
+import CVEditor from './pages/cv-editor'
 import CVTemplate5 from './pages/CVTemplate5'
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
 					<Route path="/cvtemplate1" element={<CVTemplate1></CVTemplate1>}></Route>
 					<Route path="/cvtemplate2" element={<CVTemplate2></CVTemplate2>}></Route>
 					<Route path="/cvinfo" element={<CVInfo></CVInfo>}></Route>
+					<Route path="/cveditor" element={<CVEditor></CVEditor>}></Route>
 					<Route path="/mycv" element={<MyCVPage></MyCVPage>}></Route>
 					<Route path="/recentcv" element={<MyRecentCVPage></MyRecentCVPage>}></Route>
 					<Route path="/myprofile" element={<MyProfilePage></MyProfilePage>}></Route>

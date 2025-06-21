@@ -8,11 +8,20 @@
 		"esModuleInterop": true,
 		"moduleDetection": "force",
 		"strict": true,
+		"allowJs": true,
 		"resolveJsonModule": true,
 		"allowSyntheticDefaultImports": true,
 		"forceConsistentCasingInFileNames": true,
 		"skipLibCheck": true,
-		"jsx": "react-jsx"
+		"jsx": "react-jsx",
+		"baseUrl": ".",
+		"paths": {
+			"@/*": [
+				"./src/*"
+			]
+		}
 	},
-	"include": ["src"]
+	"include": [
+		"src"
+	]
 }
