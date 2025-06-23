@@ -158,9 +158,23 @@ export default function CVBuilder() {
         }
     }
 
-    const handleLayoutChange = (layout: string) => {
-        setSelectedLayout(layout)
-        // Implement layout change logic if needed
+    const handleLayoutChange = async (layout: string) => {
+        setSelectedLayout(layout);
+        if (layout === "Bộ cục CV") {
+            try {
+                const response = await fetch('http://localhost:3000/api/layout');
+                const data = await response.json();
+                const textFromBackend = data.text;
+                console.log('Text from backend:', textFromBackend);
+                // Cập nhật state hoặc hiển thị text tùy ý, ví dụ:
+                setCvData((prev) => ({
+                    ...prev,
+                    objective: { ...prev.objective, content: textFromBackend },
+                }));
+            } catch (error) {
+                console.error('Error fetching layout:', error);
+            }
+        }
     }
 
     const handleContentChange = (key: string, value: any) => {
