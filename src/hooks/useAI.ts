@@ -1,109 +1,77 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useCallback } from "react";
 
-interface ChatMessage {
-  role: "user" | "assistant"
-  content: string
-}
+type CohereChatHistory = {
+    role: "USER" | "CHATBOT";
+    message: string;
+};
 
-interface SectionInfo {
-  sections: string[]
-  totalSections: number
-}
+export const useAI = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const API_BASE_URL = "http://localhost:3000/api/ai";
 
-// Cấu hình base URL cho Express backend
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"
-
-export function useAI() {
-  const [isLoading, setIsLoading] = useState(false)
-  const [conversationHistory, setConversationHistory] = useState<ChatMessage[]>([])
-
-  const generateTip = async (section: string): Promise<string> => {
-    setIsLoading(true)
+  // BỎ COMMENT API THẬT
+  const generateTip = useCallback(async (sectionName: string, cvData: any): Promise<string> => {
+    setIsLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/api/tips`, {
+      const response = await fetch(`${API_BASE_URL}/generate-tip`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ section }),
-      })
-
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sectionName, cvData }),
+      });
       if (!response.ok) {
-        throw new Error("Failed to generate tip")
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Lỗi mạng hoặc server");
       }
-
-      const data = await response.json()
-      return data.tip
-    } catch (error) {
-      console.error("Error generating tip:", error)
-      return "Không thể tạo gợi ý lúc này. Vui lòng thử lại sau."
+      const data = await response.json();
+      return data.tip || "Không thể nhận được gợi ý lúc này.";
+    } catch (error: any) {
+      console.error("Lỗi khi tạo tip:", error);
+      return `Đã có lỗi xảy ra: ${error.message}`;
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  }, []); // Dependency rỗng vì hàm này không phụ thuộc vào state/props bên trong hook
 
-  const extractSections = async (cvData: any): Promise<SectionInfo> => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/sections`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ cvData }),
-      })
-
-      if (!response.ok) {
-        throw new Error("Failed to extract sections")
+  const sendChatMessage = useCallback(async (
+    message: string, 
+    chatHistory: { sender: string; message: string }[],
+    cvData: any
+  ): Promise<string> => {
+      setIsLoading(true);
+      const cohereHistory: CohereChatHistory[] = chatHistory.map(msg => ({
+          role: msg.sender === 'user' ? 'USER' : 'CHATBOT',
+          message: msg.message
+      }));
+      try {
+          const response = await fetch(`${API_BASE_URL}/chat`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ message, chatHistory: cohereHistory, cvData }),
+          });
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Lỗi mạng hoặc server");
+          }
+          const data = await response.json();
+          return data.reply || "Tôi chưa thể trả lời câu hỏi này.";
+      } catch (error: any) {
+          console.error("Lỗi khi gửi tin nhắn chat:", error);
+          return `Đã có lỗi xảy ra: ${error.message}`;
+      } finally {
+          setIsLoading(false);
       }
+  }, []); // Dependency rỗng
 
-      return await response.json()
-    } catch (error) {
-      console.error("Error extracting sections:", error)
-      return { sections: [], totalSections: 0 }
-    }
-  }
+   const extractSections = useCallback(async (cvData: any): Promise<{ sections: string[] }> => {
+        const sections = Object.values(cvData)
+            .filter((value: any): value is { title: string } => value && typeof value === 'object' && 'title' in value)
+            .map((value) => value.title);
+        
+        sections.unshift("Thông tin liên hệ");
+        return { sections };
+    }, []);
 
-  const sendChatMessage = async (message: string): Promise<string> => {
-    setIsLoading(true)
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/chat`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          message,
-          conversationHistory,
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error("Failed to send chat message")
-      }
-
-      const data = await response.json()
-      setConversationHistory(data.conversationHistory)
-      return data.reply
-    } catch (error) {
-      console.error("Error sending chat message:", error)
-      return "Xin lỗi, tôi không thể trả lời câu hỏi này lúc này."
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const clearConversation = () => {
-    setConversationHistory([])
-  }
-
-  return {
-    generateTip,
-    extractSections,
-    sendChatMessage,
-    clearConversation,
-    isLoading,
-    conversationHistory,
-  }
-}
+  return { isLoading, generateTip, sendChatMessage, extractSections };
+};
