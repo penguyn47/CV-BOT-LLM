@@ -7,7 +7,7 @@ export default function CVTemplate1() {
         setCurrentPage(currentPage === 1 ? 2 : 1);
     };
 
-    // SVG icons as inline components to replace Lucide React imports
+    // Biểu tượng SVG dưới dạng thành phần nội tuyến để thay thế các import từ Lucide React
     const MapPin = () => (
         <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -66,126 +66,115 @@ export default function CVTemplate1() {
             <div className="max-w-5xl mx-auto bg-white shadow-lg">
                 {currentPage === 1 ? (
                     <div className="flex flex-col md:flex-row">
-                        {/* Left Column - Page 1 */}
+                        {/* Cột trái - Trang 1 */}
                         <div className="md:w-2/3 p-8">
                             <h1 className="text-3xl font-bold text-[#2c5777] mb-4">JAMES STELE</h1>
                             <div className="border-t border-gray-300 mb-6"></div>
 
-                            {/* Summary Statement */}
+                            {/* Tóm tắt cá nhân */}
                             <div className="mb-8">
-                                <h2 className="text-xl font-semibold text-[#2c5777] mb-3">SUMMARY STATEMENT</h2>
+                                <h2 className="text-xl font-semibold text-[#2c5777] mb-3">TÓM TẮT CÁ NHÂN</h2>
                                 <div className="border-t border-gray-300 mb-3"></div>
                                 <p className="text-sm leading-relaxed">
-                                    Technically sound application engineer effective in analyzing relevant information and guiding the
-                                    product cycle from conception to completion. Manages design effort and guides installation process for
-                                    on-schedule product launches. Consults with internal and external clientele, and employs additional
-                                    system resources to review and enhance configuration for optimal customer satisfaction.
+                                    Kỹ sư ứng dụng có nền tảng kỹ thuật vững chắc, hiệu quả trong việc phân tích thông tin liên quan và quản lý chu kỳ sản phẩm từ ý tưởng đến hoàn thiện. Quản lý nỗ lực thiết kế và hướng dẫn quy trình cài đặt để ra mắt sản phẩm đúng tiến độ. Tư vấn với khách hàng nội bộ và bên ngoài, đồng thời sử dụng các nguồn lực hệ thống bổ sung để xem xét và cải thiện cấu hình nhằm tối ưu hóa sự hài lòng của khách hàng.
                                 </p>
                             </div>
 
-                            {/* Work Experience */}
+                            {/* Kinh nghiệm làm việc */}
                             <div className="mb-8">
-                                <h2 className="text-xl font-semibold text-[#2c5777] mb-3">WORK EXPERIENCE</h2>
+                                <h2 className="text-xl font-semibold text-[#2c5777] mb-3">KINH NGHIỆM LÀM VIỆC</h2>
                                 <div className="border-t border-gray-300 mb-3"></div>
 
                                 <div className="mb-4">
-                                    <div className="font-semibold">Application Engineer, 08/2020 - Current</div>
+                                    <div className="font-semibold">Kỹ sư Ứng dụng, 08/2020 - Hiện tại</div>
                                     <div className="text-sm mb-2">Deluxe, Atlanta, GA</div>
                                     <ul className="list-disc pl-5 text-sm space-y-2">
                                         <li>
-                                            Demonstrate proposed design solutions by preparing and presenting CAD layouts for system concepts.
+                                            Trình bày các giải pháp thiết kế đề xuất bằng cách chuẩn bị và trình bày các bố cục CAD cho các khái niệm hệ thống.
                                         </li>
                                         <li>
-                                            Work with the Special Projects team and two external suppliers to prepare design specifications
-                                            following project goals.
+                                            Làm việc với đội Dự án Đặc biệt và hai nhà cung cấp bên ngoài để chuẩn bị thông số kỹ thuật thiết kế theo mục tiêu dự án.
                                         </li>
                                         <li>
-                                            Generate RFQ cost estimates, including peripheral equipment, FL materials, assembly labor and more.
+                                            Tạo ước tính chi phí RFQ, bao gồm thiết bị ngoại vi, vật liệu FL, lao động lắp ráp và hơn thế nữa.
                                         </li>
                                     </ul>
                                 </div>
 
                                 <div className="mb-4">
-                                    <div className="font-semibold">Application Engineer, 03/2020 - 08/2020</div>
+                                    <div className="font-semibold">Kỹ sư Ứng dụng, 03/2020 - 08/2020</div>
                                     <div className="text-sm mb-2">Tech USA, Atlanta, GA</div>
                                     <ul className="list-disc pl-5 text-sm space-y-2">
                                         <li>
-                                            Analyzed, designed, developed and tested robotics systems according to CAD drawings, written
-                                            instructions and other specifications.
+                                            Phân tích, thiết kế, phát triển và thử nghiệm các hệ thống robot theo bản vẽ CAD, hướng dẫn bằng văn bản và các thông số kỹ thuật khác.
                                         </li>
                                         <li>
-                                            Created written proposals outlining the precise scope of work and proposed engineering solutions,
-                                            specific deliverables and operation descriptions.
+                                            Tạo đề xuất bằng văn bản nêu rõ phạm vi công việc chính xác và các giải pháp kỹ thuật được đề xuất, các sản phẩm cụ thể và mô tả vận hành.
                                         </li>
                                         <li>
-                                            Consulted with and later supervised a larger 25-member engineering team to ensure I met the
-                                            specified design criteria.
+                                            Tư vấn và sau đó giám sát một đội kỹ thuật lớn hơn gồm 25 thành viên để đảm bảo đáp ứng các tiêu chí thiết kế đã chỉ định.
                                         </li>
                                     </ul>
                                 </div>
 
                                 <div className="mb-4">
-                                    <div className="font-semibold">Field Application Engineer, 06/2012 - 05/2020</div>
+                                    <div className="font-semibold">Kỹ sư Ứng dụng Hiện trường, 06/2012 - 05/2020</div>
                                     <div className="text-sm mb-2">Aerotek, Atlanta, GA</div>
                                     <ul className="list-disc pl-5 text-sm space-y-2">
                                         <li>
-                                            Fabricated, assembled and tested mechanical components exclusively for use in outdoor environments;
-                                            presented modified CAD specs to mechanical engineers.
+                                            Chế tạo, lắp ráp và thử nghiệm các thành phần cơ khí dành riêng cho sử dụng trong môi trường ngoài trời; trình bày thông số CAD đã chỉnh sửa cho các kỹ sư cơ khí.
                                         </li>
                                         <li>
-                                            Answered client and customer questions via phone and email; made in-person service calls providing
-                                            further assistance.
+                                            Trả lời các câu hỏi của khách hàng qua điện thoại và email; thực hiện các cuộc gọi dịch vụ trực tiếp để hỗ trợ thêm.
                                         </li>
                                         <li>
-                                            Reported on-site for final product delivery, and assisted with unboxing, setup and preliminary
-                                            troubleshooting.
+                                            Có mặt tại hiện trường để giao sản phẩm cuối cùng, hỗ trợ mở hộp, thiết lập và xử lý sự cố ban đầu.
                                         </li>
                                     </ul>
                                 </div>
                             </div>
 
-                            {/* Research Experience */}
+                            {/* Kinh nghiệm nghiên cứu */}
                             <div>
-                                <h2 className="text-xl font-semibold text-[#2c5777] mb-3">RESEARCH EXPERIENCE</h2>
+                                <h2 className="text-xl font-semibold text-[#2c5777] mb-3">KINH NGHIỆM NGHIÊN CỨU</h2>
                                 <div className="border-t border-gray-300 mb-3"></div>
 
                                 <div className="mb-4">
-                                    <div className="font-semibold">Research Assistant – Application Performance Optimization</div>
-                                    <div className="text-sm mb-2">University of California, Berkeley (2020-2021)</div>
+                                    <div className="font-semibold">Trợ lý Nghiên cứu – Tối ưu hóa Hiệu suất Ứng dụng</div>
+                                    <div className="text-sm mb-2">Đại học California, Berkeley (2020-2021)</div>
                                     <ul className="list-disc pl-5 text-sm space-y-2">
-                                        <li>Developed algorithms to improve application response time by 20%.</li>
+                                        <li>Phát triển các thuật toán để cải thiện thời gian phản hồi ứng dụng lên 20%.</li>
                                         <li>
-                                            Published findings in <em>Journal of Software Engineering Research</em>.
+                                            Công bố kết quả nghiên cứu trên <em>Tạp chí Nghiên cứu Kỹ thuật Phần mềm</em>.
                                         </li>
                                     </ul>
                                 </div>
 
                                 <div className="mb-4">
-                                    <div className="font-semibold">Researcher – Cloud-Based Application Development</div>
-                                    <div className="text-sm mb-2">Atlanta Tech Lab (2019-2020)</div>
+                                    <div className="font-semibold">Nhà nghiên cứu – Phát triển Ứng dụng Dựa trên Đám mây</div>
+                                    <div className="text-sm mb-2">Phòng thí nghiệm Công nghệ Atlanta (2019-2020)</div>
                                     <ul className="list-disc pl-5 text-sm space-y-2">
                                         <li>
-                                            Conducted research on scalable cloud-native applications, resulting in a 30% reduction in deployment
-                                            time.
+                                            Tiến hành nghiên cứu về các ứng dụng gốc đám mây có khả năng mở rộng, dẫn đến giảm 30% thời gian triển khai.
                                         </li>
-                                        <li>Presented findings at two international tech conferences.</li>
+                                        <li>Trình bày kết quả tại hai hội nghị công nghệ quốc tế.</li>
                                     </ul>
                                 </div>
 
                                 <div className="mb-4">
-                                    <div className="font-semibold">Research Intern – Embedded Systems</div>
+                                    <div className="font-semibold">Thực tập sinh Nghiên cứu – Hệ thống Nhúng</div>
                                     <div className="text-sm mb-2">ABC Innovations (2018-2019)</div>
                                     <ul className="list-disc pl-5 text-sm space-y-2">
-                                        <li>Worked on low-level firmware optimization, improving system efficiency by 15%.</li>
-                                        <li>Co-authored a research paper on embedded application performance.</li>
+                                        <li>Tối ưu hóa firmware cấp thấp, cải thiện hiệu suất hệ thống lên 15%.</li>
+                                        <li>Đồng tác giả một bài báo nghiên cứu về hiệu suất ứng dụng nhúng.</li>
                                     </ul>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Right Column - Page 1 */}
+                        {/* Cột phải - Trang 1 */}
                         <div className="md:w-1/3 bg-[#2c5777] text-white p-8">
-                            {/* Contact Information */}
+                            {/* Thông tin liên hệ */}
                             <div className="mb-8">
                                 <div className="flex items-center mb-3">
                                     <MapPin />
@@ -201,147 +190,147 @@ export default function CVTemplate1() {
                                 </div>
                             </div>
 
-                            {/* Core Qualifications */}
+                            {/* Kỹ năng cốt lõi */}
                             <div className="mb-8">
-                                <h2 className="text-xl font-semibold mb-4">CORE QUALIFICATIONS</h2>
+                                <h2 className="text-xl font-semibold mb-4">KỸ NĂNG CỐT LÕI</h2>
                                 <ul className="space-y-2">
                                     <li className="flex items-start">
                                         <span className="mr-2">•</span>
-                                        <span>Solutions development</span>
+                                        <span>Phát triển giải pháp</span>
                                     </li>
                                     <li className="flex items-start">
                                         <span className="mr-2">•</span>
-                                        <span>Virtualization technologies</span>
+                                        <span>Công nghệ ảo hóa</span>
                                     </li>
                                     <li className="flex items-start">
                                         <span className="mr-2">•</span>
-                                        <span>Software applications</span>
+                                        <span>Ứng dụng phần mềm</span>
                                     </li>
                                     <li className="flex items-start">
                                         <span className="mr-2">•</span>
-                                        <span>Database configuration</span>
+                                        <span>Cấu hình cơ sở dữ liệu</span>
                                     </li>
                                     <li className="flex items-start">
                                         <span className="mr-2">•</span>
-                                        <span>Software platforms</span>
+                                        <span>Nền tảng phần mềm</span>
                                     </li>
                                     <li className="flex items-start">
                                         <span className="mr-2">•</span>
-                                        <span>Solution mock-ups</span>
+                                        <span>Mô hình giải pháp</span>
                                     </li>
                                     <li className="flex items-start">
                                         <span className="mr-2">•</span>
-                                        <span>Database management</span>
+                                        <span>Quản lý cơ sở dữ liệu</span>
                                     </li>
                                     <li className="flex items-start">
                                         <span className="mr-2">•</span>
-                                        <span>Collaboration</span>
+                                        <span>Hợp tác</span>
                                     </li>
                                 </ul>
                             </div>
 
-                            {/* Education */}
+                            {/* Học vấn */}
                             <div className="mb-8">
-                                <h2 className="text-xl font-semibold mb-4">EDUCATION</h2>
+                                <h2 className="text-xl font-semibold mb-4">HỌC VẤN</h2>
                                 <div className="mb-4">
-                                    <div className="font-semibold">Master of Science, Computer Science</div>
-                                    <div>Georgia State University - Atlanta, GA</div>
+                                    <div className="font-semibold">Thạc sĩ Khoa học Máy tính</div>
+                                    <div>Đại học Bang Georgia - Atlanta, GA</div>
                                 </div>
                                 <div>
-                                    <div className="font-semibold">Bachelor of Science, Computer Science</div>
-                                    <div>Georgia State University - Atlanta, GA</div>
+                                    <div className="font-semibold">Cử nhân Khoa học Máy tính</div>
+                                    <div>Đại học Bang Georgia - Atlanta, GA</div>
                                 </div>
                             </div>
 
-                            {/* Certifications */}
+                            {/* Chứng chỉ */}
                             <div className="mb-8">
-                                <h2 className="text-xl font-semibold mb-4">CERTIFICATIONS</h2>
+                                <h2 className="text-xl font-semibold mb-4">CHỨNG CHỈ</h2>
                                 <ul className="space-y-2">
                                     <li className="flex items-start">
                                         <span className="mr-2">•</span>
                                         <div>
-                                            <div>AWS Certified Solutions Architect – Associate – Amazon Web Services</div>
+                                            <div>Kiến trúc sư Giải pháp Được Chứng nhận AWS – Cấp độ Liên kết – Amazon Web Services</div>
                                         </div>
                                     </li>
                                     <li className="flex items-start">
                                         <span className="mr-2">•</span>
                                         <div>
-                                            <div>Microsoft Certified: Azure Developer Associate – Microsoft</div>
+                                            <div>Chứng nhận Microsoft: Nhà phát triển Azure – Cấp độ Liên kết – Microsoft</div>
                                         </div>
                                     </li>
                                     <li className="flex items-start">
                                         <span className="mr-2">•</span>
                                         <div>
-                                            <div>Certified Kubernetes Application Developer (CKAD) – Cloud Native Computing Foundation</div>
+                                            <div>Nhà phát triển Ứng dụng Kubernetes Được Chứng nhận (CKAD) – Quỹ Điện toán Gốc Đám mây</div>
                                         </div>
                                     </li>
                                     <li className="flex items-start">
                                         <span className="mr-2">•</span>
                                         <div>
-                                            <div>Oracle Certified Java Programmer (OCJP) – Oracle</div>
+                                            <div>Lập trình viên Java Được Chứng nhận Oracle (OCJP) – Oracle</div>
                                         </div>
                                     </li>
                                     <li className="flex items-start">
                                         <span className="mr-2">•</span>
                                         <div>
-                                            <div>Certified DevOps Engineer – Red Hat</div>
+                                            <div>Kỹ sư DevOps Được Chứng nhận – Red Hat</div>
                                         </div>
                                     </li>
                                 </ul>
                             </div>
 
-                            {/* Training */}
+                            {/* Đào tạo */}
                             <div className="mb-8">
-                                <h2 className="text-xl font-semibold mb-4">TRAINING</h2>
+                                <h2 className="text-xl font-semibold mb-4">ĐÀO TẠO</h2>
                                 <ul className="space-y-2">
                                     <li className="flex items-start">
                                         <span className="mr-2">•</span>
                                         <div>
-                                            <div>Advanced C++ for Software Development – Coursera</div>
+                                            <div>C++ Nâng cao cho Phát triển Phần mềm – Coursera</div>
                                         </div>
                                     </li>
                                     <li className="flex items-start">
                                         <span className="mr-2">•</span>
                                         <div>
-                                            <div>Cloud-Native Application Development – Google Cloud Platform (GCP)</div>
+                                            <div>Phát triển Ứng dụng Gốc Đám mây – Nền tảng Google Cloud (GCP)</div>
                                         </div>
                                     </li>
                                     <li className="flex items-start">
                                         <span className="mr-2">•</span>
                                         <div>
-                                            <div>Microservices Architecture and Design – Udemy</div>
+                                            <div>Kiến trúc và Thiết kế Vi dịch vụ – Udemy</div>
                                         </div>
                                     </li>
                                     <li className="flex items-start">
                                         <span className="mr-2">•</span>
                                         <div>
-                                            <div>DevOps for Application Engineers – LinkedIn Learning</div>
+                                            <div>DevOps cho Kỹ sư Ứng dụng – LinkedIn Learning</div>
                                         </div>
                                     </li>
                                     <li className="flex items-start">
                                         <span className="mr-2">•</span>
                                         <div>
-                                            <div>Full-Stack Application Development – edX (offered by MIT)</div>
+                                            <div>Phát triển Ứng dụng Full-Stack – edX (do MIT cung cấp)</div>
                                         </div>
                                     </li>
                                 </ul>
                             </div>
 
-                            {/* Affiliations */}
+                            {/* Liên kết */}
                             <div>
-                                <h2 className="text-xl font-semibold mb-4">AFFILIATIONS</h2>
+                                <h2 className="text-xl font-semibold mb-4">LIÊN KẾT</h2>
                                 <ul className="space-y-2">
                                     <li className="flex items-start">
                                         <span className="mr-2">•</span>
-                                        <span>Association of Information Technology Professionals</span>
+                                        <span>Hiệp hội Chuyên gia Công nghệ Thông tin</span>
                                     </li>
                                     <li className="flex items-start">
                                         <span className="mr-2">•</span>
-                                        <span>Association for Computing Machinery (ACM)</span>
+                                        <span>Hiệp hội Máy tính (ACM)</span>
                                     </li>
                                     <li className="flex items-start">
                                         <span className="mr-2">•</span>
-                                        <span>Institute of Electrical and Electronics Engineers (IEEE) – Computer Society</span>
+                                        <span>Viện Kỹ sư Điện và Điện tử (IEEE) – Hội Máy tính</span>
                                     </li>
                                 </ul>
                             </div>
@@ -349,142 +338,128 @@ export default function CVTemplate1() {
                     </div>
                 ) : (
                     <div className="flex flex-col md:flex-row">
-                        {/* Left Column - Page 2 */}
-                        <div className="w-full md:w-2/3 p-8">
-                            {/* Work Experience Section */}
+                        {/* Cột trái - Trang 2 */}
+                        <div className="md:w-2/3 p-8">
+                            {/* Xuất bản */}
                             <div className="mb-8">
-                                <h2 className="text-xl font-bold text-gray-700 mb-4">WORK EXPERIENCE</h2>
-                                <div className="mb-6">
-                                    <div className="flex flex-col md:flex-row md:justify-between mb-1">
-                                        <h3 className="font-bold">Field Application Engineer, 06/2012 - 05/2020</h3>
-                                    </div>
-                                    <p className="text-gray-600 italic mb-2">Aerotek, Atlanta, GA</p>
-                                    <ul className="list-disc pl-5 space-y-2">
-                                        <li>
-                                            Consulted with and later supervised a larger 25-member engineering team to ensure I met the specified
-                                            design criteria.
-                                        </li>
-                                        <li>
-                                            Fabricated, assembled and tested mechanical components exclusively for use in outdoor environments;
-                                            presented modified CAD specs to mechanical engineers.
-                                        </li>
-                                        <li>
-                                            Answered client and customer questions via phone and email; made in-person service calls providing
-                                            further assistance.
-                                        </li>
-                                        <li>
-                                            Reported on-site for final product delivery, and assisted with unboxing, setup and preliminary
-                                            troubleshooting.
-                                        </li>
-                                    </ul>
+                                <h2 className="text-xl font-semibold text-[#2c5777] mb-3">XUẤT BẢN</h2>
+                                <div className="border-t border-gray-300 mb-3"></div>
+                                <div className="mb-4">
+                                    <div className="font-semibold">Stele, James. "Tối ưu hóa Hiệu suất Hệ thống Ứng dụng Nhúng"</div>
+                                    <div className="text-sm mb-2"><em>Tạp chí Kỹ thuật Phần mềm</em>, tập 29, số 4, 2021, trang 45-60.</div>
+                                </div>
+                                <div className="mb-4">
+                                    <div className="font-semibold">Stele, James. "Kiến trúc Đám mây trong Phát triển Ứng dụng Hiện đại"</div>
+                                    <div className="text-sm mb-2"><em>Tạp chí Công nghệ Đám mây</em>, tập 15, số 2, 2020, trang 112-125.</div>
                                 </div>
                             </div>
 
-                            {/* Research Experience Section */}
+                            {/* Bài trình bày hội nghị */}
+                            <div className="mb-8">
+                                <h2 className="text-xl font-semibold text-[#2c5777] mb-3">BÀI TRÌNH BÀY HỘI NGHỊ</h2>
+                                <div className="border-t border-gray-300 mb-3"></div>
+                                <div className="mb-4">
+                                    <div className="font-semibold">"Tăng tốc Triển khai Ứng dụng với Công nghệ Đám mây"</div>
+                                    <div className="text-sm mb-2">Hội nghị Công nghệ Quốc tế 2021, San Francisco, CA</div>
+                                </div>
+                                <div className="mb-4">
+                                    <div className="font-semibold">"Tối ưu hóa Firmware cho Hệ thống Nhúng"</div>
+                                    <div className="text-sm mb-2">Hội nghị Kỹ thuật Hệ thống Nhúng 2020, Boston, MA</div>
+                                </div>
+                            </div>
+
+                            {/* Hoạt động cộng đồng */}
                             <div>
-                                <h2 className="text-xl font-bold text-gray-700 mb-4">RESEARCH EXPERIENCE</h2>
-
-                                <div className="mb-6">
-                                    <div className="flex flex-col md:flex-row md:justify-between mb-1">
-                                        <h3 className="font-bold">Research Assistant – Application Performance Optimization</h3>
-                                    </div>
-                                    <p className="text-gray-600 italic mb-2">University of California, Berkeley (2020-2021)</p>
-                                    <ul className="list-disc pl-5 space-y-2">
-                                        <li>Developed algorithms to improve application response time by 20%.</li>
-                                        <li>
-                                            Published findings in <i>Journal of Software Engineering Research</i>.
-                                        </li>
+                                <h2 className="text-xl font-semibold text-[#2c5777] mb-3">HOẠT ĐỘNG CỘNG ĐỒNG</h2>
+                                <div className="border-t border-gray-300 mb-3"></div>
+                                <div className="mb-4">
+                                    <div className="font-semibold">Tình nguyện viên Hướng dẫn, Chương trình STEM Atlanta</div>
+                                    <div className="text-sm mb-2">Atlanta, GA, 2018-Hiện tại</div>
+                                    <ul className="list-disc pl-5 text-sm space-y-2">
+                                        <li>Hướng dẫn học sinh trung học về lập trình và thiết kế hệ thống nhúng.</li>
+                                        <li>Tổ chức hội thảo về phát triển ứng dụng đám mây cho sinh viên đại học.</li>
                                     </ul>
                                 </div>
-
-                                <div className="mb-6">
-                                    <div className="flex flex-col md:flex-row md:justify-between mb-1">
-                                        <h3 className="font-bold">Researcher – Cloud-Based Application Development</h3>
-                                    </div>
-                                    <p className="text-gray-600 italic mb-2">Atlanta Tech Lab (2019-2020)</p>
-                                    <ul className="list-disc pl-5 space-y-2">
-                                        <li>
-                                            Conducted research on scalable cloud-native applications, resulting in a 30% reduction in deployment
-                                            time.
-                                        </li>
-                                        <li>Presented findings at two international tech conferences.</li>
-                                    </ul>
-                                </div>
-
-                                <div className="mb-6">
-                                    <div className="flex flex-col md:flex-row md:justify-between mb-1">
-                                        <h3 className="font-bold">Research Intern – Embedded Systems</h3>
-                                    </div>
-                                    <p className="text-gray-600 italic mb-2">ABC Innovations (2018-2019)</p>
-                                    <ul className="list-disc pl-5 space-y-2">
-                                        <li>Worked on low-level firmware optimization, improving system efficiency by 15%.</li>
-                                        <li>Co-authored a research paper on embedded application performance.</li>
+                                <div className="mb-4">
+                                    <div className="font-semibold">Diễn giả Khách mời, Hội thảo Công nghệ Thanh niên</div>
+                                    <div className="text-sm mb-2">Atlanta, GA, 2019-2020</div>
+                                    <ul className="list-disc pl-5 text-sm space-y-2">
+                                        <li>Trình bày về vai trò của DevOps trong phát triển phần mềm hiện đại.</li>
+                                        <li>Chia sẻ kinh nghiệm thực tế về quản lý dự án kỹ thuật với các bạn trẻ.</li>
                                     </ul>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Right Column - Page 2 */}
-                        <div className="w-full md:w-1/3 bg-[#2b5170] text-white p-8">
-                            {/* Certifications Section */}
+                        {/* Cột phải - Trang 2 */}
+                        <div className="md:w-1/3 bg-[#2c5777] text-white p-8">
+                            {/* Giải thưởng và danh hiệu */}
                             <div className="mb-8">
-                                <h2 className="text-xl font-bold border-b border-white pb-2 mb-4">CERTIFICATIONS</h2>
-                                <ul className="space-y-3">
-                                    <li>
-                                        <p className="font-semibold">Microsoft Certified: Azure</p>
-                                        <p className="text-sm">Solutions Associate – Microsoft</p>
+                                <h2 className="text-xl font-semibold mb-4">GIẢI THƯỞNG VÀ DANH HIỆU</h2>
+                                <ul className="space-y-2">
+                                    <li className="flex items-start">
+                                        <span className="mr-2">•</span>
+                                        <div>
+                                            <div>Kỹ sư Xuất sắc của Năm, Deluxe, 2022</div>
+                                        </div>
                                     </li>
-                                    <li>
-                                        <p className="font-semibold">Certified Kubernetes</p>
-                                        <p className="text-sm">Application Developer (CKAD) –</p>
-                                        <p className="text-sm">Cloud Native Computing Foundation</p>
+                                    <li className="flex items-start">
+                                        <span className="mr-2">•</span>
+                                        <div>
+                                            <div>Giải thưởng Đổi mới Công nghệ, Tech USA, 2020</div>
+                                        </div>
                                     </li>
-                                    <li>
-                                        <p className="font-semibold">Oracle Certified Java</p>
-                                        <p className="text-sm">Programmer (OCJP) – Oracle</p>
-                                    </li>
-                                    <li>
-                                        <p className="font-semibold">Certified DevOps Engineer – Red Hat</p>
+                                    <li className="flex items-start">
+                                        <span className="mr-2">•</span>
+                                        <div>
+                                            <div>Giải Nghiên cứu Xuất sắc, Đại học California, Berkeley, 2021</div>
+                                        </div>
                                     </li>
                                 </ul>
                             </div>
 
-                            {/* Training Section */}
+                            {/* Dự án nổi bật */}
                             <div className="mb-8">
-                                <h2 className="text-xl font-bold border-b border-white pb-2 mb-4">TRAINING</h2>
-                                <ul className="space-y-3">
-                                    <li>
-                                        <p className="font-semibold">Advanced C++ for Software Development – Coursera</p>
+                                <h2 className="text-xl font-semibold mb-4">DỰ ÁN NỔI BẬT</h2>
+                                <ul className="space-y-2">
+                                    <li className="flex items-start">
+                                        <span className="mr-2">•</span>
+                                        <div>
+                                            <div className="font-semibold">Hệ thống Tự động hóa Dựa trên Đám mây</div>
+                                            <div>Deluxe, 2021</div>
+                                            <div className="text-sm">Dẫn dắt phát triển hệ thống tự động hóa, giảm chi phí vận hành 25%.</div>
+                                        </div>
                                     </li>
-                                    <li>
-                                        <p className="font-semibold">Cloud-Native Application Development – Google Cloud Platform (GCP)</p>
-                                    </li>
-                                    <li>
-                                        <p className="font-semibold">Microservices Architecture and Design – Udemy</p>
-                                    </li>
-                                    <li>
-                                        <p className="font-semibold">DevOps for Application Engineers – LinkedIn Learning</p>
-                                    </li>
-                                    <li>
-                                        <p className="font-semibold">Full-Stack Application Development – edX (offered by MIT)</p>
+                                    <li className="flex items-start">
+                                        <span className="mr-2">•</span>
+                                        <div>
+                                            <div className="font-semibold">Tối ưu hóa Robot Công nghiệp</div>
+                                            <div>Tech USA, 2020</div>
+                                            <div className="text-sm">Cải tiến hiệu suất robot công nghiệp, tăng năng suất 18%.</div>
+                                        </div>
                                     </li>
                                 </ul>
                             </div>
 
-                            {/* Affiliations Section */}
+                            {/* Kỹ năng kỹ thuật bổ sung */}
                             <div>
-                                <h2 className="text-xl font-bold border-b border-white pb-2 mb-4">AFFILIATIONS</h2>
-                                <ul className="space-y-3">
-                                    <li>
-                                        <p className="font-semibold">Association of Information Technology Professionals</p>
+                                <h2 className="text-xl font-semibold mb-4">KỸ NĂNG KỸ THUẬT BỔ SUNG</h2>
+                                <ul className="space-y-2">
+                                    <li className="flex items-start">
+                                        <span className="mr-2">•</span>
+                                        <span>Lập trình Python và JavaScript</span>
                                     </li>
-                                    <li>
-                                        <p className="font-semibold">Association for Computing Machinery (ACM)</p>
+                                    <li className="flex items-start">
+                                        <span className="mr-2">•</span>
+                                        <span>Triển khai CI/CD với Jenkins và GitLab</span>
                                     </li>
-                                    <li>
-                                        <p className="font-semibold">
-                                            Institute of Electrical and Electronics Engineers (IEEE) – Computer Society
-                                        </p>
+                                    <li className="flex items-start">
+                                        <span className="mr-2">•</span>
+                                        <span>Quản lý container với Docker và Kubernetes</span>
+                                    </li>
+                                    <li className="flex items-start">
+                                        <span className="mr-2">•</span>
+                                        <span>Phân tích dữ liệu với SQL và NoSQL</span>
                                     </li>
                                 </ul>
                             </div>
@@ -492,13 +467,13 @@ export default function CVTemplate1() {
                     </div>
                 )}
 
-                {/* Toggle Button */}
+                {/* Nút chuyển đổi */}
                 <div className="flex justify-center py-4">
                     <button
                         onClick={togglePage}
                         className="bg-[#2c5777] text-white px-6 py-2 rounded-md hover:bg-[#1e3a5f] transition-colors"
                     >
-                        {currentPage === 1 ? "Go to Page 2" : "Go to Page 1"}
+                        {currentPage === 1 ? "Đi đến Trang 2" : "Đi đến Trang 1"}
                     </button>
                 </div>
             </div>

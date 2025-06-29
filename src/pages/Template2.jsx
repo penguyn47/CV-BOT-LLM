@@ -7,7 +7,7 @@ export default function CVTemplate() {
         setCurrentPage(currentPage === 1 ? 2 : 1);
     };
 
-    // SVG icons as inline components to replace Lucide React imports
+    // Biểu tượng SVG dưới dạng thành phần nội tuyến để thay thế các import từ Lucide React
     const MapPin = () => (
         <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -63,7 +63,7 @@ export default function CVTemplate() {
 
     return (
         <>
-            {/* Import Poppins font via Google Fonts */}
+            {/* Nhập font Poppins từ Google Fonts */}
             <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
         body {
@@ -74,7 +74,7 @@ export default function CVTemplate() {
                 <div className="max-w-5xl mx-auto bg-white shadow-lg print:shadow-none">
                     {currentPage === 1 ? (
                         <div className="flex flex-col md:flex-row w-full">
-                            {/* Left Column - Page 1 */}
+                            {/* Cột trái - Trang 1 */}
                             <div className="w-full md:w-1/3 bg-slate-400 p-6 text-slate-800">
                                 <div className="mb-8">
                                     <h1 className="text-4xl font-bold uppercase">Jackie</h1>
@@ -98,138 +98,130 @@ export default function CVTemplate() {
                                 </div>
 
                                 <div className="mb-8">
-                                    <h2 className="text-xl font-semibold uppercase mb-2">Education</h2>
+                                    <h2 className="text-xl font-semibold uppercase mb-2">Học vấn</h2>
                                     <div className="mb-4">
-                                        <h3 className="font-semibold">Arizona State University</h3>
+                                        <h3 className="font-semibold">Đại học Bang Arizona</h3>
                                         <p>Tempe, AZ</p>
-                                        <p className="italic">Master of Science: Industrial Engineering</p>
+                                        <p className="italic">Thạc sĩ Khoa học: Kỹ thuật Công nghiệp</p>
                                     </div>
                                     <div>
-                                        <h3 className="font-semibold">Arizona State University</h3>
+                                        <h3 className="font-semibold">Đại học Bang Arizona</h3>
                                         <p>Tempe, AZ</p>
-                                        <p className="italic">Bachelor of Science: Manufacturing Engineering</p>
+                                        <p className="italic">Cử nhân Khoa học: Kỹ thuật Sản xuất</p>
                                     </div>
                                 </div>
 
                                 <div className="mb-8">
-                                    <h2 className="text-xl font-semibold uppercase mb-2">Licenses</h2>
+                                    <h2 className="text-xl font-semibold uppercase mb-2">Chứng chỉ</h2>
                                     <ul className="list-disc pl-5">
-                                        <li>Professional Engineer (PE) Licensure - (2023)</li>
-                                        <li>GeoSpatial and BIM</li>
+                                        <li>Chứng chỉ Kỹ sư Chuyên nghiệp (PE) - (2023)</li>
+                                        <li>GeoSpatial và BIM</li>
                                     </ul>
                                 </div>
 
                                 <div className="mb-8">
-                                    <h2 className="text-xl font-semibold uppercase mb-2">Teaching Experience</h2>
+                                    <h2 className="text-xl font-semibold uppercase mb-2">Kinh nghiệm giảng dạy</h2>
                                     <div>
-                                        <h3 className="font-semibold">Graduate Teaching Assistant, Industrial Engineering</h3>
-                                        <p>Arizona State University, Tempe, AZ, 2020-2021</p>
+                                        <h3 className="font-semibold">Trợ giảng Sau đại học, Kỹ thuật Công nghiệp</h3>
+                                        <p>Đại học Bang Arizona, Tempe, AZ, 2020-2021</p>
                                     </div>
                                 </div>
 
                                 <div className="mb-8">
-                                    <h2 className="text-xl font-semibold uppercase mb-2">Research Experience</h2>
+                                    <h2 className="text-xl font-semibold uppercase mb-2">Kinh nghiệm nghiên cứu</h2>
                                     <div>
-                                        <h3 className="font-semibold">"Optimizing CAD Processes for Industrial Applications"</h3>
-                                        <p>Research conducted in collaboration with Arizona State University's Engineering Department, 2021</p>
+                                        <h3 className="font-semibold">"Tối ưu hóa quy trình CAD cho ứng dụng công nghiệp"</h3>
+                                        <p>Nghiên cứu hợp tác với Khoa Kỹ thuật, Đại học Bang Arizona, 2021</p>
                                     </div>
                                 </div>
 
                                 <div>
-                                    <h2 className="text-xl font-semibold uppercase mb-2">Work Experience</h2>
+                                    <h2 className="text-xl font-semibold uppercase mb-2">Kinh nghiệm làm việc</h2>
                                     <div className="mb-4">
-                                        <h3 className="font-semibold">Quest Global - Design Engineer</h3>
-                                        <p>Phoenix, AZ - 12/2021 - Current</p>
+                                        <h3 className="font-semibold">Quest Global - Kỹ sư Thiết kế</h3>
+                                        <p>Phoenix, AZ - 12/2021 - Hiện tại</p>
                                     </div>
                                     <div>
-                                        <h3 className="font-semibold">ASM International - Manufacturing Engineer Assistant</h3>
+                                        <h3 className="font-semibold">ASM International - Trợ lý Kỹ sư Sản xuất</h3>
                                         <p>Phoenix, AZ - 06/2021 - 11/2021</p>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Right Column - Page 1 */}
+                            {/* Cột phải - Trang 1 */}
                             <div className="w-full md:w-2/3 bg-gray-50 p-6">
                                 <div className="mb-8">
-                                    <h2 className="text-xl font-semibold uppercase mb-2">Summary Statement</h2>
+                                    <h2 className="text-xl font-semibold uppercase mb-2">Tóm tắt cá nhân</h2>
                                     <p>
-                                        Design engineer experienced in CAD modeling and product development. Collaborative team player with a proven
-                                        track record of delivering multiple, concurrent projects in fast-paced environments. Drives production
-                                        efficiency through qualitative analysis and process redesign.
+                                        Kỹ sư thiết kế có kinh nghiệm trong mô phỏng CAD và phát triển sản phẩm. Người làm việc nhóm hiệu quả với thành tích đã được chứng minh trong việc thực hiện nhiều dự án đồng thời trong môi trường nhịp độ nhanh. Tăng cường hiệu quả sản xuất thông qua phân tích định tính và tái thiết kế quy trình.
                                     </p>
                                 </div>
 
                                 <div className="mb-8">
-                                    <h2 className="text-xl font-semibold uppercase mb-2">Core Qualifications</h2>
+                                    <h2 className="text-xl font-semibold uppercase mb-2">Kỹ năng cốt lõi</h2>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1">
                                         <ul className="list-disc pl-5">
-                                            <li>Quality control</li>
-                                            <li>3D Modeling</li>
-                                            <li>Rapid prototyping</li>
-                                            <li>Process engineering</li>
+                                            <li>Kiểm soát chất lượng</li>
+                                            <li>Mô phỏng 3D</li>
+                                            <li>Tạo mẫu nhanh</li>
+                                            <li>Kỹ thuật quy trình</li>
                                         </ul>
                                         <ul className="list-disc pl-5">
-                                            <li>Creative thinking</li>
-                                            <li>Reading and interpreting blueprints</li>
-                                            <li>Stress analysis</li>
-                                            <li>Quality control management</li>
+                                            <li>Tư duy sáng tạo</li>
+                                            <li>Đọc và diễn giải bản vẽ kỹ thuật</li>
+                                            <li>Phân tích ứng suất</li>
+                                            <li>Quản lý kiểm soát chất lượng</li>
                                         </ul>
                                     </div>
                                 </div>
 
                                 <div className="mb-8">
-                                    <h2 className="text-xl font-semibold uppercase mb-2">Summary of Qualifications</h2>
+                                    <h2 className="text-xl font-semibold uppercase mb-2">Tóm tắt năng lực</h2>
                                     <ul className="list-disc pl-5">
                                         <li>
-                                            Ability to successfully address design challenges and evaluate alternative design models to meet project
-                                            requirements.
+                                            Khả năng giải quyết các thách thức thiết kế thành công và đánh giá các mô hình thiết kế thay thế để đáp ứng yêu cầu dự án.
                                         </li>
-                                        <li>Adept at collaborating with cross-functional teams to conceptualize and fine-tune product concepts.</li>
-                                        <li>Resourceful and well-organized with excellent leadership and team building skills.</li>
+                                        <li>Thành thạo trong việc hợp tác với các nhóm đa chức năng để hình thành và tinh chỉnh khái niệm sản phẩm.</li>
+                                        <li>Nguồn lực dồi dào và tổ chức tốt với kỹ năng lãnh đạo và xây dựng đội nhóm xuất sắc.</li>
                                     </ul>
                                 </div>
 
                                 <div>
-                                    <h2 className="text-xl font-semibold uppercase mb-2">Professional Skills</h2>
+                                    <h2 className="text-xl font-semibold uppercase mb-2">Kỹ năng chuyên môn</h2>
 
                                     <div className="mb-4">
-                                        <h3 className="font-semibold">Design</h3>
+                                        <h3 className="font-semibold">Thiết kế</h3>
                                         <ul className="list-disc pl-5">
                                             <li>
-                                                Translated concepts into user flows, wireframes, mock ups and prototypes to promote positive
-                                                interactions, site maps, interactions and user experiences.
+                                                Chuyển đổi các khái niệm thành luồng người dùng, wireframe, mockup và nguyên mẫu để thúc đẩy tương tác tích cực, sơ đồ trang web, tương tác và trải nghiệm người dùng.
                                             </li>
                                             <li>
-                                                Participated in design and manufacturing engineering and other functions to reduce 20% of the time
-                                                required to bring five products to market.
+                                                Tham gia vào thiết kế và kỹ thuật sản xuất để giảm 20% thời gian đưa năm sản phẩm ra thị trường.
                                             </li>
                                             <li>
-                                                Participated in pre-project analysis and technical assessments to develop correct functionality to meet
-                                                business objectives.
+                                                Tham gia phân tích trước dự án và đánh giá kỹ thuật để phát triển chức năng phù hợp nhằm đáp ứng mục tiêu kinh doanh.
                                             </li>
                                         </ul>
                                     </div>
 
                                     <div className="mb-4">
-                                        <h3 className="font-semibold">Project Management</h3>
+                                        <h3 className="font-semibold">Quản lý dự án</h3>
                                         <ul className="list-disc pl-5">
                                             <li>
-                                                Defined and conducted design processes at all stages, including research, conceptualization, testing and
-                                                implementation of five projects.
+                                                Xác định và thực hiện các quy trình thiết kế ở tất cả các giai đoạn, bao gồm nghiên cứu, hình thành ý tưởng, thử nghiệm và triển khai cho năm dự án.
                                             </li>
                                             <li>
-                                                Determined job priorities for multiple projects and communicated sequencing, priorities and timelines to
-                                                a team of 15.
+                                                Xác định ưu tiên công việc cho nhiều dự án và truyền đạt trình tự, ưu tiên và thời gian cho đội gồm 15 người.
                                             </li>
-                                            <li>Directed documentation detailing design requirements and technical specifications.</li>
+                                            <li>Chỉ đạo tài liệu chi tiết về yêu cầu thiết kế và thông số kỹ thuật.</li>
                                         </ul>
                                     </div>
 
                                     <div>
-                                        <h3 className="font-semibold">Manufacturing Process</h3>
+                                        <h3 className="font-semibold">Quy trình sản xuất</h3>
                                         <ul className="list-disc pl-5">
-                                            <li>Worked closely with three engineers and assisted them with product testing.</li>
-                                            <li>Supported the design of documents and proposal.</li>
+                                            <li>Làm việc chặt chẽ với ba kỹ sư và hỗ trợ họ trong việc thử nghiệm sản phẩm.</li>
+                                            <li>Hỗ trợ thiết kế tài liệu và đề xuất.</li>
                                         </ul>
                                     </div>
                                 </div>
@@ -237,110 +229,108 @@ export default function CVTemplate() {
                         </div>
                     ) : (
                         <div className="flex flex-col md:flex-row w-full">
-                            {/* Left Column - Page 2 */}
+                            {/* Cột trái - Trang 2 */}
                             <div className="w-full md:w-1/3 bg-slate-400 p-6 print:p-4">
                                 <div className="space-y-6">
                                     <div>
-                                        <h2 className="text-slate-800 font-semibold text-lg">CyberCoders · Design Intern</h2>
+                                        <h2 className="text-slate-800 font-semibold text-lg">CyberCoders · Thực tập sinh Thiết kế</h2>
                                         <p className="text-slate-600">Phoenix, AZ · 09/2017 - 06/2018</p>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Right Column - Page 2 */}
+                            {/* Cột phải - Trang 2 */}
                             <div className="w-full md:w-2/3 p-6 print:p-4">
                                 <div className="space-y-6">
-                                    {/* Work Experience Details */}
+                                    {/* Chi tiết kinh nghiệm làm việc */}
                                     <div>
                                         <ul className="list-disc ml-5 space-y-2 text-slate-700">
                                             <li>
-                                                Collaborated with engineering teams on design statements, lead times, technical costs, budgets and
-                                                work statements to manage supplier development efforts.
+                                                Hợp tác với các nhóm kỹ thuật về tuyên bố thiết kế, thời gian thực hiện, chi phí kỹ thuật, ngân sách và tuyên bố công việc để quản lý nỗ lực phát triển nhà cung cấp.
                                             </li>
-                                            <li>Reviewed products for compliance with Design for Manufacturing (DFM) requirements.</li>
+                                            <li>Xem xét sản phẩm để tuân thủ yêu cầu Thiết kế cho Sản xuất (DFM).</li>
                                         </ul>
                                     </div>
 
-                                    {/* Publications */}
+                                    {/* Xuất bản */}
                                     <div>
-                                        <h2 className="text-slate-800 font-semibold text-base uppercase tracking-wider mb-3">Publications</h2>
+                                        <h2 className="text-slate-800 font-semibold text-base uppercase tracking-wider mb-3">Xuất bản</h2>
                                         <p className="text-slate-700">
-                                            Duran, Jackie. "Innovative Approaches to Streamlining Design-to-Production Pipelines."{" "}
-                                            <span className="italic">Journal of Manufacturing Engineering</span>, vol. 28, no. 3, 2022, pp. 87-99.
+                                            Duran, Jackie. "Cách tiếp cận sáng tạo để tối ưu hóa quy trình từ thiết kế đến sản xuất."{" "}
+                                            <span className="italic">Tạp chí Kỹ thuật Sản xuất</span>, tập 28, số 3, 2022, trang 87-99.
                                         </p>
                                     </div>
 
-                                    {/* Conference Presentations */}
+                                    {/* Bài trình bày hội nghị */}
                                     <div>
                                         <h2 className="text-slate-800 font-semibold text-base uppercase tracking-wider mb-3">
-                                            Conference Presentations
+                                            Bài trình bày hội nghị
                                         </h2>
                                         <p className="text-slate-700">
-                                            "Advancing Rapid Prototyping Techniques," presented at the 2022 International Conference on
-                                            Manufacturing Innovation, San Diego, CA.
+                                            "Tiến bộ trong kỹ thuật tạo mẫu nhanh," trình bày tại Hội nghị Quốc tế về Đổi mới Sản xuất 2022, San Diego, CA.
                                         </p>
                                     </div>
 
-                                    {/* Conference Attendance */}
+                                    {/* Tham dự hội nghị */}
                                     <div>
                                         <h2 className="text-slate-800 font-semibold text-base uppercase tracking-wider mb-3">
-                                            Conference Attendance
+                                            Tham dự hội nghị
                                         </h2>
                                         <ul className="list-disc ml-5 space-y-1 text-slate-700">
-                                            <li>International Conference on Manufacturing Innovation, 2022</li>
-                                            <li>CAD and Prototyping Expo, 2021</li>
+                                            <li>Hội nghị Quốc tế về Đổi mới Sản xuất, 2022</li>
+                                            <li>Triển lãm CAD và Tạo mẫu, 2021</li>
                                         </ul>
                                     </div>
 
-                                    {/* Grants or Funding */}
+                                    {/* Tài trợ hoặc quỹ nghiên cứu */}
                                     <div>
                                         <h2 className="text-slate-800 font-semibold text-base uppercase tracking-wider mb-3">
-                                            Grants or Funding
+                                            Tài trợ hoặc quỹ nghiên cứu
                                         </h2>
                                         <p className="text-slate-700">
-                                            Awarded $15K for research on stress analysis in rapid prototyping, Arizona State University, 2021
+                                            Nhận tài trợ 15.000 USD cho nghiên cứu về phân tích ứng suất trong tạo mẫu nhanh, Đại học Bang Arizona, 2021
                                         </p>
                                     </div>
 
-                                    {/* Honors and Awards */}
+                                    {/* Danh hiệu và giải thưởng */}
                                     <div>
                                         <h2 className="text-slate-800 font-semibold text-base uppercase tracking-wider mb-3">
-                                            Honors and Awards
+                                            Danh hiệu và giải thưởng
                                         </h2>
                                         <ul className="list-disc ml-5 space-y-1 text-slate-700">
-                                            <li>Engineer of the Year, Quest Global, 2023</li>
-                                            <li>Excellence in Manufacturing Processes, ASM International, 2020</li>
+                                            <li>Kỹ sư của Năm, Quest Global, 2023</li>
+                                            <li>Xuất sắc trong Quy trình Sản xuất, ASM International, 2020</li>
                                         </ul>
                                     </div>
 
-                                    {/* Professional Affiliations */}
+                                    {/* Liên kết chuyên môn */}
                                     <div>
                                         <h2 className="text-slate-800 font-semibold text-base uppercase tracking-wider mb-3">
-                                            Professional Affiliations and Memberships
+                                            Liên kết và thành viên chuyên môn
                                         </h2>
                                         <ul className="list-disc ml-5 space-y-1 text-slate-700">
-                                            <li>Member, American Society of Mechanical Engineers (ASME)</li>
-                                            <li>Member, Society of Manufacturing Engineers (SME)</li>
+                                            <li>Thành viên, Hiệp hội Kỹ sư Cơ khí Hoa Kỳ (ASME)</li>
+                                            <li>Thành viên, Hiệp hội Kỹ sư Sản xuất (SME)</li>
                                         </ul>
                                     </div>
 
-                                    {/* Training */}
+                                    {/* <!-- Training --> */}
                                     <div>
-                                        <h2 className="text-slate-800 font-semibold text-base uppercase tracking-wider mb-3">Training</h2>
+                                        <h2 className="text-slate-800 font-semibold text-base uppercase tracking-wider mb-3">Đào tạo</h2>
                                         <ul className="list-disc ml-5 space-y-1 text-slate-700">
-                                            <li>Advanced CAD Modeling Workshop, Quest Global, 2022</li>
-                                            <li>Leadership in Engineering Program, ASM International, 2021</li>
+                                            <li>Hội thảo Mô phỏng CAD Nâng cao, Quest Global, 2022</li>
+                                            <li>Chương trình Lãnh đạo trong Kỹ thuật, ASM International, 2021</li>
                                         </ul>
                                     </div>
 
-                                    {/* Community Outreach */}
+                                    {/* <!-- Community Outreach --> */}
                                     <div>
                                         <h2 className="text-slate-800 font-semibold text-base uppercase tracking-wider mb-3">
-                                            Community Outreach
+                                            Hoạt động cộng đồng
                                         </h2>
                                         <ul className="list-disc ml-5 space-y-1 text-slate-700">
-                                            <li>Volunteer mentor for aspiring engineers, Arizona STEM Outreach Program, 2019-Present</li>
-                                            <li>Organizer of workshops for high school students on CAD modeling and prototyping</li>
+                                            <li>Tình nguyện viên hướng dẫn cho các kỹ sư trẻ, Chương trình STEM Arizona, 2019-Hiện tại</li>
+                                            <li>Tổ chức các hội thảo cho học sinh trung học về mô phỏng CAD và tạo mẫu</li>
                                         </ul>
                                     </div>
                                 </div>
@@ -348,13 +338,13 @@ export default function CVTemplate() {
                         </div>
                     )}
 
-                    {/* Toggle Button */}
+                    {/* <!-- Toggle Button --> */}
                     <div className="flex justify-center py-4">
                         <button
                             onClick={togglePage}
                             className="bg-slate-600 text-white px-6 py-2 rounded-md hover:bg-slate-700 transition-colors"
                         >
-                            {currentPage === 1 ? "Go to Page 2" : "Go to Page 1"}
+                            {currentPage === 1 ? "Đi đến Trang 2" : "Đi đến Trang 1"}
                         </button>
                     </div>
                 </div>

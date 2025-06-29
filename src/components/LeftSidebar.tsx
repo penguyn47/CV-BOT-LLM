@@ -17,6 +17,8 @@ interface LeftSidebarProps {
     onClose: () => void
     activeContent: string | null
     handleNavClick: (contentType: string | null) => void
+    selectedColor: string // Thêm prop
+    onColorChange: (color: string) => void // Thêm prop
 }
 
 const colors = [
@@ -43,11 +45,11 @@ interface Language {
 const languages: Language[] = [
     { code: "en", name: "Tiếng Anh", flag: "🇬🇧" },
     { code: "vi", name: "Tiếng Việt", flag: "🇻🇳" },
-    { code: "ja", name: "Tiếng Nhật", flag: "🇯🇵" },
 ]
 
-export default function LeftSidebar({ navItems, onClose, activeContent, handleNavClick }: LeftSidebarProps) {
-    const [selectedColor, setSelectedColor] = useState("#FF6B35")
+export default function LeftSidebar({ navItems, onClose, activeContent, handleNavClick, selectedColor, onColorChange }: LeftSidebarProps) {
+    // Xóa state cục bộ vì giờ sử dụng prop từ CVBuilder
+    // const [selectedColor, setSelectedColor] = useState("#FF6B35")
     const [selectedTemplate, setSelectedTemplate] = useState(templates[0].id)
     const [selectedLanguage, setSelectedLanguage] = useState("vi")
 
@@ -68,7 +70,7 @@ export default function LeftSidebar({ navItems, onClose, activeContent, handleNa
                     {row.map((color, colorIndex) => (
                         <button
                             key={`${rowIndex}-${colorIndex}`}
-                            onClick={() => setSelectedColor(color)}
+                            onClick={() => onColorChange(color)}
                             className="relative w-8 h-8 rounded-full border-2 border-gray-200 hover:border-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                             style={{ backgroundColor: color }}
                             aria-label={`Select color ${color}`}
@@ -89,7 +91,7 @@ export default function LeftSidebar({ navItems, onClose, activeContent, handleNa
                 <input
                     type="color"
                     value={selectedColor}
-                    onChange={(e) => setSelectedColor(e.target.value)}
+                    onChange={(e) => onColorChange(e.target.value)}
                     className="w-8 h-8 cursor-pointer p-0 border-none appearance-none"
                     aria-label={`Select color ${selectedColor}`}
                 />
