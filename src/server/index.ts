@@ -4,7 +4,7 @@ import bodyParser from 'body-parser'
 import profileRouter from './routes/savecvinfo.ts'
 
 const app = express()
-const PORT = 5000
+const PORT = 3000
 
 app.use(cors())
 app.use(bodyParser.json())

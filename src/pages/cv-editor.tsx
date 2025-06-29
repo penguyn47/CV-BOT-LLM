@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
@@ -94,6 +94,161 @@ export default function CVBuilder() {
         { id: "download", label: "Tải xuống", icon: "⬇️", contentType: null },
     ];
 
+    // Enhanced handleFormat function with better list support
+    const handleFormat = (command: string, value?: string) => {
+        if (editorRef.current) {
+            const selection = window.getSelection();
+            if (!selection || selection.rangeCount === 0) return;
+
+            const range = selection.getRangeAt(0);
+            const container = range.commonAncestorContainer;
+            
+            // Handle list formatting
+            if (command === "insertOrderedList" || command === "insertUnorderedList") {
+                // Check if we're already in a list
+                const listItem = container.nodeType === Node.ELEMENT_NODE 
+                    ? (container as Element).closest('li')
+                    : container.parentElement?.closest('li');
+                
+                if (listItem) {
+                    const currentList = listItem.parentElement;
+                    if (currentList) {
+                        // If we're in a list, convert it to the new type
+                        const newListType = command === "insertOrderedList" ? 'ol' : 'ul';
+                        const currentListType = currentList.tagName.toLowerCase();
+                        
+                        if (newListType !== currentListType) {
+                            // Convert list type
+                            const newList = document.createElement(newListType);
+                            newList.className = currentList.className;
+                            newList.style.cssText = currentList.style.cssText;
+                            
+                            // Move all list items to the new list
+                            while (currentList.firstChild) {
+                                newList.appendChild(currentList.firstChild);
+                            }
+                            
+                            // Replace the old list with the new one
+                            currentList.parentNode?.replaceChild(newList, currentList);
+                            
+                            // Set proper list style
+                            if (newListType === 'ol') {
+                                newList.style.listStyleType = 'decimal';
+                                newList.style.paddingLeft = '20px';
+                            } else {
+                                newList.style.listStyleType = 'disc';
+                                newList.style.paddingLeft = '20px';
+                            }
+                        } else {
+                            // Same type, toggle it off
+                            document.execCommand('outdent', false);
+                        }
+                    }
+                } else {
+                    // Create new list
+                    document.execCommand(command, false);
+                    
+                    // For ordered lists, ensure proper numbering
+                    if (command === "insertOrderedList") {
+                        const newList = selection.anchorNode?.parentElement?.closest('ol');
+                        if (newList) {
+                            newList.style.listStyleType = 'decimal';
+                            newList.style.paddingLeft = '20px';
+                        }
+                    } else {
+                        const newList = selection.anchorNode?.parentElement?.closest('ul');
+                        if (newList) {
+                            newList.style.listStyleType = 'disc';
+                            newList.style.paddingLeft = '20px';
+                        }
+                    }
+                }
+            } else {
+                // Handle other formatting commands
+                document.execCommand(command, false, value);
+            }
+            
+            editorRef.current.focus();
+        }
+    };
+
+    // Enhanced keyboard shortcuts for list formatting
+    const handleKeyDown = (e: KeyboardEvent) => {
+        // Ctrl+Shift+7 for ordered list
+        if (e.ctrlKey && e.shiftKey && e.key === '7') {
+            e.preventDefault();
+            handleFormat('insertOrderedList');
+        }
+        // Ctrl+Shift+8 for unordered list
+        else if (e.ctrlKey && e.shiftKey && e.key === '8') {
+            e.preventDefault();
+            handleFormat('insertUnorderedList');
+        }
+        // Enter to create new list item
+        else if (e.key === 'Enter') {
+            const selection = window.getSelection();
+            if (selection && selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                const listItem = range.commonAncestorContainer.nodeType === Node.ELEMENT_NODE 
+                    ? (range.commonAncestorContainer as Element).closest('li')
+                    : range.commonAncestorContainer.parentElement?.closest('li');
+                
+                if (listItem) {
+                    // If we're at the end of a list item, create a new one
+                    const listItemText = listItem.textContent || '';
+                    const cursorPosition = range.startOffset;
+                    
+                    if (cursorPosition >= listItemText.length) {
+                        // Create new list item
+                        const newLi = document.createElement('li');
+                        listItem.parentNode?.insertBefore(newLi, listItem.nextSibling);
+                        
+                        // Move cursor to new list item
+                        const newRange = document.createRange();
+                        newRange.setStart(newLi, 0);
+                        newRange.collapse(true);
+                        selection.removeAllRanges();
+                        selection.addRange(newRange);
+                        
+                        e.preventDefault();
+                    }
+                }
+            }
+        }
+        // Backspace to remove empty list items
+        else if (e.key === 'Backspace') {
+            const selection = window.getSelection();
+            if (selection && selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                const listItem = range.commonAncestorContainer.nodeType === Node.ELEMENT_NODE 
+                    ? (range.commonAncestorContainer as Element).closest('li')
+                    : range.commonAncestorContainer.parentElement?.closest('li');
+                
+                if (listItem && (listItem.textContent || '').trim() === '') {
+                    const list = listItem.parentElement;
+                    if (list && (list.tagName === 'OL' || list.tagName === 'UL')) {
+                        // If this is the only list item, remove the entire list
+                        if (list.children.length === 1) {
+                            list.remove();
+                        } else {
+                            // Remove just this list item
+                            listItem.remove();
+                        }
+                        e.preventDefault();
+                    }
+                }
+            }
+        }
+    };
+
+    // Add keyboard event listener
+    useEffect(() => {
+        document.addEventListener('keydown', handleKeyDown);
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, []);
+
     const handleNavClick = (contentType: string | null) => {
         if (contentType) {
             setIsLeftSidebarOpen(true);
@@ -125,13 +280,6 @@ export default function CVBuilder() {
         setIsRightSidebarOpen(!isRightSidebarOpen);
         setIsPreviewMode(false);
         if (isLeftSidebarOpen) setActiveContent(null);
-    };
-
-    const handleFormat = (command: string, value: string | undefined = undefined) => {
-        if (editorRef.current) {
-            document.execCommand(command, false, value);
-            editorRef.current.focus();
-        }
     };
 
     const handleFontChange = (font: string) => {
@@ -459,19 +607,37 @@ export default function CVBuilder() {
 
                         <div className="w-px h-4 bg-gray-300 mx-1" />
 
-                        <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => handleFormat("insertUnorderedList")}>
-                            <List className="h-3 w-3" />
-                        </Button>
-                        <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => handleFormat("insertOrderedList")}>
-                            <ListOrdered className="h-3 w-3" />
-                        </Button>
+                        <div className="tooltip">
+                            <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="h-6 w-6 p-0 list-button" 
+                                onClick={() => handleFormat("insertUnorderedList")}
+                                title="Danh sách không đánh số (Ctrl+Shift+8)"
+                            >
+                                <List className="h-3 w-3" />
+                            </Button>
+                            <span className="tooltiptext">Danh sách không đánh số<br/>Ctrl+Shift+8</span>
+                        </div>
+                        <div className="tooltip">
+                            <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="h-6 w-6 p-0 list-button" 
+                                onClick={() => handleFormat("insertOrderedList")}
+                                title="Danh sách đánh số (Ctrl+Shift+7)"
+                            >
+                                <ListOrdered className="h-3 w-3" />
+                            </Button>
+                            <span className="tooltiptext">Danh sách đánh số<br/>Ctrl+Shift+7</span>
+                        </div>
                     </div>
                 </div>
             )}
 
             {/* Main Content */}
             {!isPreviewMode && (
-                <div className="flex min-h-[calc(100vh-120px)] mt-[120px]">
+                <div className="flex min-h-[calc(100vh-120px)] mt-[120px] cv-editor">
                     {/* Left Sidebar */}
                     {isLeftSidebarOpen && (
                         <div className="w-80 fixed left-0 top-[105px] bottom-0 z-10">

@@ -1,5 +1,6 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { FaPhone, FaFax, FaEnvelope, FaFacebook, FaInstagram, FaMapMarkerAlt } from 'react-icons/fa';
+import { FiPlus, FiTrash2 } from 'react-icons/fi';
 
 // Hàm debounce để trì hoãn cập nhật state
 const debounce = (func, delay) => {
@@ -17,6 +18,9 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
     console.error('Dữ liệu CV không tồn tại');
     return <div className="p-4 text-red-500">Lỗi: Dữ liệu CV không tồn tại</div>;
   }
+
+  // State để theo dõi section đang focus
+  const [focusedSection, setFocusedSection] = useState(null);
 
   // Ref để lưu vị trí con trỏ
   const cursorPositions = useRef({});
@@ -129,7 +133,7 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
     } catch (error) {
       console.error('Lỗi khi xử lý thay đổi nội dung:', error);
     }
-  }, 300); // Debounce 300ms
+  }, 300);
 
   const handleContactChange = (field, value) => {
     try {
@@ -142,9 +146,10 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
   };
 
   // Hàm xử lý focus cho thông tin liên hệ và tiêu đề
-  const handleFocus = (e) => {
+  const handleFocus = (e, sectionKey) => {
     const element = e.currentTarget;
     element.classList.remove('text-gray-400');
+    setFocusedSection(sectionKey);
   };
 
   // Hàm xử lý blur cho thông tin liên hệ, tiêu đề, name và subtitle
@@ -157,7 +162,7 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
         if (field) {
           handleContactChange(field, defaultText);
         } else if (key === 'name' || key === 'subtitle') {
-          onContentChange(key, defaultText);
+          onContentChange(key, text);
         } else {
           onContentChange(key, { ...data[key], title: defaultText });
         }
@@ -172,6 +177,187 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
       }
     } catch (error) {
       console.error('Lỗi khi xử lý blur:', error);
+    }
+  };
+
+  // Hàm xử lý thêm section mới
+  const handleAddSection = (key) => {
+    try {
+      let newItem;
+      if (key === 'experiences') {
+        newItem = { title: 'Vị trí mới', details: ['Mô tả công việc mới'] };
+        onContentChange(key, {
+          ...data[key],
+          items: [...(data[key].items || []), newItem]
+        });
+      } else if (key === 'education') {
+        newItem = { institution: 'Trường mới', details: ['Thông tin học vấn mới'] };
+        onContentChange(key, {
+          ...data[key],
+          items: [...(data[key].items || []), newItem]
+        });
+      } else if (['expertise', 'otherSkills', 'hobbies', 'certificates'].includes(key)) {
+        newItem = 'Kỹ năng/chứng chỉ/sở thích mới';
+        onContentChange(key, {
+          ...data[key],
+          items: [...(data[key].items || []), newItem]
+        });
+      } else if (key === 'objective') {
+        // Objective không cần thêm section mới, chỉ có một nội dung
+        return;
+      }
+      console.log(`Đã thêm section mới cho ${key}`);
+    } catch (error) {
+      console.error('Lỗi khi thêm section:', error);
+    }
+  };
+
+  // Hàm xử lý xóa section
+  const handleDeleteSection = (key, index = null) => {
+    try {
+      if (key === 'objective') {
+        // Objective chỉ có một nội dung, xóa nội dung
+        onContentChange(key, { ...data[key], content: '' });
+      } else if (['expertise', 'otherSkills', 'hobbies', 'certificates'].includes(key)) {
+        if (index !== null) {
+          const newItems = data[key].items.filter((_, i) => i !== index);
+          onContentChange(key, { ...data[key], items: newItems });
+        } else {
+          // Xóa toàn bộ section
+          onContentChange(key, { ...data[key], items: [] });
+        }
+      } else if (key === 'experiences') {
+        if (index !== null) {
+          const newItems = data[key].items.filter((_, i) => i !== index);
+          onContentChange(key, { ...data[key], items: newItems });
+        } else {
+          onContentChange(key, { ...data[key], items: [], summary: '', additionalNote: '' });
+        }
+      } else if (key === 'education') {
+        if (index !== null) {
+          const newItems = data[key].items.filter((_, i) => i !== index);
+          onContentChange(key, { ...data[key], items: newItems });
+        } else {
+          onContentChange(key, { ...data[key], items: [] });
+        }
+      }
+      console.log(`Đã xóa section ${key}${index !== null ? ` tại index ${index}` : ''}`);
+      setFocusedSection(null); // Reset focus sau khi xóa
+    } catch (error) {
+      console.error('Lỗi khi xóa section:', error);
+    }
+  };
+
+  // Helper function to render lists with proper support for both bullet and numbered lists
+  const renderList = (items, defaultItems, listType = 'ul', className = 'list-disc list-inside text-sm space-y-1') => {
+    const listItems = items?.length > 0 ? items : defaultItems;
+    const listTag = listType === 'ol' ? 'ol' : 'ul';
+    const listClass = listType === 'ol' ? 'list-decimal list-inside text-sm space-y-1' : className;
+    
+    return `<${listTag} class="${listClass}">${listItems.map(item => `<li>${item}</li>`).join('')}</${listTag}>`;
+  };
+
+  // Helper function to render experience items with proper list support
+  const renderExperienceItems = (items, defaultItems) => {
+    if (items?.length > 0) {
+      return items.map((exp, index) => {
+        const details = exp.details?.length > 0 ? exp.details : defaultItems;
+        return `<div class="mt-3 experience-item relative">
+          ${focusedSection === `experiences-${index}` ? `
+            <div class="absolute top-0 right-0 flex gap-2">
+              <button class="p-1 bg-gray-200 rounded hover:bg-gray-300" onclick="event.stopPropagation();" onClick={() => handleAddSection('experiences')}>
+                <FiPlus className="h-4 w-4" />
+              </button>
+              <button class="p-1 bg-red-200 rounded hover:bg-red-300" onclick="event.stopPropagation();" onClick={() => handleDeleteSection('experiences', ${index})}>
+                <FiTrash2 className="h-4 w-4" />
+              </button>
+            </div>
+          ` : ''}
+          <h3 class="text-lg font-medium text-gray-700">${exp.title || 'Nhân viên kinh doanh'}</h3>
+          ${renderList(details, ['Quản lý danh mục khách hàng', 'Đạt doanh số 500 triệu/tháng'], 'ul', 'list-disc list-inside text-sm mt-1')}
+        </div>`;
+      }).join('');
+    } else {
+      return `<div class="mt-3 experience-item relative">
+        ${focusedSection === 'experiences-0' ? `
+          <div class="absolute top-0 right-0 flex gap-2">
+            <button class="p-1 bg-gray-200 rounded hover:bg-gray-300" onclick="event.stopPropagation();" onClick={() => handleAddSection('experiences')}>
+              <FiPlus className="h-4 w-4" />
+            </button>
+            <button class="p-1 bg-red-200 rounded hover:bg-red-300" onclick="event.stopPropagation();" onClick={() => handleDeleteSection('experiences', 0)}>
+              <FiTrash2 className="h-4 w-4" />
+            </button>
+          </div>
+        ` : ''}
+        <h3 class="text-lg font-medium text-gray-700">Nhân viên kinh doanh</h3>
+        ${renderList([], ['Quản lý danh mục khách hàng', 'Đạt doanh số 500 triệu/tháng'], 'ul', 'list-disc list-inside text-sm mt-1')}
+      </div>
+      <div class="mt-3 experience-item relative">
+        ${focusedSection === 'experiences-1' ? `
+          <div class="absolute top-0 right-0 flex gap-2">
+            <button class="p-1 bg-gray-200 rounded hover:bg-gray-300" onclick="event.stopPropagation();" onClick={() => handleAddSection('experiences')}>
+              <FiPlus className="h-4 w-4" />
+            </button>
+            <button class="p-1 bg-red-200 rounded hover:bg-red-300" onclick="event.stopPropagation();" onClick={() => handleDeleteSection('experiences', 1)}>
+              <FiTrash2 className="h-4 w-4" />
+            </button>
+          </div>
+        ` : ''}
+        <h3 class="text-lg font-medium text-gray-700">Trợ lý marketing</h3>
+        ${renderList([], ['Lập kế hoạch quảng cáo', 'Phân tích hiệu quả chiến dịch'], 'ul', 'list-disc list-inside text-sm mt-1')}
+      </div>`;
+    }
+  };
+
+  // Helper function to render education items with proper list support
+  const renderEducationItems = (items, defaultItems) => {
+    if (items?.length > 0) {
+      return items.map((edu, index) => {
+        const details = edu.details?.length > 0 ? edu.details : defaultItems;
+        return `<div class="mt-2 education-item relative">
+          ${focusedSection === `education-${index}` ? `
+            <div class="absolute top-0 right-0 flex gap-2">
+              <button class="p-1 bg-gray-200 rounded hover:bg-gray-300" onclick="event.stopPropagation();" onClick={() => handleAddSection('education')}>
+                <FiPlus className="h-4 w-4" />
+              </button>
+              <button class="p-1 bg-red-200 rounded hover:bg-red-300" onclick="event.stopPropagation();" onClick={() => handleDeleteSection('education', ${index})}>
+                <FiTrash2 className="h Sama sama4 w-4" />
+              </button>
+            </div>
+          ` : ''}
+          <h3 class="text-lg font-medium text-gray-700">${edu.institution || 'Đại học Kinh tế Quốc dân'}</h3>
+          ${renderList(details, ['Cử nhân Quản trị Kinh doanh, 2018-2022', 'GPA 3.5/4.0'], 'ul', 'list-disc list-inside text-sm mt-1')}
+        </div>`;
+      }).join('');
+    } else {
+      return `<div class="mt-2 education-item relative">
+        ${focusedSection === 'education-0' ? `
+          <div class="absolute top-0 right-0 flex gap-2">
+            <button class="p-1 bg-gray-200 rounded hover:bg-gray-300" onclick="event.stopPropagation();" onClick={() => handleAddSection('education')}>
+              <FiPlus className="h-4 w-4" />
+            </button>
+            <button class="p-1 bg-red-200 rounded hover:bg-red-300" onclick="event.stopPropagation();" onClick={() => handleDeleteSection('education', 0)}>
+              <FiTrash2 className="h-4 w-4" />
+            </button>
+          </div>
+        ` : ''}
+        <h3 class="text-lg font-medium text-gray-700">Đại học Kinh tế Quốc dân</h3>
+        ${renderList([], ['Cử nhân Quản trị Kinh doanh, 2018-2022', 'GPA 3.5/4.0'], 'ul', 'list-disc list-inside text-sm mt-1')}
+      </div>
+      <div class="mt-2 education-item relative">
+        ${focusedSection === 'education-1' ? `
+          <div class="absolute top-0 right-0 flex gap-2">
+            <button class="p-1 bg-gray-200 rounded hover:bg-gray-300" onclick="event.stopPropagation();" onClick={() => handleAddSection('education')}>
+              <FiPlus className="h-4 w-4" />
+            </button>
+            <button class="p-1 bg-red-200 rounded hover:bg-red-300" onclick="event.stopPropagation();" onClick={() => handleDeleteSection('education', 1)}>
+              <FiTrash2 className="h-4 w-4" />
+            </button>
+          </div>
+        ` : ''}
+        <h3 class="text-lg font-medium text-gray-700">Đại học Công nghệ Thông tin</h3>
+        ${renderList([], ['Thạc sĩ Khoa học Máy tính, 2022-2024', 'Nghiên cứu trí tuệ nhân tạo'], 'ul', 'list-disc list-inside text-sm mt-1')}
+      </div>`;
     }
   };
 
@@ -202,7 +388,7 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
               className="text-sm uppercase text-gray-600"
               contentEditable
               suppressContentEditableWarning
-              onFocus={handleFocus}
+              onFocus={(e) => handleFocus(e, 'subtitle')}
               onBlur={(e) => handleBlur(e, 'Quản Trị Kinh Doanh', 'subtitle')}
             >
               {data.subtitle || 'Quản Trị Kinh Doanh'}
@@ -211,7 +397,7 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
               className="text-4xl font-bold text-gray-800"
               contentEditable
               suppressContentEditableWarning
-              onFocus={handleFocus}
+              onFocus={(e) => handleFocus(e, 'name')}
               onBlur={(e) => handleBlur(e, 'Họ và Tên', 'name')}
             >
               {data.name || 'Họ và Tên'}
@@ -231,7 +417,7 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
                 contentEditable
                 suppressContentEditableWarning
                 className="text-gray-700"
-                onFocus={handleFocus}
+                onFocus={(e) => handleFocus(e, 'contact-phone')}
                 onBlur={(e) => handleBlur(e, '+84 123 456 789', 'contact', 'phone')}
               >
                 {data.contact?.phone || '+84 123 456 789'}
@@ -243,7 +429,7 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
                 contentEditable
                 suppressContentEditableWarning
                 className="text-gray-700"
-                onFocus={handleFocus}
+                onFocus={(e) => handleFocus(e, 'contact-fax')}
                 onBlur={(e) => handleBlur(e, '+84 123 456 789', 'contact', 'fax')}
               >
                 {data.contact?.fax || '+84 123 456 789'}
@@ -255,7 +441,7 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
                 contentEditable
                 suppressContentEditableWarning
                 className="text-gray-700"
-                onFocus={handleFocus}
+                onFocus={(e) => handleFocus(e, 'contact-email')}
                 onBlur={(e) => handleBlur(e, 'email@example.com', 'contact', 'email')}
               >
                 {data.contact?.email || 'email@example.com'}
@@ -269,7 +455,7 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
                 contentEditable
                 suppressContentEditableWarning
                 className="text-gray-700"
-                onFocus={handleFocus}
+                onFocus={(e) => handleFocus(e, 'contact-facebook')}
                 onBlur={(e) => handleBlur(e, 'facebook.com/username', 'contact', 'facebook')}
               >
                 {data.contact?.facebook || 'facebook.com/username'}
@@ -281,7 +467,7 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
                 contentEditable
                 suppressContentEditableWarning
                 className="text-gray-700"
-                onFocus={handleFocus}
+                onFocus={(e) => handleFocus(e, 'contact-instagram')}
                 onBlur={(e) => handleBlur(e, 'instagram.com/username', 'contact', 'instagram')}
               >
                 {data.contact?.instagram || 'instagram.com/username'}
@@ -293,7 +479,7 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
                 contentEditable
                 suppressContentEditableWarning
                 className="text-gray-700"
-                onFocus={handleFocus}
+                onFocus={(e) => handleFocus(e, 'contact-address')}
                 onBlur={(e) => handleBlur(e, '123 Đường ABC, Quận 1, TP.HCM', 'contact', 'address')}
               >
                 {data.contact?.address || '123 Đường ABC, Quận 1, TP.HCM'}
@@ -308,20 +494,31 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
         {/* Đường ngăn cách dọc cố định */}
         <div
           className="hidden md:block absolute left-[70mm] top-0 w-px bg-gray-300"
-          style={{ height: '207mm' }}
+          style={{ height: '202mm' }}
         ></div>
         {/* Cột trái */}
         <aside className="md:w-1/3 bg-white p-6">
-          <section className="mb-6">
+          <section className="mb-6 relative">
             <h2
               className="text-lg font-semibold border-b border-gray-400 pb-1 mb-2"
               contentEditable
               suppressContentEditableWarning
               onKeyDown={handleKeyDown}
+              onFocus={(e) => handleFocus(e, 'objective')}
               onBlur={(e) => handleTitleChange('objective', e)}
             >
               {data.objective?.title || 'Mục tiêu nghề nghiệp'}
             </h2>
+            {focusedSection === 'objective' && (
+              <div className="absolute top-0 right-0 flex gap-2">
+                <button className="p-1 bg-gray-200 rounded hover:bg-gray-300" onClick={() => handleAddSection('objective')}>
+                  <FiPlus className="h-4 w-4" />
+                </button>
+                <button className="p-1 bg-red-200 rounded hover:bg-red-300" onClick={() => handleDeleteSection('objective')}>
+                  <FiTrash2 className="h-4 w-4" />
+                </button>
+              </div>
+            )}
             <div
               contentEditable
               suppressContentEditableWarning
@@ -332,21 +529,33 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
                 setTimeout(() => restoreCursorPosition(e.currentTarget, 'objective'), 0);
               }}
               onKeyDown={handleKeyDown}
+              onFocus={(e) => handleFocus(e, 'objective')}
               dangerouslySetInnerHTML={{
                 __html: `<p class="text-gray-700">${data.objective?.content || 'Phát triển sự nghiệp trong lĩnh vực công nghệ thông tin, đóng góp vào các dự án sáng tạo và đổi mới...'}</p>`
               }}
             />
           </section>
-          <section className="mb-6">
+          <section className="mb-6 relative">
             <h2
               className="text-lg font-semibold border-b border-gray-400 pb-1 mb-2"
               contentEditable
               suppressContentEditableWarning
               onKeyDown={handleKeyDown}
-              onBlur={(e) => handleTitleChange('objective', e)}
+              onFocus={(e) => handleFocus(e, 'expertise')}
+              onBlur={(e) => handleTitleChange('expertise', e)}
             >
               {data.expertise?.title || 'Lĩnh vực chuyên môn'}
             </h2>
+            {focusedSection === 'expertise' && (
+              <div className="absolute top-0 right-0 flex gap-2">
+                <button className="p-1 bg-gray-200 rounded hover:bg-gray-300" onClick={() => handleAddSection('expertise')}>
+                  <FiPlus className="h-4 w-4" />
+                </button>
+                <button className="p-1 bg-red-200 rounded hover:bg-red-300" onClick={() => handleDeleteSection('expertise')}>
+                  <FiTrash2 className="h-4 w-4" />
+                </button>
+              </div>
+            )}
             <div
               contentEditable
               suppressContentEditableWarning
@@ -357,28 +566,42 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
                 setTimeout(() => restoreCursorPosition(e.currentTarget, 'expertise'), 0);
               }}
               onKeyDown={handleKeyDown}
+              onFocus={(e) => handleFocus(e, 'expertise')}
               dangerouslySetInnerHTML={{
-                __html: `<ul class="list-disc list-inside text-sm space-y-1">${data.expertise?.items?.length > 0
-                    ? data.expertise.items.map(item => `<li>${item}</li>`).join('')
-                    : [
-                      'Thành thạo Microsoft Office (Word, Excel, PowerPoint)',
-                      'Kỹ năng phân tích dữ liệu',
-                      'Quản lý dự án'
-                    ].map(item => `<li>${item}</li>`).join('')
-                  }</ul>`
+                __html: renderList(
+                  data.expertise?.items,
+                  [
+                    'Thành thạo Microsoft Office (Word, Excel, PowerPoint)',
+                    'Kỹ năng phân tích dữ liệu',
+                    'Quản lý dự án'
+                  ],
+                  'ul',
+                  'list-disc list-inside text-sm space-y-1'
+                )
               }}
             />
           </section>
-          <section className="mb-6">
+          <section className="mb-6 relative">
             <h2
               className="text-lg font-semibold border-b border-gray-400 pb-1 mb-2"
               contentEditable
               suppressContentEditableWarning
               onKeyDown={handleKeyDown}
+              onFocus={(e) => handleFocus(e, 'otherSkills')}
               onBlur={(e) => handleTitleChange('otherSkills', e)}
             >
               {data.otherSkills?.title || 'Kỹ năng khác'}
             </h2>
+            {focusedSection === 'otherSkills' && (
+              <div className="absolute top-0 right-0 flex gap-2">
+                <button className="p-1 bg-gray-200 rounded hover:bg-gray-300" onClick={() => handleAddSection('otherSkills')}>
+                  <FiPlus className="h-4 w-4" />
+                </button>
+                <button className="p-1 bg-red-200 rounded hover:bg-red-300" onClick={() => handleDeleteSection('otherSkills')}>
+                  <FiTrash2 className="h-4 w-4" />
+                </button>
+              </div>
+            )}
             <div
               contentEditable
               suppressContentEditableWarning
@@ -389,28 +612,42 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
                 setTimeout(() => restoreCursorPosition(e.currentTarget, 'otherSkills'), 0);
               }}
               onKeyDown={handleKeyDown}
+              onFocus={(e) => handleFocus(e, 'otherSkills')}
               dangerouslySetInnerHTML={{
-                __html: `<ul class="list-disc list-inside text-sm space-y-1">${data.otherSkills?.items?.length > 0
-                    ? data.otherSkills.items.map(item => `<li>${item}</li>`).join('')
-                    : [
-                      'Lãnh đạo nhóm',
-                      'Giải quyết vấn đề',
-                      'Giao tiếp đa văn hóa'
-                    ].map(item => `<li>${item}</li>`).join('')
-                  }</ul>`
+                __html: renderList(
+                  data.otherSkills?.items,
+                  [
+                    'Lãnh đạo nhóm',
+                    'Giải quyết vấn đề',
+                    'Giao tiếp đa văn hóa'
+                  ],
+                  'ul',
+                  'list-disc list-inside text-sm space-y-1'
+                )
               }}
             />
           </section>
-          <section>
+          <section className="relative">
             <h2
               className="text-lg font-semibold border-b border-gray-400 pb-1 mb-2"
               contentEditable
               suppressContentEditableWarning
               onKeyDown={handleKeyDown}
+              onFocus={(e) => handleFocus(e, 'hobbies')}
               onBlur={(e) => handleTitleChange('hobbies', e)}
             >
               {data.hobbies?.title || 'Sở thích'}
             </h2>
+            {focusedSection === 'hobbies' && (
+              <div className="absolute top-0 right-0 flex gap-2">
+                <button className="p-1 bg-gray-200 rounded hover:bg-gray-300" onClick={() => handleAddSection('hobbies')}>
+                  <FiPlus className="h-4 w-4" />
+                </button>
+                <button className="p-1 bg-red-200 rounded hover:bg-red-300" onClick={() => handleDeleteSection('hobbies')}>
+                  <FiTrash2 className="h-4 w-4" />
+                </button>
+              </div>
+            )}
             <div
               contentEditable
               suppressContentEditableWarning
@@ -421,31 +658,45 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
                 setTimeout(() => restoreCursorPosition(e.currentTarget, 'hobbies'), 0);
               }}
               onKeyDown={handleKeyDown}
+              onFocus={(e) => handleFocus(e, 'hobbies')}
               dangerouslySetInnerHTML={{
-                __html: `<ul class="list-disc list-inside text-sm space-y-1">${data.hobbies?.items?.length > 0
-                    ? data.hobbies.items.map(item => `<li>${item}</li>`).join('')
-                    : [
-                      'Đọc sách phát triển bản thân',
-                      'Du lịch khám phá văn hóa',
-                      'Chơi thể thao (bóng đá, cầu lông)'
-                    ].map(item => `<li>${item}</li>`).join('')
-                  }</ul>`
+                __html: renderList(
+                  data.hobbies?.items,
+                  [
+                    'Đọc sách phát triển bản thân',
+                    'Du lịch khám phá văn hóa',
+                    'Chơi thể thao (bóng đá, cầu lông)'
+                  ],
+                  'ul',
+                  'list-disc list-inside text-sm space-y-1'
+                )
               }}
             />
           </section>
         </aside>
         {/* Cột phải */}
         <main className="md:w-2/3 bg-white p-6">
-          <section className="mb-6">
+          <section className="mb-6 relative">
             <h2
               className="text-xl font-semibold border-b border-gray-500 pb-1 mb-2"
               contentEditable
               suppressContentEditableWarning
               onKeyDown={handleKeyDown}
+              onFocus={(e) => handleFocus(e, 'experiences')}
               onBlur={(e) => handleTitleChange('experiences', e)}
             >
               {data.experiences?.title || 'Kinh nghiệm làm việc'}
             </h2>
+            {focusedSection === 'experiences' && (
+              <div className="absolute top-0 right-0 flex gap-2">
+                <button className="p-1 bg-gray-200 rounded hover:bg-gray-300" onClick={() => handleAddSection('experiences')}>
+                  <FiPlus className="h-4 w-4" />
+                </button>
+                <button className="p-1 bg-red-200 rounded hover:bg-red-300" onClick={() => handleDeleteSection('experiences')}>
+                  <FiTrash2 className="h-4 w-4" />
+                </button>
+              </div>
+            )}
             <div
               contentEditable
               suppressContentEditableWarning
@@ -456,56 +707,38 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
                 setTimeout(() => restoreCursorPosition(e.currentTarget, 'experiences'), 0);
               }}
               onKeyDown={handleKeyDown}
+              onFocus={(e) => handleFocus(e, 'experiences')}
               dangerouslySetInnerHTML={{
                 __html: (() => {
                   let html = `<p class="font-medium text-gray-700">${data.experiences?.summary || 'Hơn 3 năm kinh nghiệm trong lĩnh vực phát triển phần mềm...'}</p>`;
-                  if (data.experiences?.items?.length > 0) {
-                    data.experiences.items.forEach(exp => {
-                      html += `<div class="mt-3 experience-item">
-                        <h3 class="text-lg font-medium text-gray-700">${exp.title || 'Nhân viên kinh doanh'}</h3>
-                        <ul class="list-disc list-inside text-sm mt-1">`;
-                      if (exp.details?.length > 0) {
-                        exp.details.forEach(d => {
-                          html += `<li class="text-gray-700">${d}</li>`;
-                        });
-                      } else {
-                        html += `<li class="text-gray-700">Quản lý danh mục khách hàng</li>
-                          <li class="text-gray-700">Đạt doanh số 500 triệu/tháng</li>`;
-                      }
-                      html += `</ul></div>`;
-                    });
-                  } else {
-                    html += `<div class="mt-3 experience-item">
-                      <h3 class="text-lg font-medium text-gray-700">Nhân viên kinh doanh</h3>
-                      <ul class="list-disc list-inside text-sm mt-1">
-                        <li class="text-gray-700">Quản lý danh mục khách hàng</li>
-                        <li class="text-gray-700">Đạt doanh số 500 triệu/tháng</li>
-                      </ul>
-                    </div>
-                    <div class="mt-3 experience-item">
-                      <h3 class="text-lg font-medium text-gray-700">Trợ lý marketing</h3>
-                      <ul class="list-disc list-inside text-sm mt-1">
-                        <li class="text-gray-700">Lập kế hoạch quảng cáo</li>
-                        <li class="text-gray-700">Phân tích hiệu quả chiến dịch</li>
-                      </ul>
-                    </div>`;
-                  }
+                  html += renderExperienceItems(data.experiences?.items, ['Quản lý danh mục khách hàng', 'Đạt doanh số 500 triệu/tháng']);
                   html += `<p class="mt-2 text-sm italic text-gray-700">${data.experiences?.additionalNote || 'Có kinh nghiệm làm việc với các đối tác quốc tế...'}</p>`;
                   return html;
                 })()
               }}
             />
           </section>
-          <section className="mb-6">
+          <section className="mb-6 relative">
             <h2
               className="text-xl font-semibold border-b border-gray-500 pb-1 mb-2"
               contentEditable
               suppressContentEditableWarning
               onKeyDown={handleKeyDown}
+              onFocus={(e) => handleFocus(e, 'education')}
               onBlur={(e) => handleTitleChange('education', e)}
             >
               {data.education?.title || 'Lịch sử học vấn'}
             </h2>
+            {focusedSection === 'education' && (
+              <div className="absolute top-0 right-0 flex gap-2">
+                <button className="p-1 bg-gray-200 rounded hover:bg-gray-300" onClick={() => handleAddSection('education')}>
+                  <FiPlus className="h-4 w-4" />
+                </button>
+                <button className="p-1 bg-red-200 rounded hover:bg-red-300" onClick={() => handleDeleteSection('education')}>
+                  <FiTrash2 className="h-4 w-4" />
+                </button>
+              </div>
+            )}
             <div
               contentEditable
               suppressContentEditableWarning
@@ -516,55 +749,37 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
                 setTimeout(() => restoreCursorPosition(e.currentTarget, 'education'), 0);
               }}
               onKeyDown={handleKeyDown}
+              onFocus={(e) => handleFocus(e, 'education')}
               dangerouslySetInnerHTML={{
                 __html: (() => {
                   let html = '';
-                  if (data.education?.items?.length > 0) {
-                    data.education.items.forEach(edu => {
-                      html += `<div class="mt-2 education-item">
-                        <h3 class="text-lg font-medium text-gray-700">${edu.institution || 'Đại học Kinh tế Quốc dân'}</h3>
-                        <ul class="list-disc list-inside text-sm mt-1">`;
-                      if (edu.details?.length > 0) {
-                        edu.details.forEach(d => {
-                          html += `<li class="text-gray-700">${d}</li>`;
-                        });
-                      } else {
-                        html += `<li class="text-gray-700">Cử nhân Quản trị Kinh doanh, 2018-2022</li>
-                          <li class="text-gray-700">GPA 3.5/4.0</li>`;
-                      }
-                      html += `</ul></div>`;
-                    });
-                  } else {
-                    html += `<div class="mt-2 education-item">
-                      <h3 className="text-lg font-medium text-gray-700">Đại học Kinh tế Quốc dân</h3>
-                      <ul class="list-disc list-inside text-sm mt-1">
-                        <li class="text-gray-700">Cử nhân Quản trị Kinh doanh, 2018-2022</li>
-                        <li class="text-gray-700">GPA 3.5/4.0</li>
-                      </ul>
-                    </div>
-                    <div class="mt-2 education-item">
-                      <h3 class="text-lg font-medium text-gray-700">Đại học Công nghệ Thông tin</h3>
-                      <ul class="list-disc list-inside text-sm mt-1">
-                        <li class="text-gray-700">Thạc sĩ Khoa học Máy tính, 2022-2024</li>
-                        <li class="text-gray-700">Nghiên cứu trí tuệ nhân tạo</li>
-                      </ul>
-                    </div>`;
-                  }
+                  html += renderEducationItems(data.education?.items, ['Cử nhân Quản trị Kinh doanh, 2018-2022', 'GPA 3.5/4.0']);
                   return html;
                 })()
               }}
             />
           </section>
-          <section>
+          <section className="relative">
             <h2
               className="text-xl font-semibold border-b border-gray-500 pb-1 mb-2"
               contentEditable
               suppressContentEditableWarning
               onKeyDown={handleKeyDown}
+              onFocus={(e) => handleFocus(e, 'certificates')}
               onBlur={(e) => handleTitleChange('certificates', e)}
             >
               {data.certificates?.title || 'Một số chứng chỉ đạt được'}
             </h2>
+            {focusedSection === 'certificates' && (
+              <div className="absolute top-0 right-0 flex gap-2">
+                <button className="p-1 bg-gray-200 rounded hover:bg-gray-300" onClick={() => handleAddSection('certificates')}>
+                  <FiPlus className="h-4 w-4" />
+                </button>
+                <button className="p-1 bg-red-200 rounded hover:bg-red-300" onClick={() => handleDeleteSection('certificates')}>
+                  <FiTrash2 className="h-4 w-4" />
+                </button>
+              </div>
+            )}
             <div
               contentEditable
               suppressContentEditableWarning
@@ -575,15 +790,18 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
                 setTimeout(() => restoreCursorPosition(e.currentTarget, 'certificates'), 0);
               }}
               onKeyDown={handleKeyDown}
+              onFocus={(e) => handleFocus(e, 'certificates')}
               dangerouslySetInnerHTML={{
-                __html: `<ul class="list-disc list-inside text-sm mt-1">${data.certificates?.items?.length > 0
-                    ? data.certificates.items.map(item => `<li>${item}</li>`).join('')
-                    : [
-                      'Chứng chỉ TOEIC 800',
-                      'Chứng chỉ PMP (Quản lý dự án chuyên nghiệp)',
-                      'Chứng chỉ Google Analytics'
-                    ].map(item => `<li>${item}</li>`).join('')
-                  }</ul>`
+                __html: renderList(
+                  data.certificates?.items,
+                  [
+                    'Chứng chỉ TOEIC 800',
+                    'Chứng chỉ PMP (Quản lý dự án chuyên nghiệp)',
+                    'Chứng chỉ Google Analytics'
+                  ],
+                  'ul',
+                  'list-disc list-inside text-sm mt-1'
+                )
               }}
             />
           </section>
