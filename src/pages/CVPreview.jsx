@@ -1,9 +1,7 @@
 import { useRef, useState } from 'react'
 
 function CVPreview() {
-	const [selectedColor, setSelectedColor] = useState(null)
 	const printRef = useRef(null)
-
 	const colors = [
 		{ name: 'Red', value: '#EF4444' },
 		{ name: 'Green', value: '#10B981' },
@@ -14,6 +12,7 @@ function CVPreview() {
 		{ name: 'Amber', value: '#F59E0B' },
 		{ name: 'Emerald', value: '#047857' },
 	]
+	const [selectedColor, setSelectedColor] = useState(colors[0])
 
 	const handleColorSelect = (color) => {
 		setSelectedColor(selectedColor?.name === color.name ? null : color)
