@@ -2,7 +2,6 @@ import { useRef, useState } from 'react'
 
 function CVPreview() {
 	const printRef = useRef(null)
-
 	const colors = [
 		{ name: 'Red', value: '#EF4444' },
 		{ name: 'Green', value: '#10B981' },
