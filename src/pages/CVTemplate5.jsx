@@ -1,5 +1,3 @@
-import avatar from '../../public/avatar.png'
-
 export default function CVTemplate5({ data }) {
 	return (
 		<div className="relative max-w-4xl mx-auto bg-white shadow-lg overflow-hidden font-sans flex my-10">
@@ -11,7 +9,7 @@ export default function CVTemplate5({ data }) {
 			<div className="bg-white w-full max-w-5xl p-6 rounded-xl shadow-md grid grid-cols-12 gap-6">
 				{/* Sidebar - Left */}
 				<div className="z-999 col-span-4 flex flex-col items-center text-center mt-10">
-					<img src={avatar} alt="avatar" className="w-45 h-45 rounded-full mb-4 object-cover z-10" />
+					<img src="./avatar.png" alt="avatar" className="w-45 h-45 rounded-full mb-4 object-cover z-10" />
 
 					{/* Contact Info */}
 					<div className="text-sm text-[.92rem] bg-white text-left space-y-[14px] w-full border border-orange-200 p-3 px-4 rounded shadow-sm -mt-8">

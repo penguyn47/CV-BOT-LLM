@@ -1,27 +1,27 @@
 {
-	"profile": {
-		"name": "Trần Đức Minh",
-		"email": "tranducminh2412z@gmail.com",
-		"phone": "0344448590",
-		"address": "Minh Hưng, Chơn Thành, Bình Phước",
-		"summary": "Không có"
-	},
-	"target_job": {
-		"position": "DevOps",
-		"level": "fresher",
-		"job": "it",
-		"description": "Không có"
-	},
-	"target_company": {
-		"name": "Facebook Ins. Company",
-		"scale": "corporation",
-		"type": "foreign",
-		"description": "Không có",
-		"value": "Mảk Zuckerberg iz da bezt"
-	},
-	"skill": {
-		"name": ["Dốt", "Lười"],
-		"experience": "Không có",
-		"education": "IELTS 10.0"
-	}
+  "profile": {
+    "name": "Trần Đức Minh",
+    "email": "tranducminh2412z@gmail.com",
+    "phone": "0344448590",
+    "address": "Minh Hưng, Chơn Thành, Bình Phước",
+    "summary": "s"
+  },
+  "target_job": {
+    "position": "s",
+    "level": "junior",
+    "job": "marketing",
+    "description": "s"
+  },
+  "target_company": {
+    "name": "s",
+    "scale": "medium",
+    "type": "foreign",
+    "description": "s",
+    "value": "s"
+  },
+  "skill": {
+    "name": [],
+    "experience": "s",
+    "education": "s"
+  }
 }

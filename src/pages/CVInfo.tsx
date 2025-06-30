@@ -1,10 +1,13 @@
 import React, { useState, useEffect, type KeyboardEvent } from 'react'
+import { useNavigate } from 'react-router-dom'
 import data from '../../db/profile.json'
 
 const CVInfoForm: React.FC = () => {
+	const navigate = useNavigate()
 	const [currentStep, setCurrentStep] = useState<number>(1)
 	const [skills, setSkills] = useState<string[]>([])
 	const [newSkill, setNewSkill] = useState<string>('')
+	const [checkNextStep, setCheckNextStep] = useState(false)
 	const totalSteps = 4
 	const progress = (currentStep / totalSteps) * 100
 	type SectionKey = keyof typeof infoFormData
@@ -41,6 +44,11 @@ const CVInfoForm: React.FC = () => {
 	useEffect(() => {
 		handleSkills('skill', 'name', skills)
 	}, [skills])
+	useEffect(() => {
+		if (checkNextStep) {
+			navigate('/cveditor')
+		}
+	}, [checkNextStep, navigate])
 
 	const addSkill = () => {
 		if (newSkill.trim() && !skills.includes(newSkill.trim())) {
@@ -101,7 +109,7 @@ const CVInfoForm: React.FC = () => {
 	const handleSave = async (formData: typeof infoFormData) => {
 		try {
 			console.log(formData)
-			const response = await fetch('http://localhost:5000/save-profile', {
+			const response = await fetch('http://localhost:3000/save-profile', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -521,7 +529,10 @@ const CVInfoForm: React.FC = () => {
 									</button>
 								) : (
 									<button
-										onClick={(e) => handleSave(infoFormData)}
+										onClick={(e) => {
+											handleSave(infoFormData)
+											setCheckNextStep(true)
+										}}
 										className="flex items-center gap-2 px-5 py-3 text-base text-white bg-green-600 rounded-md hover:bg-green-700"
 									>
 										Tạo CV
