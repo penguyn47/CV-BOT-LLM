@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 const cvList = Array(6).fill({
@@ -14,6 +15,12 @@ const cvList = Array(6).fill({
 
 export default function MyCVPage() {
 	const navigate = useNavigate()
+	const [checkCreateCV, setCheckCreateCV] = useState(false)
+	useEffect(() => {
+		if (checkCreateCV) {
+			navigate('/cvinfo')
+		}
+	}, [checkCreateCV, navigate])
 
 	return (
 		<div className="font-sans text-black bg-white">
@@ -46,7 +53,10 @@ export default function MyCVPage() {
 						<h3 className="text-xl font-semibold">Danh sách CV của bạn</h3>
 						<p className="text-gray-600 text-sm mt-1">Quản lý và chỉnh sửa các CV đã tạo.</p>
 					</div>
-					<button className="flex items-center bg-blue-100 text-blue-500 px-4 py-2 rounded">
+					<button
+						className="flex items-center bg-blue-100 text-blue-500 px-4 py-2 rounded"
+						onClick={() => setCheckCreateCV(true)}
+					>
 						<img src="/plus.png" alt="Add CV" className="w-6 mr-2" />
 						Tạo CV mới
 					</button>
