@@ -130,7 +130,7 @@ export default function CVTemplate1({ data, onContentChange, selectedFont, selec
 				const contentElement = doc.querySelector('p') || doc.body
 				const contentText = contentElement.textContent.trim()
 				newContent = { ...data[key], content: contentText }
-			} else if (['skills', 'languages', 'softSkills', 'certificates'].includes(key)) {
+			} else if (['expertise', 'otherSkills', 'hobbies', 'certificates'].includes(key)) {
 				const listItems = Array.from(doc.querySelectorAll('li'))
 				const items = listItems
 					.map((li) => li.textContent.trim())
@@ -622,7 +622,10 @@ export default function CVTemplate1({ data, onContentChange, selectedFont, selec
 	return (
 		<div className="max-w-4xl mx-auto shadow-lg p-6 flex flex-col md:flex-row font-sans">
 			{/* Sidebar trái */}
-			<aside className="md:w-1/3 bg-gray-800 text-white border-r border-gray-300 px-4 py-4 mb-6 md:mb-0">
+			<aside
+				className="md:w-1/3 bg-gray-800 text-white border-r border-gray-300 px-4 py-4 mb-6 md:mb-0"
+				style={{ backgroundColor: selectedColor }}
+			>
 				{cv.photoUrl && (
 					<div className="flex justify-center mb-4">
 						<img src={cv.photoUrl} alt={cv.name} className="w-32 h-32 rounded-full object-cover" />
@@ -680,7 +683,7 @@ export default function CVTemplate1({ data, onContentChange, selectedFont, selec
 						)}
 					</div>
 
-					<ul className="text-sm space-y-1">
+					<ul className="text-sm space-y-1" style={{ marginLeft: '-10px' }}>
 						{contactItems.map(({ key, icon, placeholder }, index) => (
 							<li
 								key={`contact-${key}`}

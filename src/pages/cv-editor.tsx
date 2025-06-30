@@ -17,13 +17,11 @@ import {
 } from 'lucide-react'
 import CVTemplate2 from '@/pages/CVTemplate2'
 import CVTemplate from '@/pages/CVTemplate1'
+import CVTemplate5 from '@/pages/CVTemplate5'
 import RightSidebar from '@/components/RightSidebar'
 import LeftSidebar from '@/components/LeftSidebar'
 import html2canvas from 'html2canvas-pro'
 import { jsPDF } from 'jspdf'
-
-// Giả lập CVTemplate1 cho khả năng chuyển đổi template
-const CVTemplate1 = () => <div>Template 1 Placeholder</div>
 
 export default function CVBuilder() {
 	const [selectedFont, setSelectedFont] = useState('Be Vietnam')
@@ -38,6 +36,7 @@ export default function CVBuilder() {
 		subtitle: 'Nhân Viên Kinh Doanh',
 		photoUrl: 'https://img6.thuthuatphanmem.vn/uploads/2022/11/18/anh-avatar-don-gian-cho-nu_081757692.jpg',
 		contact: {
+			sex: 'Nam',
 			phone: '0321456987',
 			email: 'trannguyentamdan@gmail.com',
 			birthday: '16/10/1998',
@@ -101,7 +100,7 @@ export default function CVBuilder() {
 			items: [
 				{
 					name: 'Cử nhân Công nghệ Thông tin',
-					period: '2022-2026',
+					period: 'Tháng 8 2022 - Tháng 6 2026',
 					description: [
 						'Tốt nghiệp loại xuất sắc trường Đại học Khoa học Tự nhiên, ĐHQG TP.HCM',
 						'Tốt nghiệp loại xuất sắc trường Đại học Khoa học Tự nhiên, ĐHQG TP.HCM',
@@ -109,7 +108,7 @@ export default function CVBuilder() {
 				},
 				{
 					name: 'Cử nhân Công nghệ Thông tin',
-					period: '2022-2026',
+					period: 'Tháng 8 2022 - Tháng 6 2026',
 					description: [
 						'Tốt nghiệp loại xuất sắc trường Đại học Khoa học Tự nhiên, ĐHQG TP.HCM',
 						'Tốt nghiệp loại xuất sắc trường Đại học Khoa học Tự nhiên, ĐHQG TP.HCM',
@@ -501,6 +500,15 @@ export default function CVBuilder() {
 		switch (selectedLayout) {
 			case 'CVTemplate2':
 				return (
+					<CVTemplate2
+						data={cvData}
+						onContentChange={handleContentChange}
+						selectedFont={selectedFont}
+						selectedColor={selectedColor}
+					/>
+				)
+			case 'CVTemplate1':
+				return (
 					<CVTemplate
 						data={cvData}
 						onContentChange={handleContentChange}
@@ -508,15 +516,15 @@ export default function CVBuilder() {
 						selectedColor={selectedColor}
 					/>
 				)
-			// case "CVTemplate1":
-			//     return (
-			//         <CVTemplate1
-			//             data={cvData}
-			//             onContentChange={handleContentChange}
-			//             selectedFont={selectedFont}
-			//             selectedColor={selectedColor}
-			//         />
-			//     );
+			case 'CVTemplate5':
+				return (
+					<CVTemplate5
+						data={cvData}
+						onContentChange={handleContentChange}
+						selectedFont={selectedFont}
+						selectedColor={selectedColor}
+					/>
+				)
 			default:
 				return (
 					<CVTemplate2
@@ -602,6 +610,7 @@ export default function CVBuilder() {
 								</Button>
 							</DropdownMenuTrigger>
 							<DropdownMenuContent align="start" className="w-[120px]">
+								<DropdownMenuItem onClick={() => handleLayoutChange('CVTemplate5')}>CVTemplate5</DropdownMenuItem>
 								<DropdownMenuItem onClick={() => handleLayoutChange('CVTemplate2')}>CVTemplate2</DropdownMenuItem>
 								<DropdownMenuItem onClick={() => handleLayoutChange('CVTemplate1')}>CVTemplate1</DropdownMenuItem>
 							</DropdownMenuContent>
