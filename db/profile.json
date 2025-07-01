@@ -1,27 +1,27 @@
 {
-  "profile": {
-    "name": "Trần Đức Minh",
-    "email": "tranducminh2412z@gmail.com",
-    "phone": "0344448590",
-    "address": "Minh Hưng, Chơn Thành, Bình Phước",
-    "summary": "s"
-  },
-  "target_job": {
-    "position": "s",
-    "level": "junior",
-    "job": "marketing",
-    "description": "s"
-  },
-  "target_company": {
-    "name": "s",
-    "scale": "medium",
-    "type": "foreign",
-    "description": "s",
-    "value": "s"
-  },
-  "skill": {
-    "name": [],
-    "experience": "s",
-    "education": "s"
-  }
+	"profile": {
+		"name": "Trần Đức Minh",
+		"email": "tranducminh2412z@gmail.com",
+		"phone": "0344448590",
+		"address": "Minh Hưng, Chơn Thành, Bình Phước",
+		"summary": "s"
+	},
+	"target_job": {
+		"position": "KỸ SƯ PHẦN MỀM",
+		"level": "junior",
+		"job": "marketing",
+		"description": "s"
+	},
+	"target_company": {
+		"name": "s",
+		"scale": "medium",
+		"type": "foreign",
+		"description": "s",
+		"value": "s"
+	},
+	"skill": {
+		"name": [],
+		"experience": "s",
+		"education": "s"
+	}
 }

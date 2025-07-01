@@ -111,7 +111,7 @@ export default function CVTemplate1({ data, onContentChange, selectedFont, selec
 	const handleTitleChange = (key, e) => {
 		try {
 			const title = e.currentTarget.textContent.trim()
-			onContentChange(key, { ...cv[key], title })
+			onContentChange(key, { ...data[key], title })
 		} catch (error) {
 			console.error('Lỗi khi thay đổi tiêu đề:', error)
 		}
@@ -187,7 +187,7 @@ export default function CVTemplate1({ data, onContentChange, selectedFont, selec
 	const handleContactChange = (field, value) => {
 		try {
 			const updatedContact = {
-				...(cv.contact || {}), // giữ lại mọi field khác
+				...(data.contact || {}), // giữ lại mọi field khác
 				[field]: value,
 			}
 			onContentChange('contact', updatedContact)
@@ -617,18 +617,16 @@ export default function CVTemplate1({ data, onContentChange, selectedFont, selec
 	// 	hobbies: ['Thể thao'],
 	// }
 
-	const [cv, setCV] = useState(data ? data : JSON.parse(JSON.stringify(sampleData)))
-
 	return (
-		<div className="max-w-4xl mx-auto shadow-lg p-6 flex flex-col md:flex-row font-sans">
+		<div className="mx-auto shadow-lg p-6 flex flex-col md:flex-row font-sans w-[270mm] h-[320mm]">
 			{/* Sidebar trái */}
 			<aside
 				className="md:w-1/3 bg-gray-800 text-white border-r border-gray-300 px-4 py-4 mb-6 md:mb-0"
 				style={{ backgroundColor: selectedColor }}
 			>
-				{cv.photoUrl && (
+				{data.photoUrl && (
 					<div className="flex justify-center mb-4">
-						<img src={cv.photoUrl} alt={cv.name} className="w-32 h-32 rounded-full object-cover" />
+						<img src={data.photoUrl} alt={data.name} className="w-32 h-32 rounded-full object-cover" />
 					</div>
 				)}
 				<div>
@@ -639,7 +637,7 @@ export default function CVTemplate1({ data, onContentChange, selectedFont, selec
 						onFocus={(e) => handleFocus(e, 'name')}
 						onBlur={(e) => handleBlur(e, 'Họ và Tên', 'name')}
 					>
-						{cv.name || 'Họ và Tên'}
+						{data.name || 'Họ và Tên'}
 					</h1>
 					<p
 						className="text-center opacity-80 mb-4"
@@ -648,7 +646,7 @@ export default function CVTemplate1({ data, onContentChange, selectedFont, selec
 						onFocus={(e) => handleFocus(e, 'subtitle')}
 						onBlur={(e) => handleBlur(e, 'Quản Trị Kinh Doanh', 'subtitle')}
 					>
-						{cv.subtitle || 'Quản Trị Kinh Doanh'}
+						{data.subtitle || 'Quản Trị Kinh Doanh'}
 					</p>
 				</div>
 
@@ -694,7 +692,7 @@ export default function CVTemplate1({ data, onContentChange, selectedFont, selec
 								onBlur={(e) => handleBlur(e, placeholder, 'contact', key)}
 							>
 								{icon}
-								<span className="ml-2">{cv.contact?.[key] || placeholder}</span>
+								<span className="ml-2">{data.contact?.[key] || placeholder}</span>
 							</li>
 						))}
 					</ul>
@@ -743,7 +741,7 @@ export default function CVTemplate1({ data, onContentChange, selectedFont, selec
 								setTimeout(() => restoreCursorPosition(e.currentTarget, 'expertise'), 0)
 							}}
 						>
-							{cv.expertise.items?.map((skill, idx) => (
+							{data.expertise.items?.map((skill, idx) => (
 								<li key={idx}>{skill}</li>
 							))}
 						</div>
@@ -793,7 +791,7 @@ export default function CVTemplate1({ data, onContentChange, selectedFont, selec
 								setTimeout(() => restoreCursorPosition(e.currentTarget, 'certificates'), 0)
 							}}
 						>
-							{cv.certificates.items?.map((language, idx) => (
+							{data.certificates.items?.map((language, idx) => (
 								<li key={idx}>{language}</li>
 							))}
 						</div>
@@ -844,62 +842,68 @@ export default function CVTemplate1({ data, onContentChange, selectedFont, selec
 							}}
 						>
 							{' '}
-							{cv.otherSkills.items?.map((skill, idx) => (
+							{data.otherSkills.items?.map((skill, idx) => (
 								<li key={idx}>{skill}</li>
 							))}
 						</div>
 					</ul>
 				</section>
 
-				{/* Người tham chiếu */}
-				<section>
-					<div
-						className="relative"
-						contentEditable
-						suppressContentEditableWarning
-						onKeyDown={handleKeyDown}
-						onFocus={(e) => handleFocus(e, 'references')}
-						onBlur={(e) => handleTitleChange('references', e)}
-					>
-						<h2 className="text-lg font-semibold border-b border-gray-400 pb-1 mb-2">Người tham chiếu</h2>
-						{focusedSection === 'references' && (
-							<div className="absolute top-0 right-0 flex gap-2">
-								<button
-									className="p-1 bg-gray-400 rounded hover:bg-gray-300"
-									onClick={() => handleAddSection('references')}
-								>
-									<FiPlus className="h-4 w-4" />
-								</button>
-								<button
-									className="p-1 bg-red-400 rounded hover:bg-red-300"
-									onClick={() => handleDeleteSection('references')}
-								>
-									<FiTrash2 className="h-4 w-4" />
-								</button>
-							</div>
-						)}
-					</div>
-					<ul className="text-sm space-y-1">
-						{referencesItems.map(({ key, icon, placeholder }, index) => (
-							<li
-								key={`references-${key}`}
-								className="flex items-start"
+				{data.hobbies?.items?.length > 0 && (
+					<section>
+						<div className="relative">
+							<h2
+								className="text-xl font-semibold border-b border-gray-500 pb-1 mb-2"
 								contentEditable
 								suppressContentEditableWarning
-								onFocus={(e) => handleFocus(e, `references-${key}`)}
-								onBlur={(e) => handleBlur(e, placeholder, 'references', key)}
+								onKeyDown={handleKeyDown}
+								onFocus={(e) => handleFocus(e, 'hobbies')}
+								onBlur={(e) => handleTitleChange('hobbies', e)}
 							>
-								{icon}
-								<span className="ml-2">{cv.references?.[key] || placeholder}</span>
-							</li>
-						))}
-					</ul>
-				</section>
+								Sở thích
+							</h2>
+							{focusedSection === 'hobbies' && (
+								<div className="absolute top-0 right-0 flex gap-2">
+									<button
+										className="p-1 bg-gray-400 rounded hover:bg-gray-300"
+										onClick={() => handleAddSection('hobbies')}
+									>
+										<FiPlus className="h-4 w-4" />
+									</button>
+									<button
+										className="p-1 bg-red-400 rounded hover:bg-red-300"
+										onClick={() => handleDeleteSection('hobbies')}
+									>
+										<FiTrash2 className="h-4 w-4" />
+									</button>
+								</div>
+							)}
+						</div>
+						<div
+							contentEditable
+							suppressContentEditableWarning
+							className="text-sm"
+							onInput={(e) => {
+								saveCursorPosition(e.currentTarget, 'hobbies')
+								handleContentChange('hobbies', e)
+								setTimeout(() => restoreCursorPosition(e.currentTarget, 'hobbies'), 0)
+							}}
+							onKeyDown={handleKeyDown}
+							onFocus={(e) => handleFocus(e, 'hobbies')}
+						>
+							<ul className="list-disc list-inside  text-sm">
+								{data.hobbies.items.map((hobby, idx) => (
+									<li key={idx}>{hobby}</li>
+								))}
+							</ul>
+						</div>
+					</section>
+				)}
 			</aside>
 
 			{/* Nội dung chính */}
 			<main className="md:w-2/3 bg-gray-100 pl-0 md:pl-6 py-4 px-4">
-				{cv.objective && (
+				{data.objective && (
 					<section className="mb-6">
 						<div className="relative">
 							<h2
@@ -942,12 +946,12 @@ export default function CVTemplate1({ data, onContentChange, selectedFont, selec
 							onKeyDown={handleKeyDown}
 							onFocus={(e) => handleFocus(e, 'objective')}
 						>
-							{cv.objective.content}
+							{data.objective.content}
 						</p>
 					</section>
 				)}
 
-				{cv.experiences?.[0]?.items?.length > 0 && (
+				{data.experiences?.[0]?.items?.length > 0 && (
 					<section className="mb-6">
 						<div className="relative">
 							<h2
@@ -958,7 +962,7 @@ export default function CVTemplate1({ data, onContentChange, selectedFont, selec
 								onFocus={(e) => handleFocus(e, 'experiences')}
 								onBlur={(e) => handleTitleChange('experiences', e)}
 							>
-								{cv.experiences[0].title || 'Kinh nghiệm làm việc'}
+								{data.experiences[0].title || 'Kinh nghiệm làm việc'}
 							</h2>
 							{focusedSection === 'experiences' && (
 								<div className="absolute top-0 right-0 flex gap-2">
@@ -990,7 +994,7 @@ export default function CVTemplate1({ data, onContentChange, selectedFont, selec
 							onKeyDown={handleKeyDown}
 							onFocus={(e) => handleFocus(e, 'experiences')}
 						>
-							{cv.experiences[0].items.map((exp, idx) => (
+							{data.experiences[0].items.map((exp, idx) => (
 								<div key={idx} className="mb-4">
 									<h3 className="text-[15px] font-medium ">{exp.position}</h3>
 									<ul className="list-disc list-inside text-gray-700 text-sm mt-2">
@@ -1002,7 +1006,7 @@ export default function CVTemplate1({ data, onContentChange, selectedFont, selec
 							))}
 						</div>
 
-						{cv.experiences[0].additionalNote && (
+						{data.experiences[0].additionalNote && (
 							<p
 								className="italic text-sm text-gray-600 mt-2"
 								contentEditable
@@ -1011,13 +1015,13 @@ export default function CVTemplate1({ data, onContentChange, selectedFont, selec
 								onFocus={(e) => handleFocus(e, 'experiences')}
 								onBlur={(e) => handleTitleChange('experiences', e)}
 							>
-								{cv.experiences[0].additionalNote}
+								{data.experiences[0].additionalNote}
 							</p>
 						)}
 					</section>
 				)}
 
-				{cv.education?.items?.length > 0 && (
+				{data.education?.items?.length > 0 && (
 					<section className="mb-6">
 						<div className="relative">
 							{' '}
@@ -1061,11 +1065,11 @@ export default function CVTemplate1({ data, onContentChange, selectedFont, selec
 							onKeyDown={handleKeyDown}
 							onFocus={(e) => handleFocus(e, 'education')}
 						>
-							{cv.education.items.map((edu, idx) => (
+							{data.education.items.map((edu, idx) => (
 								<div key={idx} className="mb-4">
 									<div className="flex justify-between">
 										<h3 className="text-[15px] font-medium ">{edu.name}</h3>
-										<h4 className="mr-5 font-bold"> {edu.period}</h4>
+										<h4 className="mr-2 font-bold"> {edu.period}</h4>
 									</div>
 									<ul className="list-disc list-inside text-gray-700 text-sm mt-2">
 										{Array.isArray(edu.description) && edu.description.map((duty, i) => <li key={i}>{duty}</li>)}
@@ -1076,56 +1080,50 @@ export default function CVTemplate1({ data, onContentChange, selectedFont, selec
 					</section>
 				)}
 
-				{cv.hobbies?.items?.length > 0 && (
-					<section>
-						<div className="relative">
-							<h2
-								className="text-xl font-semibold border-b border-gray-500 pb-1 mb-2"
+				{/* Người tham chiếu */}
+				<section>
+					<div
+						className="relative mt-5"
+						contentEditable
+						suppressContentEditableWarning
+						onKeyDown={handleKeyDown}
+						onFocus={(e) => handleFocus(e, 'references')}
+						onBlur={(e) => handleTitleChange('references', e)}
+					>
+						<h2 className="text-lg font-semibold border-b border-gray-400 pb-1 mb-2">Người tham chiếu</h2>
+						{focusedSection === 'references' && (
+							<div className="absolute top-0 right-0 flex gap-2">
+								<button
+									className="p-1 bg-gray-400 rounded hover:bg-gray-300"
+									onClick={() => handleAddSection('references')}
+								>
+									<FiPlus className="h-4 w-4" />
+								</button>
+								<button
+									className="p-1 bg-red-400 rounded hover:bg-red-300"
+									onClick={() => handleDeleteSection('references')}
+								>
+									<FiTrash2 className="h-4 w-4" />
+								</button>
+							</div>
+						)}
+					</div>
+					<ul className="text-sm space-y-1" style={{ marginLeft: '-10px' }}>
+						{referencesItems.map(({ key, icon, placeholder }, index) => (
+							<li
+								key={`references-${key}`}
+								className="flex items-start"
 								contentEditable
 								suppressContentEditableWarning
-								onKeyDown={handleKeyDown}
-								onFocus={(e) => handleFocus(e, 'hobbies')}
-								onBlur={(e) => handleTitleChange('hobbies', e)}
+								onFocus={(e) => handleFocus(e, `references-${key}`)}
+								onBlur={(e) => handleBlur(e, placeholder, 'references', key)}
 							>
-								Sở thích
-							</h2>
-							{focusedSection === 'hobbies' && (
-								<div className="absolute top-0 right-0 flex gap-2">
-									<button
-										className="p-1 bg-gray-400 rounded hover:bg-gray-300"
-										onClick={() => handleAddSection('hobbies')}
-									>
-										<FiPlus className="h-4 w-4" />
-									</button>
-									<button
-										className="p-1 bg-red-400 rounded hover:bg-red-300"
-										onClick={() => handleDeleteSection('hobbies')}
-									>
-										<FiTrash2 className="h-4 w-4" />
-									</button>
-								</div>
-							)}
-						</div>
-						<div
-							contentEditable
-							suppressContentEditableWarning
-							className="text-sm text-gray-700"
-							onInput={(e) => {
-								saveCursorPosition(e.currentTarget, 'hobbies')
-								handleContentChange('hobbies', e)
-								setTimeout(() => restoreCursorPosition(e.currentTarget, 'hobbies'), 0)
-							}}
-							onKeyDown={handleKeyDown}
-							onFocus={(e) => handleFocus(e, 'hobbies')}
-						>
-							<ul className="list-disc list-inside text-gray-700 text-sm">
-								{cv.hobbies.items.map((hobby, idx) => (
-									<li key={idx}>{hobby}</li>
-								))}
-							</ul>
-						</div>
-					</section>
-				)}
+								{icon}
+								<span className="ml-2">{data.references?.[key] || placeholder}</span>
+							</li>
+						))}
+					</ul>
+				</section>
 			</main>
 		</div>
 	)

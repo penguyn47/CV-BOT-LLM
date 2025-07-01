@@ -171,7 +171,7 @@ export default function CVTemplate({ data, onContentChange, selectedFont, select
 	const handleTitleChange = (key, e) => {
 		try {
 			const title = e.currentTarget.textContent.trim()
-			onContentChange(key, { ...cv[key], title })
+			onContentChange(key, { ...data[key], title })
 		} catch (error) {
 			console.error('Lỗi khi thay đổi tiêu đề:', error)
 		}
@@ -247,7 +247,7 @@ export default function CVTemplate({ data, onContentChange, selectedFont, select
 	const handleContactChange = (field, value) => {
 		try {
 			const updatedContact = {
-				...(cv.contact || {}), // giữ lại mọi field khác
+				...(data.contact || {}), // giữ lại mọi field khác
 				[field]: value,
 			}
 			onContentChange('contact', updatedContact)
@@ -655,8 +655,6 @@ export default function CVTemplate({ data, onContentChange, selectedFont, select
 		{ key: 'email', icon: <FaAddressCard className="mr-2 mt-1" />, placeholder: '123 Đường ABC, Quận 1, TP.HCM' },
 	]
 
-	const [cv, setCV] = useState(data ? data : JSON.parse(JSON.stringify(sampleData)))
-
 	return (
 		<>
 			{/* Nhập font Poppins từ Google Fonts */}
@@ -666,575 +664,460 @@ export default function CVTemplate({ data, onContentChange, selectedFont, select
 					font-family: 'Poppins', sans-serif;
 				}
 			`}</style>
-			<div className="min-h-screen bg-white py-8 px-4 sm:px-6 lg:px-8">
+			<div className="min-h-screen bg-white py-8 px-4 sm:px-6 lg:px-8 w-[1000px]">
 				<div className="max-w-5xl mx-auto bg-white shadow-lg print:shadow-none">
-					{currentPage === 1 ? (
-						<div className="flex flex-col md:flex-row w-full">
-							{/* Cột trái - Trang 1 */}
-							<div className="w-full md:w-1/3 bg-slate-400 p-6 text-slate-800">
-								<div className="mb-8">
-									<h1
-										className="text-4xl font-bold uppercase"
+					<div className="flex flex-col md:flex-row w-full">
+						{/* Cột trái - Trang 1 */}
+						<div className="w-full md:w-1/3 bg-slate-400 p-6 text-slate-800" style={{ backgroundColor: selectedColor }}>
+							<div className="mb-8">
+								<h1
+									className="text-4xl font-bold uppercase"
+									contentEditable
+									suppressContentEditableWarning
+									onFocus={(e) => handleFocus(e, 'name')}
+									onBlur={(e) => handleBlur(e, 'Họ và Tên', 'name')}
+								>
+									{data.name || 'Họ và Tên'}
+								</h1>
+								<div className="border-t-2 border-slate-600 w-12 mt-2"></div>
+							</div>
+
+							<ul className="space-y-2 mb-8 relative" style={{ marginLeft: '-25px' }}>
+								{contactItems.map(({ key, icon, placeholder }, index) => (
+									<li
+										key={`contact-${key}`}
+										className="flex items-start"
 										contentEditable
 										suppressContentEditableWarning
-										onFocus={(e) => handleFocus(e, 'name')}
-										onBlur={(e) => handleBlur(e, 'Họ và Tên', 'name')}
+										onFocus={(e) => handleFocus(e, `contact-${key}`)}
+										onBlur={(e) => handleBlur(e, placeholder, 'contact', key)}
 									>
-										{cv.name || 'Họ và Tên'}
-									</h1>
-									<div className="border-t-2 border-slate-600 w-12 mt-2"></div>
-								</div>
+										{icon}
+										<span className="flex items-center gap-2">{data.contact?.[key] || placeholder}</span>
+									</li>
+								))}
+							</ul>
 
-								<ul className="space-y-2 mb-8 relative" style={{ marginLeft: '-25px' }}>
-									{contactItems.map(({ key, icon, placeholder }, index) => (
-										<li
-											key={`contact-${key}`}
-											className="flex items-start"
-											contentEditable
-											suppressContentEditableWarning
-											onFocus={(e) => handleFocus(e, `contact-${key}`)}
-											onBlur={(e) => handleBlur(e, placeholder, 'contact', key)}
+							<div className="mb-8 relative">
+								<h2
+									className="text-xl font-semibold uppercase mb-2 mt-7"
+									contentEditable
+									suppressContentEditableWarning
+									onKeyDown={handleKeyDown}
+									onFocus={(e) => handleFocus(e, 'education')}
+									onBlur={(e) => handleTitleChange('education', e)}
+								>
+									Học vấn
+								</h2>
+								{focusedSection === 'education' && (
+									<div className="absolute top-0 right-0 flex gap-2">
+										<button
+											className="p-1 bg-gray-400 rounded hover:bg-gray-300"
+											onClick={() => handleAddSection('education')}
 										>
-											{icon}
-											<span className="flex items-center gap-2">{cv.contact?.[key] || placeholder}</span>
-										</li>
-									))}
-								</ul>
-
-								<div className="mb-8 relative">
-									<h2
-										className="text-xl font-semibold uppercase mb-2"
-										contentEditable
-										suppressContentEditableWarning
-										onKeyDown={handleKeyDown}
-										onFocus={(e) => handleFocus(e, 'education')}
-										onBlur={(e) => handleTitleChange('education', e)}
-									>
-										Học vấn
-									</h2>
-									{focusedSection === 'education' && (
-										<div className="absolute top-0 right-0 flex gap-2">
-											<button
-												className="p-1 bg-gray-400 rounded hover:bg-gray-300"
-												onClick={() => handleAddSection('education')}
-											>
-												<FiPlus className="h-4 w-4" />
-											</button>
-											<button
-												className="p-1 bg-red-400 rounded hover:bg-red-300"
-												onClick={() => handleDeleteSection('education')}
-											>
-												<FiTrash2 className="h-4 w-4" />
-											</button>
-										</div>
-									)}
-									<div
-										contentEditable
-										suppressContentEditableWarning
-										className="text-sm text-gray-700"
-										onInput={(e) => {
-											saveCursorPosition(e.currentTarget, 'education')
-											handleContentChange('education', e)
-											setTimeout(() => restoreCursorPosition(e.currentTarget, 'education'), 0)
-										}}
-										onKeyDown={handleKeyDown}
-										onFocus={(e) => handleFocus(e, 'education')}
-									>
-										{cv.education.items.map((edu, idx) => (
-											<div key={idx} className="mb-4">
-												<div className="justify-between">
-													<h3 className="text-[15px] font-medium ">{edu.name}</h3>
-													<h4 className="mr-5 font-bold"> {edu.period}</h4>
-												</div>
-												<ul className="list-disc list-inside text-gray-700 text-sm mt-2">
-													{Array.isArray(edu.description) &&
-														edu.description.map((duty, i) => (
-															<li key={i} style={{ marginLeft: '-10px' }}>
-																{duty}
-															</li>
-														))}
-												</ul>
-											</div>
-										))}
+											<FiPlus className="h-4 w-4" />
+										</button>
+										<button
+											className="p-1 bg-red-400 rounded hover:bg-red-300"
+											onClick={() => handleDeleteSection('education')}
+										>
+											<FiTrash2 className="h-4 w-4" />
+										</button>
 									</div>
+								)}
+								<div
+									contentEditable
+									suppressContentEditableWarning
+									className="text-sm text-gray-700"
+									onInput={(e) => {
+										saveCursorPosition(e.currentTarget, 'education')
+										handleContentChange('education', e)
+										setTimeout(() => restoreCursorPosition(e.currentTarget, 'education'), 0)
+									}}
+									onKeyDown={handleKeyDown}
+									onFocus={(e) => handleFocus(e, 'education')}
+								>
+									{data.education.items.map((edu, idx) => (
+										<div key={idx} className="mb-4">
+											<div className="justify-between">
+												<h3 className="text-[15px] font-medium ">{edu.name}</h3>
+												<h4 className="mr-5 font-bold"> {edu.period}</h4>
+											</div>
+											<ul className="list-disc list-inside text-gray-700 text-sm mt-2">
+												{Array.isArray(edu.description) &&
+													edu.description.map((duty, i) => (
+														<li key={i} style={{ marginLeft: '-10px' }}>
+															{duty}
+														</li>
+													))}
+											</ul>
+										</div>
+									))}
 								</div>
+							</div>
 
-								<div className="mb-8 relative">
-									<h2
-										className="text-xl font-semibold uppercase mb-2"
+							<div className="mb-8 relative">
+								<h2
+									className="text-xl font-semibold uppercase mb-2"
+									contentEditable
+									suppressContentEditableWarning
+									onKeyDown={handleKeyDown}
+									onFocus={(e) => handleFocus(e, 'certificates')}
+									onBlur={(e) => handleTitleChange('certificates', e)}
+								>
+									Chứng chỉ
+								</h2>
+								{focusedSection === 'certificates' && (
+									<div className="absolute top-0 right-0 flex gap-2">
+										<button
+											className="p-1 bg-gray-400 rounded hover:bg-gray-300"
+											onClick={() => handleAddSection('languages')}
+										>
+											<FiPlus className="h-4 w-4" />
+										</button>
+										<button
+											className="p-1 bg-red-400 rounded hover:bg-red-300"
+											onClick={() => handleDeleteSection('languages')}
+										>
+											<FiTrash2 className="h-4 w-4" />
+										</button>
+									</div>
+								)}
+								<ul className="list-disc list-inside space-y-1 pl-1">
+									<div
 										contentEditable
 										suppressContentEditableWarning
 										onKeyDown={handleKeyDown}
 										onFocus={(e) => handleFocus(e, 'certificates')}
-										onBlur={(e) => handleTitleChange('certificates', e)}
+										onInput={(e) => {
+											saveCursorPosition(e.currentTarget, 'certificates')
+											handleContentChange('certificates', e)
+											setTimeout(() => restoreCursorPosition(e.currentTarget, 'certificates'), 0)
+										}}
 									>
-										Chứng chỉ
-									</h2>
-									{focusedSection === 'certificates' && (
-										<div className="absolute top-0 right-0 flex gap-2">
-											<button
-												className="p-1 bg-gray-400 rounded hover:bg-gray-300"
-												onClick={() => handleAddSection('languages')}
-											>
-												<FiPlus className="h-4 w-4" />
-											</button>
-											<button
-												className="p-1 bg-red-400 rounded hover:bg-red-300"
-												onClick={() => handleDeleteSection('languages')}
-											>
-												<FiTrash2 className="h-4 w-4" />
-											</button>
-										</div>
-									)}
-									<ul className="list-disc list-inside space-y-1 pl-1">
-										<div
-											contentEditable
-											suppressContentEditableWarning
-											onKeyDown={handleKeyDown}
-											onFocus={(e) => handleFocus(e, 'certificates')}
-											onInput={(e) => {
-												saveCursorPosition(e.currentTarget, 'certificates')
-												handleContentChange('certificates', e)
-												setTimeout(() => restoreCursorPosition(e.currentTarget, 'certificates'), 0)
-											}}
-										>
-											{cv.certificates.items?.map((language, idx) => (
-												<li key={idx}>{language}</li>
-											))}
-										</div>
-									</ul>
-								</div>
+										{data.certificates.items?.map((language, idx) => (
+											<li key={idx}>{language}</li>
+										))}
+									</div>
+								</ul>
+							</div>
 
-								<div className="mb-8 relative">
-									<h2
-										className="text-xl font-semibold uppercase mb-2"
+							<div className="mb-8 relative">
+								<h2
+									className="text-xl font-semibold uppercase mb-2"
+									contentEditable
+									suppressContentEditableWarning
+									onKeyDown={handleKeyDown}
+									onFocus={(e) => handleFocus(e, 'otherSkills')}
+									onBlur={(e) => handleTitleChange('otherSkills', e)}
+								>
+									Kỹ năng mềm
+								</h2>
+								{focusedSection === 'otherSkills' && (
+									<div className="absolute top-0 right-0 flex gap-2">
+										<button
+											className="p-1 bg-gray-400 rounded hover:bg-gray-300"
+											onClick={() => handleAddSection('otherSkills')}
+										>
+											<FiPlus className="h-4 w-4" />
+										</button>
+										<button
+											className="p-1 bg-red-400 rounded hover:bg-red-300"
+											onClick={() => handleDeleteSection('otherSkills')}
+										>
+											<FiTrash2 className="h-4 w-4" />
+										</button>
+									</div>
+								)}
+								<ul className="list-disc list-inside space-y-1 pl-1">
+									<div
 										contentEditable
 										suppressContentEditableWarning
 										onKeyDown={handleKeyDown}
 										onFocus={(e) => handleFocus(e, 'otherSkills')}
-										onBlur={(e) => handleTitleChange('otherSkills', e)}
+										onInput={(e) => {
+											saveCursorPosition(e.currentTarget, 'otherSkills')
+											handleContentChange('otherSkills', e)
+											setTimeout(() => restoreCursorPosition(e.currentTarget, 'otherSkills'), 0)
+										}}
 									>
-										Kỹ năng mềm
-									</h2>
-									{focusedSection === 'otherSkills' && (
-										<div className="absolute top-0 right-0 flex gap-2">
-											<button
-												className="p-1 bg-gray-400 rounded hover:bg-gray-300"
-												onClick={() => handleAddSection('otherSkills')}
-											>
-												<FiPlus className="h-4 w-4" />
-											</button>
-											<button
-												className="p-1 bg-red-400 rounded hover:bg-red-300"
-												onClick={() => handleDeleteSection('otherSkills')}
-											>
-												<FiTrash2 className="h-4 w-4" />
-											</button>
-										</div>
-									)}
-									<ul className="list-disc list-inside space-y-1 pl-1">
-										<div
-											contentEditable
-											suppressContentEditableWarning
-											onKeyDown={handleKeyDown}
-											onFocus={(e) => handleFocus(e, 'otherSkills')}
-											onInput={(e) => {
-												saveCursorPosition(e.currentTarget, 'otherSkills')
-												handleContentChange('otherSkills', e)
-												setTimeout(() => restoreCursorPosition(e.currentTarget, 'otherSkills'), 0)
-											}}
-										>
-											{cv.otherSkills.items?.map((language, idx) => (
-												<li key={idx}>{language}</li>
-											))}
-										</div>
-									</ul>
-								</div>
+										{data.otherSkills.items?.map((language, idx) => (
+											<li key={idx}>{language}</li>
+										))}
+									</div>
+								</ul>
+							</div>
 
-								<div className="mb-8 relative">
-									<h2
-										className="text-xl font-semibold uppercase mb-2"
+							<div className="mb-8 relative">
+								<h2
+									className="text-xl font-semibold uppercase mb-2"
+									contentEditable
+									suppressContentEditableWarning
+									onKeyDown={handleKeyDown}
+									onFocus={(e) => handleFocus(e, 'hobbies')}
+									onBlur={(e) => handleTitleChange('hobbies', e)}
+								>
+									Sở thích
+								</h2>
+								{focusedSection === 'hobbies' && (
+									<div className="absolute top-0 right-0 flex gap-2">
+										<button
+											className="p-1 bg-gray-400 rounded hover:bg-gray-300"
+											onClick={() => handleAddSection('hobbies')}
+										>
+											<FiPlus className="h-4 w-4" />
+										</button>
+										<button
+											className="p-1 bg-red-400 rounded hover:bg-red-300"
+											onClick={() => handleDeleteSection('hobbies')}
+										>
+											<FiTrash2 className="h-4 w-4" />
+										</button>
+									</div>
+								)}
+								<ul className="list-disc list-inside space-y-1 pl-1">
+									<div
 										contentEditable
 										suppressContentEditableWarning
 										onKeyDown={handleKeyDown}
 										onFocus={(e) => handleFocus(e, 'hobbies')}
-										onBlur={(e) => handleTitleChange('hobbies', e)}
+										onInput={(e) => {
+											saveCursorPosition(e.currentTarget, 'hobbies')
+											handleContentChange('hobbies', e)
+											setTimeout(() => restoreCursorPosition(e.currentTarget, 'hobbies'), 0)
+										}}
 									>
-										Kỹ năng mềm
-									</h2>
-									{focusedSection === 'hobbies' && (
-										<div className="absolute top-0 right-0 flex gap-2">
-											<button
-												className="p-1 bg-gray-400 rounded hover:bg-gray-300"
-												onClick={() => handleAddSection('hobbies')}
-											>
-												<FiPlus className="h-4 w-4" />
-											</button>
-											<button
-												className="p-1 bg-red-400 rounded hover:bg-red-300"
-												onClick={() => handleDeleteSection('hobbies')}
-											>
-												<FiTrash2 className="h-4 w-4" />
-											</button>
-										</div>
-									)}
-									<ul className="list-disc list-inside space-y-1 pl-1">
-										<div
-											contentEditable
-											suppressContentEditableWarning
-											onKeyDown={handleKeyDown}
-											onFocus={(e) => handleFocus(e, 'hobbies')}
-											onInput={(e) => {
-												saveCursorPosition(e.currentTarget, 'hobbies')
-												handleContentChange('hobbies', e)
-												setTimeout(() => restoreCursorPosition(e.currentTarget, 'hobbies'), 0)
-											}}
+										{data.hobbies.items?.map((language, idx) => (
+											<li key={idx}>{language}</li>
+										))}
+									</div>
+								</ul>
+							</div>
+						</div>
+
+						{/* Cột phải - Trang 1 */}
+						<div className="w-full md:w-2/3 bg-gray-50 p-6">
+							<div className="mb-8 relative">
+								<h2
+									className="text-xl font-semibold uppercase mb-2"
+									contentEditable
+									suppressContentEditableWarning
+									onKeyDown={handleKeyDown}
+									onFocus={(e) => handleFocus(e, 'objective')}
+									onBlur={(e) => handleTitleChange('objective', e)}
+								>
+									Tóm tắt cá nhân
+								</h2>
+								{focusedSection === 'objective' && (
+									<div className="absolute top-0 right-0 flex gap-2">
+										<button
+											className="p-1 bg-gray-400 rounded hover:bg-gray-300"
+											onClick={() => handleAddSection('objective')}
 										>
-											{cv.hobbies.items?.map((language, idx) => (
-												<li key={idx}>{language}</li>
-											))}
-										</div>
+											<FiPlus className="h-4 w-4" />
+										</button>
+										<button
+											className="p-1 bg-red-400 rounded hover:bg-red-300"
+											onClick={() => handleDeleteSection('objective')}
+										>
+											<FiTrash2 className="h-4 w-4" />
+										</button>
+									</div>
+								)}
+								<p
+									contentEditable
+									suppressContentEditableWarning
+									onInput={(e) => {
+										saveCursorPosition(e.currentTarget, 'objective')
+										handleContentChange('objective', e)
+										setTimeout(() => restoreCursorPosition(e.currentTarget, 'objective'), 0)
+									}}
+									onKeyDown={handleKeyDown}
+									onFocus={(e) => handleFocus(e, 'objective')}
+								>
+									{data.objective.content}
+								</p>
+							</div>
+
+							<div className="mb-8 relative">
+								<h2
+									className="text-xl font-semibold uppercase mb-2"
+									contentEditable
+									suppressContentEditableWarning
+									onKeyDown={handleKeyDown}
+									onFocus={(e) => handleFocus(e, 'expertise')}
+									onBlur={(e) => handleTitleChange('expertise', e)}
+								>
+									Kỹ năng cốt lõi
+								</h2>
+								{focusedSection === 'expertise' && (
+									<div className="absolute top-0 right-0 flex gap-2">
+										<button
+											className="p-1 bg-gray-400 rounded hover:bg-gray-300"
+											onClick={() => handleAddSection('expertise')}
+										>
+											<FiPlus className="h-4 w-4" />
+										</button>
+										<button
+											className="p-1 bg-red-400 rounded hover:bg-red-300"
+											onClick={() => handleDeleteSection('expertise')}
+										>
+											<FiTrash2 className="h-4 w-4" />
+										</button>
+									</div>
+								)}
+								<div
+									className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1"
+									contentEditable
+									suppressContentEditableWarning
+									onKeyDown={handleKeyDown}
+									onFocus={(e) => handleFocus(e, 'expertise')}
+									onInput={(e) => {
+										saveCursorPosition(e.currentTarget, 'expertise')
+										handleContentChange('expertise', e)
+										setTimeout(() => restoreCursorPosition(e.currentTarget, 'expertise'), 0)
+									}}
+								>
+									<ul className="list-disc pl-5">
+										{data.expertise.items?.map((skill, idx) =>
+											idx < Math.ceil(data.expertise.items.length / 2) ? <li key={idx}>{skill}</li> : null
+										)}
+									</ul>
+									<ul className="list-disc pl-5">
+										{data.expertise.items?.map((skill, idx) =>
+											idx >= Math.ceil(data.expertise.items.length / 2) ? <li key={idx}>{skill}</li> : null
+										)}
 									</ul>
 								</div>
 							</div>
 
-							{/* Cột phải - Trang 1 */}
-							<div className="w-full md:w-2/3 bg-gray-50 p-6">
-								<div className="mb-8 relative">
-									<h2
-										className="text-xl font-semibold uppercase mb-2"
-										contentEditable
-										suppressContentEditableWarning
-										onKeyDown={handleKeyDown}
-										onFocus={(e) => handleFocus(e, 'objective')}
-										onBlur={(e) => handleTitleChange('objective', e)}
-									>
-										Tóm tắt cá nhân
-									</h2>
-									{focusedSection === 'objective' && (
-										<div className="absolute top-0 right-0 flex gap-2">
-											<button
-												className="p-1 bg-gray-400 rounded hover:bg-gray-300"
-												onClick={() => handleAddSection('objective')}
-											>
-												<FiPlus className="h-4 w-4" />
-											</button>
-											<button
-												className="p-1 bg-red-400 rounded hover:bg-red-300"
-												onClick={() => handleDeleteSection('objective')}
-											>
-												<FiTrash2 className="h-4 w-4" />
-											</button>
-										</div>
-									)}
-									<p
-										contentEditable
-										suppressContentEditableWarning
-										onInput={(e) => {
-											saveCursorPosition(e.currentTarget, 'objective')
-											handleContentChange('objective', e)
-											setTimeout(() => restoreCursorPosition(e.currentTarget, 'objective'), 0)
-										}}
-										onKeyDown={handleKeyDown}
-										onFocus={(e) => handleFocus(e, 'objective')}
-									>
-										{cv.objective.content}
-									</p>
-								</div>
-
-								<div className="mb-8 relative">
-									<h2
-										className="text-xl font-semibold uppercase mb-2"
-										contentEditable
-										suppressContentEditableWarning
-										onKeyDown={handleKeyDown}
-										onFocus={(e) => handleFocus(e, 'expertise')}
-										onBlur={(e) => handleTitleChange('expertise', e)}
-									>
-										Kỹ năng cốt lõi
-									</h2>
-									{focusedSection === 'expertise' && (
-										<div className="absolute top-0 right-0 flex gap-2">
-											<button
-												className="p-1 bg-gray-400 rounded hover:bg-gray-300"
-												onClick={() => handleAddSection('expertise')}
-											>
-												<FiPlus className="h-4 w-4" />
-											</button>
-											<button
-												className="p-1 bg-red-400 rounded hover:bg-red-300"
-												onClick={() => handleDeleteSection('expertise')}
-											>
-												<FiTrash2 className="h-4 w-4" />
-											</button>
-										</div>
-									)}
-									<div
-										className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1"
-										contentEditable
-										suppressContentEditableWarning
-										onKeyDown={handleKeyDown}
-										onFocus={(e) => handleFocus(e, 'expertise')}
-										onInput={(e) => {
-											saveCursorPosition(e.currentTarget, 'expertise')
-											handleContentChange('expertise', e)
-											setTimeout(() => restoreCursorPosition(e.currentTarget, 'expertise'), 0)
-										}}
-									>
-										<ul className="list-disc pl-5">
-											{cv.expertise.items?.map((skill, idx) =>
-												idx < Math.ceil(cv.expertise.items.length / 2) ? <li key={idx}>{skill}</li> : null
-											)}
-										</ul>
-										<ul className="list-disc pl-5">
-											{cv.expertise.items?.map((skill, idx) =>
-												idx >= Math.ceil(cv.expertise.items.length / 2) ? <li key={idx}>{skill}</li> : null
-											)}
-										</ul>
+							<div className="mb-8 relative">
+								<h2
+									className="text-xl font-semibold uppercase mb-2"
+									contentEditable
+									suppressContentEditableWarning
+									onKeyDown={handleKeyDown}
+									onFocus={(e) => handleFocus(e, 'experiences')}
+									onBlur={(e) => handleTitleChange('experiences', e)}
+								>
+									Kinh nghiệm chuyên môn
+								</h2>
+								{focusedSection === 'experiences' && (
+									<div className="absolute top-0 right-0 flex gap-2">
+										<button
+											className="p-1 bg-gray-400 rounded hover:bg-gray-300"
+											onClick={() => handleAddSection('experiences')}
+										>
+											<FiPlus className="h-4 w-4" />
+										</button>
+										<button
+											className="p-1 bg-red-400 rounded hover:bg-red-300"
+											onClick={() => handleDeleteSection('experiences')}
+										>
+											<FiTrash2 className="h-4 w-4" />
+										</button>
 									</div>
+								)}
+								<div
+									contentEditable
+									suppressContentEditableWarning
+									onInput={(e) => {
+										saveCursorPosition(e.currentTarget, 'experiences')
+										handleContentChange('experiences', e)
+										setTimeout(() => restoreCursorPosition(e.currentTarget, 'experiences'), 0)
+									}}
+									onKeyDown={handleKeyDown}
+									onFocus={(e) => handleFocus(e, 'experiences')}
+								>
+									{data.experiences[0].items.map((exp, idx) => (
+										<div key={idx} className="mb-4">
+											<h3 className="text-[15px] ">{exp.position}</h3>
+											<ul className="list-disc list-inside  mt-2">
+												{exp.duties.map((duty, i) => (
+													<li key={i}>{duty}</li>
+												))}
+											</ul>
+										</div>
+									))}
 								</div>
-
-								<div className="mb-8 relative">
-									<h2
-										className="text-xl font-semibold uppercase mb-2"
+								{data.experiences[0].additionalNote && (
+									<p
+										className="italic text-sm text-gray-600 mt-2"
 										contentEditable
 										suppressContentEditableWarning
 										onKeyDown={handleKeyDown}
 										onFocus={(e) => handleFocus(e, 'experiences')}
 										onBlur={(e) => handleTitleChange('experiences', e)}
 									>
-										Kinh nghiệm chuyên môn
-									</h2>
-									{focusedSection === 'experiences' && (
-										<div className="absolute top-0 right-0 flex gap-2">
-											<button
-												className="p-1 bg-gray-400 rounded hover:bg-gray-300"
-												onClick={() => handleAddSection('experiences')}
-											>
-												<FiPlus className="h-4 w-4" />
-											</button>
-											<button
-												className="p-1 bg-red-400 rounded hover:bg-red-300"
-												onClick={() => handleDeleteSection('experiences')}
-											>
-												<FiTrash2 className="h-4 w-4" />
-											</button>
+										{data.experiences[0].additionalNote}
+									</p>
+								)}
+							</div>
+
+							<div className="mb-8 relative">
+								<h2
+									className="text-xl font-semibold uppercase mb-2"
+									contentEditable
+									suppressContentEditableWarning
+									onKeyDown={handleKeyDown}
+									onFocus={(e) => handleFocus(e, 'publicActivity')}
+									onBlur={(e) => handleTitleChange('publicActivity', e)}
+								>
+									hoạt động xã hội
+								</h2>
+								{focusedSection === 'publicActivity' && (
+									<div className="absolute top-0 right-0 flex gap-2">
+										<button
+											className="p-1 bg-gray-400 rounded hover:bg-gray-300"
+											onClick={() => handleAddSection('publicActivity')}
+										>
+											<FiPlus className="h-4 w-4" />
+										</button>
+										<button
+											className="p-1 bg-red-400 rounded hover:bg-red-300"
+											onClick={() => handleDeleteSection('publicActivity')}
+										>
+											<FiTrash2 className="h-4 w-4" />
+										</button>
+									</div>
+								)}
+								<div
+									contentEditable
+									suppressContentEditableWarning
+									onInput={(e) => {
+										saveCursorPosition(e.currentTarget, 'publicActivity')
+										handleContentChange('publicActivity', e)
+										setTimeout(() => restoreCursorPosition(e.currentTarget, 'publicActivity'), 0)
+									}}
+									onKeyDown={handleKeyDown}
+									onFocus={(e) => handleFocus(e, 'publicActivity')}
+								>
+									{data.publicActivity?.items.map((exp, idx) => (
+										<div key={idx} className="mb-4">
+											<h3 className="text-[15px] ">{exp.name}</h3>
+											<ul className="list-disc list-inside  mt-2">
+												{exp.description.map((duty, i) => (
+													<li key={i}>{duty}</li>
+												))}
+											</ul>
 										</div>
-									)}
-									<div
+									))}
+								</div>
+								{data.experiences[0].additionalNote && (
+									<p
+										className="italic text-sm text-gray-600 mt-2"
 										contentEditable
 										suppressContentEditableWarning
-										onInput={(e) => {
-											saveCursorPosition(e.currentTarget, 'experiences')
-											handleContentChange('experiences', e)
-											setTimeout(() => restoreCursorPosition(e.currentTarget, 'experiences'), 0)
-										}}
 										onKeyDown={handleKeyDown}
 										onFocus={(e) => handleFocus(e, 'experiences')}
+										onBlur={(e) => handleTitleChange('experiences', e)}
 									>
-										{cv.experiences[0].items.map((exp, idx) => (
-											<div key={idx} className="mb-4">
-												<h3 className="text-[15px] ">{exp.position}</h3>
-												<ul className="list-disc list-inside  mt-2">
-													{exp.duties.map((duty, i) => (
-														<li key={i}>{duty}</li>
-													))}
-												</ul>
-											</div>
-										))}
-									</div>
-									{cv.experiences[0].additionalNote && (
-										<p
-											className="italic text-sm text-gray-600 mt-2"
-											contentEditable
-											suppressContentEditableWarning
-											onKeyDown={handleKeyDown}
-											onFocus={(e) => handleFocus(e, 'experiences')}
-											onBlur={(e) => handleTitleChange('experiences', e)}
-										>
-											{cv.experiences[0].additionalNote}
-										</p>
-									)}
-								</div>
-
-								<div className="mb-8 relative">
-									<h2
-										className="text-xl font-semibold uppercase mb-2"
-										contentEditable
-										suppressContentEditableWarning
-										onKeyDown={handleKeyDown}
-										onFocus={(e) => handleFocus(e, 'publicActivity')}
-										onBlur={(e) => handleTitleChange('publicActivity', e)}
-									>
-										hoạt động xã hội
-									</h2>
-									{focusedSection === 'publicActivity' && (
-										<div className="absolute top-0 right-0 flex gap-2">
-											<button
-												className="p-1 bg-gray-400 rounded hover:bg-gray-300"
-												onClick={() => handleAddSection('publicActivity')}
-											>
-												<FiPlus className="h-4 w-4" />
-											</button>
-											<button
-												className="p-1 bg-red-400 rounded hover:bg-red-300"
-												onClick={() => handleDeleteSection('publicActivity')}
-											>
-												<FiTrash2 className="h-4 w-4" />
-											</button>
-										</div>
-									)}
-									<div
-										contentEditable
-										suppressContentEditableWarning
-										onInput={(e) => {
-											saveCursorPosition(e.currentTarget, 'publicActivity')
-											handleContentChange('publicActivity', e)
-											setTimeout(() => restoreCursorPosition(e.currentTarget, 'publicActivity'), 0)
-										}}
-										onKeyDown={handleKeyDown}
-										onFocus={(e) => handleFocus(e, 'publicActivity')}
-									>
-										{cv.publicActivity?.items.map((exp, idx) => (
-											<div key={idx} className="mb-4">
-												<h3 className="text-[15px] ">{exp.name}</h3>
-												<ul className="list-disc list-inside  mt-2">
-													{exp.description.map((duty, i) => (
-														<li key={i}>{duty}</li>
-													))}
-												</ul>
-											</div>
-										))}
-									</div>
-									{cv.experiences[0].additionalNote && (
-										<p
-											className="italic text-sm text-gray-600 mt-2"
-											contentEditable
-											suppressContentEditableWarning
-											onKeyDown={handleKeyDown}
-											onFocus={(e) => handleFocus(e, 'experiences')}
-											onBlur={(e) => handleTitleChange('experiences', e)}
-										>
-											{cv.experiences[0].additionalNote}
-										</p>
-									)}
-								</div>
+										{data.experiences[0].additionalNote}
+									</p>
+								)}
 							</div>
 						</div>
-					) : (
-						<div></div>
-						// <div className="flex flex-col md:flex-row w-full">
-						// 	{/* Cột trái - Trang 2
-						// 	<div className="w-full md:w-1/3 bg-slate-400 p-6 print:p-4">
-						// 		<div className="space-y-6">
-						// 			<div>
-						// 				<h2 className="text-slate-800 font-semibold text-lg">CyberCoders · Thực tập sinh Thiết kế</h2>
-						// 				<p className="text-slate-600">Phoenix, AZ · 09/2017 - 06/2018</p>
-						// 			</div>
-						// 		</div>
-						// 	</div> */}
-
-						// 	{/* Cột phải - Trang 2 */}
-						// 	<div className="w-full md:w-2/3 p-6 print:p-4">
-						// 		<div className="space-y-6">
-						// 			{/* Chi tiết kinh nghiệm làm việc */}
-						// 			<div>
-						// 				<ul className="list-disc ml-5 space-y-2 text-slate-700">
-						// 					<li>
-						// 						Hợp tác với các nhóm kỹ thuật về tuyên bố thiết kế, thời gian thực hiện, chi phí kỹ thuật, ngân
-						// 						sách và tuyên bố công việc để quản lý nỗ lực phát triển nhà cung cấp.
-						// 					</li>
-						// 					<li>Xem xét sản phẩm để tuân thủ yêu cầu Thiết kế cho Sản xuất (DFM).</li>
-						// 				</ul>
-						// 			</div>
-
-						// 			{/* Xuất bản */}
-						// 			<div>
-						// 				<h2 className="text-slate-800 font-semibold text-base uppercase tracking-wider mb-3">Xuất bản</h2>
-						// 				<p className="text-slate-700">
-						// 					Duran, Jackie. "Cách tiếp cận sáng tạo để tối ưu hóa quy trình từ thiết kế đến sản xuất."{' '}
-						// 					<span className="italic">Tạp chí Kỹ thuật Sản xuất</span>, tập 28, số 3, 2022, trang 87-99.
-						// 				</p>
-						// 			</div>
-
-						// 			{/* Bài trình bày hội nghị */}
-						// 			<div>
-						// 				<h2 className="text-slate-800 font-semibold text-base uppercase tracking-wider mb-3">
-						// 					Bài trình bày hội nghị
-						// 				</h2>
-						// 				<p className="text-slate-700">
-						// 					"Tiến bộ trong kỹ thuật tạo mẫu nhanh," trình bày tại Hội nghị Quốc tế về Đổi mới Sản xuất 2022,
-						// 					San Diego, CA.
-						// 				</p>
-						// 			</div>
-
-						// 			{/* Tham dự hội nghị */}
-						// 			<div>
-						// 				<h2 className="text-slate-800 font-semibold text-base uppercase tracking-wider mb-3">
-						// 					Tham dự hội nghị
-						// 				</h2>
-						// 				<ul className="list-disc ml-5 space-y-1 text-slate-700">
-						// 					<li>Hội nghị Quốc tế về Đổi mới Sản xuất, 2022</li>
-						// 					<li>Triển lãm CAD và Tạo mẫu, 2021</li>
-						// 				</ul>
-						// 			</div>
-
-						// 			{/* Tài trợ hoặc quỹ nghiên cứu */}
-						// 			<div>
-						// 				<h2 className="text-slate-800 font-semibold text-base uppercase tracking-wider mb-3">
-						// 					Tài trợ hoặc quỹ nghiên cứu
-						// 				</h2>
-						// 				<p className="text-slate-700">
-						// 					Nhận tài trợ 15.000 USD cho nghiên cứu về phân tích ứng suất trong tạo mẫu nhanh, Đại học Bang
-						// 					Arizona, 2021
-						// 				</p>
-						// 			</div>
-
-						// 			{/* Danh hiệu và giải thưởng */}
-						// 			<div>
-						// 				<h2 className="text-slate-800 font-semibold text-base uppercase tracking-wider mb-3">
-						// 					Danh hiệu và giải thưởng
-						// 				</h2>
-						// 				<ul className="list-disc ml-5 space-y-1 text-slate-700">
-						// 					<li>Kỹ sư của Năm, Quest Global, 2023</li>
-						// 					<li>Xuất sắc trong Quy trình Sản xuất, ASM International, 2020</li>
-						// 				</ul>
-						// 			</div>
-
-						// 			{/* Liên kết chuyên môn */}
-						// 			<div>
-						// 				<h2 className="text-slate-800 font-semibold text-base uppercase tracking-wider mb-3">
-						// 					Liên kết và thành viên chuyên môn
-						// 				</h2>
-						// 				<ul className="list-disc ml-5 space-y-1 text-slate-700">
-						// 					<li>Thành viên, Hiệp hội Kỹ sư Cơ khí Hoa Kỳ (ASME)</li>
-						// 					<li>Thành viên, Hiệp hội Kỹ sư Sản xuất (SME)</li>
-						// 				</ul>
-						// 			</div>
-
-						// 			{/* <!-- Training --> */}
-						// 			<div>
-						// 				<h2 className="text-slate-800 font-semibold text-base uppercase tracking-wider mb-3">Đào tạo</h2>
-						// 				<ul className="list-disc ml-5 space-y-1 text-slate-700">
-						// 					<li>Hội thảo Mô phỏng CAD Nâng cao, Quest Global, 2022</li>
-						// 					<li>Chương trình Lãnh đạo trong Kỹ thuật, ASM International, 2021</li>
-						// 				</ul>
-						// 			</div>
-
-						// 			{/* <!-- Community Outreach --> */}
-						// 			<div>
-						// 				<h2 className="text-slate-800 font-semibold text-base uppercase tracking-wider mb-3">
-						// 					Hoạt động cộng đồng
-						// 				</h2>
-						// 				<ul className="list-disc ml-5 space-y-1 text-slate-700">
-						// 					<li>Tình nguyện viên hướng dẫn cho các kỹ sư trẻ, Chương trình STEM Arizona, 2019-Hiện tại</li>
-						// 					<li>Tổ chức các hội thảo cho học sinh trung học về mô phỏng CAD và tạo mẫu</li>
-						// 				</ul>
-						// 			</div>
-						// 		</div>
-						// 	</div>
-						// </div>
-					)}
+					</div>
 
 					{/* <!-- Toggle Button --> */}
 					{/* <div className="flex justify-center py-4">

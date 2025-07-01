@@ -430,10 +430,9 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
 			className="mx-auto bg-white shadow-lg font-sans relative"
 			style={{
 				fontFamily: selectedFont,
-				width: '210mm',
-				height: '297mm',
+				width: '260mm',
+				height: '320mm',
 				minHeight: '297mm',
-				maxWidth: '210mm',
 				margin: '0 auto',
 				padding: '0',
 				boxSizing: 'border-box',
@@ -552,7 +551,7 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
 			{/* Body nội dung: 2 cột trên desktop, cột đơn trên mobile */}
 			<div className="flex flex-col md:flex-row relative">
 				{/* Đường ngăn cách dọc cố định */}
-				<div className="hidden md:block absolute left-[70mm] top-0 w-px bg-gray-300" style={{ height: '202mm' }}></div>
+				<div className="hidden md:block absolute left-[86mm] top-0 w-px bg-gray-300" style={{ height: '225mm' }}></div>
 				{/* Cột trái */}
 				<aside className="md:w-1/3 bg-white p-6">
 					<section className="mb-6 relative">
@@ -790,22 +789,18 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
 							}}
 							onKeyDown={handleKeyDown}
 							onFocus={(e) => handleFocus(e, 'experiences')}
-							dangerouslySetInnerHTML={{
-								__html: (() => {
-									let html = `<p class="font-medium text-gray-700">${
-										data.experiences?.summary || 'Hơn 3 năm kinh nghiệm trong lĩnh vực phát triển phần mềm...'
-									}</p>`
-									html += renderExperienceItems(data.experiences?.items, [
-										'Quản lý danh mục khách hàng',
-										'Đạt doanh số 500 triệu/tháng',
-									])
-									html += `<p class="mt-2 text-sm italic text-gray-700">${
-										data.experiences?.additionalNote || 'Có kinh nghiệm làm việc với các đối tác quốc tế...'
-									}</p>`
-									return html
-								})(),
-							}}
-						/>
+						>
+							{data.experiences[0].items.map((exp, idx) => (
+								<div key={idx} className="mb-4">
+									<h3 className="text-[15px] font-medium ">{exp.position}</h3>
+									<ul className="list-disc list-inside text-gray-700 text-sm mt-2">
+										{exp.duties.map((duty, i) => (
+											<li key={i}>{duty}</li>
+										))}
+									</ul>
+								</div>
+							))}
+						</div>
 					</section>
 					<section className="mb-6 relative">
 						<h2
@@ -845,17 +840,19 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
 							}}
 							onKeyDown={handleKeyDown}
 							onFocus={(e) => handleFocus(e, 'education')}
-							dangerouslySetInnerHTML={{
-								__html: (() => {
-									let html = ''
-									html += renderEducationItems(data.education?.items, [
-										'Cử nhân Quản trị Kinh doanh, 2018-2022',
-										'GPA 3.5/4.0',
-									])
-									return html
-								})(),
-							}}
-						/>
+						>
+							{data.education.items.map((edu, idx) => (
+								<div key={idx} className="mb-4">
+									<div className="flex justify-between">
+										<h3 className="text-[15px] font-medium ">{edu.name}</h3>
+										<h4 className="mr-2 font-bold"> {edu.period}</h4>
+									</div>
+									<ul className="list-disc list-inside text-gray-700 text-sm mt-2">
+										{Array.isArray(edu.description) && edu.description.map((duty, i) => <li key={i}>{duty}</li>)}
+									</ul>
+								</div>
+							))}
+						</div>
 					</section>
 					<section className="relative">
 						<h2
@@ -895,15 +892,11 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
 							}}
 							onKeyDown={handleKeyDown}
 							onFocus={(e) => handleFocus(e, 'certificates')}
-							dangerouslySetInnerHTML={{
-								__html: renderList(
-									data.certificates?.items,
-									['Chứng chỉ TOEIC 800', 'Chứng chỉ PMP (Quản lý dự án chuyên nghiệp)', 'Chứng chỉ Google Analytics'],
-									'ul',
-									'list-disc list-inside text-sm mt-1'
-								),
-							}}
-						/>
+						>
+							{data.certificates.items?.map((language, idx) => (
+								<li key={idx}>{language}</li>
+							))}
+						</div>
 					</section>
 				</main>
 			</div>

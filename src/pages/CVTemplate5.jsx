@@ -111,7 +111,7 @@ export default function CVTemplate5({ data, onContentChange, selectedFont, selec
 	const handleTitleChange = (key, e) => {
 		try {
 			const title = e.currentTarget.textContent.trim()
-			onContentChange(key, { ...cv[key], title })
+			onContentChange(key, { ...data[key], title })
 		} catch (error) {
 			console.error('Lỗi khi thay đổi tiêu đề:', error)
 		}
@@ -187,7 +187,7 @@ export default function CVTemplate5({ data, onContentChange, selectedFont, selec
 	const handleContactChange = (field, value) => {
 		try {
 			const updatedContact = {
-				...(cv.contact || {}), // giữ lại mọi field khác
+				...(data.contact || {}), // giữ lại mọi field khác
 				[field]: value,
 			}
 			onContentChange('contact', updatedContact)
@@ -413,10 +413,9 @@ export default function CVTemplate5({ data, onContentChange, selectedFont, selec
 		{ key: 'phone', icon: <FaPhone className="mr-2 mt-1" />, placeholder: '24/12/2003' },
 		{ key: 'email', icon: <FaAddressCard className="mr-2 mt-1" />, placeholder: '123 Đường ABC, Quận 1, TP.HCM' },
 	]
-	const [cv, setCV] = useState(data ? data : JSON.parse(JSON.stringify(sampleData)))
 
 	return (
-		<div className="relative max-w-4xl mx-auto bg-white shadow-lg overflow-hidden font-sans flex my-10">
+		<div className="relative  mx-auto bg-white shadow-lg overflow-hidden font-sans flex w-[260mm]">
 			<svg className="absolute top-0 left-0 w-full h-full z-0" viewBox="0 0 100 100" preserveAspectRatio="none">
 				<polygon points="0,0 40,0 0,60" fill="#F3F4F6" />
 				<polygon points="0,35 0,100 100,100" fill={selectedColor} />
@@ -466,7 +465,7 @@ export default function CVTemplate5({ data, onContentChange, selectedFont, selec
 									>
 										<div className="flex items-start">
 											{icon}
-											<span className="ml-2">{cv.contact?.[key] || placeholder}</span>
+											<span className="ml-2">{data.contact?.[key] || placeholder}</span>
 										</div>
 									</li>
 								))}
@@ -517,7 +516,7 @@ export default function CVTemplate5({ data, onContentChange, selectedFont, selec
 							onKeyDown={handleKeyDown}
 							onFocus={(e) => handleFocus(e, 'objective')}
 						>
-							{cv.objective.content}
+							{data.objective.content}
 						</p>
 					</div>
 
@@ -565,59 +564,8 @@ export default function CVTemplate5({ data, onContentChange, selectedFont, selec
 							}}
 						>
 							<ul className="list-disc list-inside space-y-1">
-								{cv.expertise.items?.map((skill, idx) => (
+								{data.expertise.items?.map((skill, idx) => (
 									<li key={idx}>{skill}</li>
-								))}
-							</ul>
-						</div>
-					</div>
-
-					{/* Interests */}
-					<div className="bg-white border border-orange-200 p-3 rounded shadow-sm mt-6 w-[100%] pb-6 text-left">
-						<div className="relative">
-							<h2
-								className="text-[1.05rem] font-bold bg-orange-200 p-1.5 mb-4 mt-1 pl-3"
-								style={{ backgroundColor: selectedColor }}
-								contentEditable
-								suppressContentEditableWarning
-								onKeyDown={handleKeyDown}
-								onFocus={(e) => handleFocus(e, 'certificates')}
-								onBlur={(e) => handleTitleChange('certificates', e)}
-							>
-								CHỨNG CHỈ
-							</h2>
-							{focusedSection === 'certificates' && (
-								<div className="absolute top-0 right-0 flex gap-2">
-									<button
-										className="p-1 bg-gray-400 rounded hover:bg-gray-300 mt-2"
-										onClick={() => handleAddSection('certificates')}
-									>
-										<FiPlus className="h-4 w-4" />
-									</button>
-									<button
-										className="p-1 bg-red-400 rounded hover:bg-red-300 mt-2 mr-2"
-										onClick={() => handleDeleteSection('certificates')}
-									>
-										<FiTrash2 className="h-4 w-4" />
-									</button>
-								</div>
-							)}{' '}
-						</div>
-						<div
-							contentEditable
-							suppressContentEditableWarning
-							className="text-sm"
-							onInput={(e) => {
-								saveCursorPosition(e.currentTarget, 'certificates')
-								handleContentChange('certificates', e)
-								setTimeout(() => restoreCursorPosition(e.currentTarget, 'certificates'), 0)
-							}}
-							onKeyDown={handleKeyDown}
-							onFocus={(e) => handleFocus(e, 'certificates')}
-						>
-							<ul className="list-disc list-inside text-gray-700 text-sm">
-								{cv.certificates.items?.map((hobby, idx) => (
-									<li key={idx}>{hobby}</li>
 								))}
 							</ul>
 						</div>
@@ -666,7 +614,7 @@ export default function CVTemplate5({ data, onContentChange, selectedFont, selec
 							onFocus={(e) => handleFocus(e, 'hobbies')}
 						>
 							<ul className="list-disc list-inside text-gray-700 text-sm">
-								{cv.hobbies.items.map((hobby, idx) => (
+								{data.hobbies.items.map((hobby, idx) => (
 									<li key={idx}>{hobby}</li>
 								))}
 							</ul>
@@ -685,7 +633,7 @@ export default function CVTemplate5({ data, onContentChange, selectedFont, selec
 							onFocus={(e) => handleFocus(e, 'name')}
 							onBlur={(e) => handleBlur(e, 'Họ và Tên', 'name')}
 						>
-							{cv.name.toUpperCase() || 'Họ và Tên'}
+							{data.name.toUpperCase() || 'Họ và Tên'}
 						</h1>
 						<div
 							className="w-85 h-[2px] bg-orange-400 rounded-full mt-1 mb-1"
@@ -698,7 +646,7 @@ export default function CVTemplate5({ data, onContentChange, selectedFont, selec
 							onFocus={(e) => handleFocus(e, 'subtitle')}
 							onBlur={(e) => handleBlur(e, 'Quản Trị Kinh Doanh', 'subtitle')}
 						>
-							{cv.subtitle.toUpperCase() || 'Quản Trị Kinh Doanh'}
+							{data.subtitle.toUpperCase() || 'Quản Trị Kinh Doanh'}
 						</p>
 					</div>
 
@@ -745,7 +693,7 @@ export default function CVTemplate5({ data, onContentChange, selectedFont, selec
 							onKeyDown={handleKeyDown}
 							onFocus={(e) => handleFocus(e, 'education')}
 						>
-							{cv.education.items.map((edu, idx) => (
+							{data.education.items.map((edu, idx) => (
 								<div key={idx} className="mb-4">
 									<div className="justify-between font-semibold">
 										<p className="">🎓 {edu.name}</p>
@@ -803,7 +751,7 @@ export default function CVTemplate5({ data, onContentChange, selectedFont, selec
 								onKeyDown={handleKeyDown}
 								onFocus={(e) => handleFocus(e, 'experiences')}
 							>
-								{cv.experiences[0].items.map((exp, idx) => (
+								{data.experiences[0].items.map((exp, idx) => (
 									<div key={idx} className="mb-4">
 										<h3 className="text-[15px] font-medium ">🏢 {exp.position}</h3>
 										<p className="text-black/65 font-bolder">{exp.period}</p>
@@ -861,10 +809,20 @@ export default function CVTemplate5({ data, onContentChange, selectedFont, selec
 								setTimeout(() => restoreCursorPosition(e.currentTarget, 'otherSkills'), 0)
 							}}
 						>
-							{' '}
-							{cv.otherSkills.items?.map((skill, idx) => (
-								<li key={idx}>{skill}</li>
+							{data.publicActivity?.items.map((exp, idx) => (
+								<div key={idx} className="mb-4 mt-5">
+									<div className="justify-between font-semibold">
+										<p className="">🎓 {exp.name}</p>
+										<p className="text-black/65">{exp.period}</p>
+									</div>
+									<ul className="list-disc list-inside text-gray-700 text-sm mt-2">
+										{Array.isArray(exp.description) && exp.description.map((duty, i) => <li key={i}>{duty}</li>)}
+									</ul>
+								</div>
 							))}
+							{/* {data.publicActivity.items?.map((skill, idx) => (
+								<li key={idx}>{skill}</li>
+							))} */}
 						</div>
 					</div>
 				</div>
