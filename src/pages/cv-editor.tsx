@@ -24,6 +24,8 @@ import RightSidebar from '@/components/RightSidebar'
 import LeftSidebar from '@/components/LeftSidebar'
 import html2canvas from 'html2canvas-pro'
 import { jsPDF } from 'jspdf'
+import dataRef from '../../db/ref.json'
+import dataProfile from '../../db/profile.json'
 
 export default function CVBuilder() {
 	const [selectedFont, setSelectedFont] = useState('Be Vietnam')
@@ -33,114 +35,142 @@ export default function CVBuilder() {
 	const [activeContent, setActiveContent] = useState<string | null>(null)
 	const [isPreviewMode, setIsPreviewMode] = useState(false)
 	const [selectedColor, setSelectedColor] = useState('#FF6B35')
+	const [selectedRef, setSelectedRef] = useState('fe')
+	const [selectedImage, setSelectedImage] = useState(3)
+	const selectedJob = dataRef.find((ref) => ref.code === selectedRef)
+	const templates = [CVTemplate, CVTemplate2, CVTemplate3, CVTemplate4, CVTemplate5]
+	const SelectedTemplate = templates[selectedImage]
 	const [cvData, setCvData] = useState({
-		name: 'Trần Nguyễn Tâm Đan',
-		subtitle: 'Nhân Viên Kinh Doanh',
+		name: dataProfile.profile.name,
+		subtitle: dataProfile.target_job.position,
 		photoUrl: 'https://img6.thuthuatphanmem.vn/uploads/2022/11/18/anh-avatar-don-gian-cho-nu_081757692.jpg',
 		contact: {
 			sex: 'Nam',
-			phone: '0321456987',
-			email: 'tntdan@gmail.com',
-			birthday: '16/10/1998',
-			location: 'Hà Nội',
-			website: '', // thêm: đề phòng có trường website
-			linkedin: '', // thêm: ví dụ bạn mở rộng sau này
+			phone: dataProfile.profile.phone,
+			email: dataProfile.profile.email,
+			birthday: '16/10/2003',
+			location: dataProfile.profile.address,
+			website: '',
+			linkedin: '',
 		},
 		objective: {
 			title: 'Mục tiêu nghề nghiệp',
-			content:
-				'`Xin chào nhà tuyển dụng! Tôi là Trần Nguyễn Tâm Đan, một nhân viên kinh doanh trẻ tuổi đầy đam mê và nhiệt huyết...`',
+			content: selectedJob?.objective.content,
 		},
+
 		expertise: {
 			title: 'Lĩnh vực chuyên môn',
-			items: ['Quản Lý Điều Hành', 'Chăm Sóc Khách Hàng', 'AccNet', 'Adobe Illustrator'],
+			items: selectedJob?.expertise.items,
 		},
-		otherSkills: { title: 'Kỹ năng khác', items: ['Quản lý thời gian', 'Giải quyết vấn đề', 'Làm việc nhóm'] },
-		hobbies: { title: 'Sở thích', items: ['Thể thao', 'Đọc sách'] },
+
+		otherSkills: {
+			title: 'Kỹ năng khác',
+			items: selectedJob?.otherSkills.items,
+		},
+
+		hobbies: {
+			title: 'Sở thích',
+			items: selectedJob?.hobbies.items,
+		},
+
 		references: {
 			title: 'Người tham chiếu',
-			name: 'Trần Lê Nguyễn Vũ',
-			address: 'Trưởng khoa CNTT - Đại học ...',
-			phone: '0123456789',
-			email: 'abc@gmail.com',
+			name: selectedJob?.references.name,
+			address: selectedJob?.references.address,
+			phone: selectedJob?.references.phone,
+			email: selectedJob?.references.email,
 		},
+
 		experiences: [
 			{
 				title: 'Kinh nghiệm làm việc',
-				summary: 'Đây là tóm tắt kinh nghiệm làm việc',
-				items: [
-					{
-						position: 'Nhân Viên Kinh Doanh',
-						duties: [
-							'Thực hiện các kế hoạch kinh doanh...',
-							'Lập kế hoạch hoạt động năm, quý, tháng, tuần...',
-							'Khảo sát, nghiên cứu, đánh giá doanh thu dự kiến...',
-						],
-					},
-					{
-						position: 'Nhân Viên Kinh Doanh',
-						duties: [
-							'Thực hiện các kế hoạch kinh doanh...',
-							'Lập kế hoạch hoạt động năm, quý, tháng, tuần...',
-							'Khảo sát, nghiên cứu, đánh giá doanh thu dự kiến...',
-						],
-					},
-					{
-						position: 'Nhân Viên Kinh Doanh',
-						duties: [
-							'Thực hiện các kế hoạch kinh doanh...',
-							'Lập kế hoạch hoạt động năm, quý, tháng, tuần...',
-							'Khảo sát, nghiên cứu, đánh giá doanh thu dự kiến...',
-						],
-					},
-				],
-				additionalNote: 'Đây là chú thích kinh nghiệm làm việc',
+				summary: selectedJob?.experiences?.[0]?.summary,
+				items: selectedJob?.experiences?.[0]?.items,
+				additionalNote: selectedJob?.experiences?.[0]?.additionalNote,
 			},
 		],
+
 		education: {
 			title: 'Lịch sử học vấn',
-			items: [
-				{
-					name: 'Cử nhân Công nghệ Thông tin',
-					period: 'Tháng 8 2022 - Tháng 6 2026',
-					description: [
-						'Tốt nghiệp loại xuất sắc trường Đại học Khoa học Tự nhiên, ĐHQG TP.HCM',
-						'Tốt nghiệp loại xuất sắc trường Đại học Khoa học Tự nhiên, ĐHQG TP.HCM',
-					],
-				},
-				{
-					name: 'Cử nhân Công nghệ Thông tin',
-					period: 'Tháng 8 2022 - Tháng 6 2026',
-					description: [
-						'Tốt nghiệp loại xuất sắc trường Đại học Khoa học Tự nhiên, ĐHQG TP.HCM',
-						'Tốt nghiệp loại xuất sắc trường Đại học Khoa học Tự nhiên, ĐHQG TP.HCM',
-					],
-				},
-			],
+			items: selectedJob?.education.items,
 		},
+
 		publicActivity: {
-			title: 'Lịch sử học vấn',
-			items: [
+			title: 'Hoạt động xã hội',
+			items: selectedJob?.publicActivity.items,
+		},
+
+		certificates: {
+			items: selectedJob?.certificates.items,
+		},
+	})
+	useEffect(() => {
+		if (!selectedJob) {
+			console.log(selectedJob)
+			return
+		}
+
+		setCvData({
+			name: dataProfile.profile.name,
+			subtitle: dataProfile.target_job.position,
+			photoUrl: 'https://img6.thuthuatphanmem.vn/uploads/2022/11/18/anh-avatar-don-gian-cho-nu_081757692.jpg',
+			contact: {
+				sex: 'Nam',
+				phone: dataProfile.profile.phone,
+				email: dataProfile.profile.email,
+				birthday: '16/10/2003',
+				location: dataProfile.profile.address,
+				website: '',
+				linkedin: '',
+			},
+			objective: {
+				title: 'Mục tiêu nghề nghiệp',
+				content: selectedJob.objective.content,
+			},
+			expertise: {
+				title: 'Lĩnh vực chuyên môn',
+				items: selectedJob.expertise.items,
+			},
+			otherSkills: {
+				title: 'Kỹ năng khác',
+				items: selectedJob.otherSkills.items,
+			},
+			hobbies: {
+				title: 'Sở thích',
+				items: selectedJob.hobbies.items,
+			},
+			references: {
+				title: 'Người tham chiếu',
+				name: selectedJob.references.name,
+				address: selectedJob.references.address,
+				phone: selectedJob.references.phone,
+				email: selectedJob.references.email,
+			},
+			experiences: [
 				{
-					name: 'Cử nhân Công nghệ Thông tin',
-					period: 'Tháng 8 2022 - Tháng 6 2026',
-					description: [
-						'Tốt nghiệp loại xuất sắc trường Đại học Khoa học Tự nhiên, ĐHQG TP.HCM',
-						'Tốt nghiệp loại xuất sắc trường Đại học Khoa học Tự nhiên, ĐHQG TP.HCM',
-					],
-				},
-				{
-					name: 'Cử nhân Công nghệ Thông tin',
-					period: 'Tháng 8 2022 - Tháng 6 2026',
-					description: [
-						'Tốt nghiệp loại xuất sắc trường Đại học Khoa học Tự nhiên, ĐHQG TP.HCM',
-						'Tốt nghiệp loại xuất sắc trường Đại học Khoa học Tự nhiên, ĐHQG TP.HCM',
-					],
+					title: 'Kinh nghiệm làm việc',
+					summary: selectedJob.experiences?.[0]?.summary,
+					items: selectedJob.experiences?.[0]?.items,
+					additionalNote: selectedJob.experiences?.[0]?.additionalNote,
 				},
 			],
-		},
-		certificates: { items: ['Tiếng Anh', 'Tiếng Pháp'] },
-	})
+			education: {
+				title: 'Lịch sử học vấn',
+				items: selectedJob.education.items,
+			},
+			publicActivity: {
+				title: 'Hoạt động xã hội',
+				items: selectedJob.publicActivity.items,
+			},
+			certificates: {
+				items: selectedJob.certificates.items,
+			},
+		})
+	}, [selectedRef])
+
+	// useEffect(() => {
+	// 	console.log('selectedRef changed:', selectedRef)
+	// }, [selectedRef])
 
 	const editorRef = useRef<HTMLDivElement>(null)
 	const cvTemplateRef = useRef<HTMLDivElement>(null)
@@ -149,7 +179,7 @@ export default function CVBuilder() {
 		{ id: 'color', label: 'Đổi màu CV', icon: '🎨', contentType: 'color' },
 		{ id: 'template', label: 'Đổi mẫu CV', icon: '📄', contentType: 'template', active: true },
 		{ id: 'language', label: 'Đổi ngôn ngữ CV', icon: '🌐', contentType: 'language', highlight: true },
-		{ id: 'reference', label: 'CV tham khảo', icon: '📋', contentType: null },
+		{ id: 'reference', label: 'CV tham khảo', icon: '📋', contentType: 'reference' },
 		{ id: 'preview', label: 'Xem trước', icon: '👁️', contentType: null },
 		{ id: 'save', label: 'Lưu CV', icon: '💾', contentType: null },
 		{ id: 'download', label: 'Tải xuống', icon: '⬇️', contentType: null },
@@ -375,6 +405,14 @@ export default function CVBuilder() {
 		setSelectedColor(color)
 	}
 
+	const handleRefChange = (ref: string) => {
+		setSelectedRef(ref)
+	}
+
+	const handleImageChange = (id: number) => {
+		setSelectedImage(id)
+	}
+
 	const handleContentChange = (key: string, value: any) => {
 		try {
 			if (key && value !== undefined && value !== null) {
@@ -520,63 +558,14 @@ export default function CVBuilder() {
 
 	// Chọn template dựa trên selectedLayout
 	const renderTemplate = () => {
-		switch (selectedLayout) {
-			case 'CVTemplate5':
-				return (
-					<CVTemplate5
-						data={cvData}
-						onContentChange={handleContentChange}
-						selectedFont={selectedFont}
-						selectedColor={selectedColor}
-					/>
-				)
-			case 'CVTemplate4':
-				return (
-					<CVTemplate4
-						data={cvData}
-						onContentChange={handleContentChange}
-						selectedFont={selectedFont}
-						selectedColor={selectedColor}
-					/>
-				)
-			case 'CVTemplate3':
-				return (
-					<CVTemplate3
-						data={cvData}
-						onContentChange={handleContentChange}
-						selectedFont={selectedFont}
-						selectedColor={selectedColor}
-					/>
-				)
-			case 'CVTemplate2':
-				return (
-					<CVTemplate2
-						data={cvData}
-						onContentChange={handleContentChange}
-						selectedFont={selectedFont}
-						selectedColor={selectedColor}
-					/>
-				)
-			case 'CVTemplate1':
-				return (
-					<CVTemplate
-						data={cvData}
-						onContentChange={handleContentChange}
-						selectedFont={selectedFont}
-						selectedColor={selectedColor}
-					/>
-				)
-
-			default:
-				return (
-					<CVTemplate2
-						data={cvData}
-						onContentChange={handleContentChange}
-						selectedFont={selectedFont}
-						selectedColor={selectedColor}
-					/>
-				)
-		}
+		return (
+			<SelectedTemplate
+				data={cvData}
+				onContentChange={handleContentChange}
+				selectedFont={selectedFont}
+				selectedColor={selectedColor}
+			/>
+		)
 	}
 
 	return (
@@ -753,6 +742,10 @@ export default function CVBuilder() {
 								handleNavClick={handleNavClick}
 								selectedColor={selectedColor}
 								onColorChange={handleColorChange}
+								selectedRef={selectedRef}
+								onRefChange={handleRefChange}
+								selectedImage={selectedImage}
+								onImageChange={handleImageChange}
 							/>
 						</div>
 					)}
@@ -787,6 +780,13 @@ export default function CVBuilder() {
 					)}
 				</div>
 			)}
+			<button
+				onClick={() => {
+					console.log(selectedImage)
+				}}
+			>
+				Hello
+			</button>
 		</div>
 	)
 }
