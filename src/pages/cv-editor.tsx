@@ -15,9 +15,11 @@ import {
 	ListOrdered,
 	Eye,
 } from 'lucide-react'
+import CVTemplate5 from '@/pages/CVTemplate5'
+import CVTemplate4 from '@/pages/Template2'
+import CVTemplate3 from '@/pages/Template1'
 import CVTemplate2 from '@/pages/CVTemplate2'
 import CVTemplate from '@/pages/CVTemplate1'
-import CVTemplate5 from '@/pages/CVTemplate5'
 import RightSidebar from '@/components/RightSidebar'
 import LeftSidebar from '@/components/LeftSidebar'
 import html2canvas from 'html2canvas-pro'
@@ -38,7 +40,7 @@ export default function CVBuilder() {
 		contact: {
 			sex: 'Nam',
 			phone: '0321456987',
-			email: 'trannguyentamdan@gmail.com',
+			email: 'tntdan@gmail.com',
 			birthday: '16/10/1998',
 			location: 'Hà Nội',
 			website: '', // thêm: đề phòng có trường website
@@ -96,6 +98,27 @@ export default function CVBuilder() {
 			},
 		],
 		education: {
+			title: 'Lịch sử học vấn',
+			items: [
+				{
+					name: 'Cử nhân Công nghệ Thông tin',
+					period: 'Tháng 8 2022 - Tháng 6 2026',
+					description: [
+						'Tốt nghiệp loại xuất sắc trường Đại học Khoa học Tự nhiên, ĐHQG TP.HCM',
+						'Tốt nghiệp loại xuất sắc trường Đại học Khoa học Tự nhiên, ĐHQG TP.HCM',
+					],
+				},
+				{
+					name: 'Cử nhân Công nghệ Thông tin',
+					period: 'Tháng 8 2022 - Tháng 6 2026',
+					description: [
+						'Tốt nghiệp loại xuất sắc trường Đại học Khoa học Tự nhiên, ĐHQG TP.HCM',
+						'Tốt nghiệp loại xuất sắc trường Đại học Khoa học Tự nhiên, ĐHQG TP.HCM',
+					],
+				},
+			],
+		},
+		publicActivity: {
 			title: 'Lịch sử học vấn',
 			items: [
 				{
@@ -498,6 +521,33 @@ export default function CVBuilder() {
 	// Chọn template dựa trên selectedLayout
 	const renderTemplate = () => {
 		switch (selectedLayout) {
+			case 'CVTemplate5':
+				return (
+					<CVTemplate5
+						data={cvData}
+						onContentChange={handleContentChange}
+						selectedFont={selectedFont}
+						selectedColor={selectedColor}
+					/>
+				)
+			case 'CVTemplate4':
+				return (
+					<CVTemplate4
+						data={cvData}
+						onContentChange={handleContentChange}
+						selectedFont={selectedFont}
+						selectedColor={selectedColor}
+					/>
+				)
+			case 'CVTemplate3':
+				return (
+					<CVTemplate3
+						data={cvData}
+						onContentChange={handleContentChange}
+						selectedFont={selectedFont}
+						selectedColor={selectedColor}
+					/>
+				)
 			case 'CVTemplate2':
 				return (
 					<CVTemplate2
@@ -516,15 +566,7 @@ export default function CVBuilder() {
 						selectedColor={selectedColor}
 					/>
 				)
-			case 'CVTemplate5':
-				return (
-					<CVTemplate5
-						data={cvData}
-						onContentChange={handleContentChange}
-						selectedFont={selectedFont}
-						selectedColor={selectedColor}
-					/>
-				)
+
 			default:
 				return (
 					<CVTemplate2
@@ -578,7 +620,7 @@ export default function CVBuilder() {
 
 			{/* Navigation Header */}
 			{!isPreviewMode && (
-				<div className="bg-white border-b border-gray-200 px-4 py-3 fixed top-0 left-0 right-0 z-20">
+				<div className="bg-white border-b border-gray-200 px-4 py-3 fixed top-0 left-0 right-0 z-99999">
 					<div className="flex flex-wrap gap-2 items-center justify-center">
 						{navItems.map((item) => (
 							<Button
@@ -600,7 +642,7 @@ export default function CVBuilder() {
 
 			{/* Formatting Toolbar */}
 			{!isPreviewMode && (
-				<div className="bg-white border-b border-gray-200 px-4 py-3 fixed top-[57px] left-0 right-0 z-20 flex justify-center">
+				<div className="bg-white border-b border-gray-200 px-4 py-3 fixed top-[57px] left-0 right-0 z-99999 flex justify-center">
 					<div className="flex items-center gap-2">
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
@@ -611,6 +653,8 @@ export default function CVBuilder() {
 							</DropdownMenuTrigger>
 							<DropdownMenuContent align="start" className="w-[120px]">
 								<DropdownMenuItem onClick={() => handleLayoutChange('CVTemplate5')}>CVTemplate5</DropdownMenuItem>
+								<DropdownMenuItem onClick={() => handleLayoutChange('CVTemplate4')}>CVTemplate4</DropdownMenuItem>
+								<DropdownMenuItem onClick={() => handleLayoutChange('CVTemplate3')}>CVTemplate3</DropdownMenuItem>
 								<DropdownMenuItem onClick={() => handleLayoutChange('CVTemplate2')}>CVTemplate2</DropdownMenuItem>
 								<DropdownMenuItem onClick={() => handleLayoutChange('CVTemplate1')}>CVTemplate1</DropdownMenuItem>
 							</DropdownMenuContent>
@@ -734,7 +778,7 @@ export default function CVBuilder() {
 					{!isRightSidebarOpen && (
 						<Button
 							variant="ghost"
-							className="fixed right-4 top-1/2 transform -translate-y-1/2 z-20 bg-white shadow-md rounded-full p-2 hover:bg-gray-100"
+							className="fixed right-4 top-1/2 transform -translate-y-1/2 z-99999 bg-white shadow-md rounded-full p-2 hover:bg-gray-100"
 							onClick={toggleRightSidebar}
 							aria-label="Open Right Sidebar"
 						>
