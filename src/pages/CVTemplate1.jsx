@@ -1,268 +1,1130 @@
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Check } from 'lucide-react'
+import React, { useRef, useState } from 'react'
+import {
+	FaPhone,
+	FaFax,
+	FaEnvelope,
+	FaFacebook,
+	FaInstagram,
+	FaMapMarkerAlt,
+	FaBirthdayCake,
+	FaAddressBook,
+	FaAddressCard,
+	FaUser,
+	FaSchool,
+} from 'react-icons/fa'
+import { FiPlus, FiTrash2 } from 'react-icons/fi'
 
-interface NavItem {
-	id: string
-	label: string
-	icon: string
-	active?: boolean
-	highlight?: boolean
-	contentType: string | null
+// Hàm debounce để trì hoãn cập nhật state
+const debounce = (func, delay) => {
+	let timeoutId
+	return (...args) => {
+		clearTimeout(timeoutId)
+		timeoutId = setTimeout(() => func(...args), delay)
+	}
 }
 
-interface LeftSidebarProps {
-	navItems: NavItem[]
-	onClose: () => void
-	activeContent: string | null
-	handleNavClick: (contentType: string | null) => void
-	selectedColor: string // Thêm prop
-	onColorChange: (color: string) => void // Thêm prop
-	selectedRef: string | null
-	onRefChange: (color: string) => void // Thêm prop
-	selectedImage: number | null
-	onImageChange: (color: number) => void // Thêm prop
-}
+export default function CVTemplate1({ data, onContentChange, selectedFont, selectedColor }) {
+	// Kiểm tra dữ liệu đầu vào
+	if (!data) {
+		console.error('Dữ liệu CV không tồn tại')
+		return <div className="p-4 text-red-500">Lỗi: Dữ liệu CV không tồn tại</div>
+	}
 
-const colors = [
-	['#FF6B35', '#2C2C2C', '#1E3A8A', '#DC2626', '#7C3AED', '#059669', '#F87171', '#6B7280'],
-	['#EA580C', '#F59E0B', '#1E40AF', '#60A5FA', '#65A30D', '#84CC16', '#3730A3', '#F8BBD0'],
-	['#7C2D12', '#047857', '#0891B2', '#FB923C', '#EAB308', '#1F2937', '#0F172A', '#A21CAF'],
-	['#D97706', '#10B981', '#2563EB', '#BE123C', '#9333EA', '#F43F5E', '#0EA5E9', '#94A3B8'],
-	['#991B1B', '#4F46E5', '#15803D', '#0369A1', '#C026D3', '#FACC15', '#3F3F46', '#E11D48'],
-]
+	//FAKE
+	// const onContentChange = (key, value) => {
+	// 	try {
+	// 		if (key && value !== undefined && value !== null) {
+	// 			setCV((prev) => {
+	// 				const prevKey = prev[key] || {}
 
-const templates = [
-	{ id: 1, name: 'Phong cách', subtitle: '', bgColor: 'bg-slate-800' },
-	{ id: 2, name: 'Cơ bản', subtitle: '', bgColor: 'bg-blue-600' },
-	{ id: 3, name: 'Cá tính', subtitle: '', bgColor: 'bg-gradient-to-br from-blue-400 to-orange-400' },
-	{ id: 4, name: 'Độc lập', subtitle: '', bgColor: 'bg-gradient-to-br from-purple-500 to-pink-500' },
-	{ id: 5, name: 'Kiến thức', subtitle: '', bgColor: 'bg-gradient-to-br from-purple-500 to-pink-500' },
-]
+	// 				if (typeof prevKey === 'object' && typeof value === 'object' && !Array.isArray(value)) {
+	// 					return {
+	// 						...prev,
+	// 						[key]: {
+	// 							...prevKey,
+	// 							...value,
+	// 						},
+	// 					}
+	// 				}
 
-interface Language {
-	code: string
-	name: string
-	flag: string
-}
+	// 				return {
+	// 					...prev,
+	// 					[key]: value,
+	// 				}
+	// 			})
+	// 		}
+	// 	} catch (error) {
+	// 		console.error('Lỗi khi cập nhật nội dung CV:', error)
+	// 	}
+	// }
+	//FAKE
 
-const languages: Language[] = [
-	{ code: 'en', name: 'Tiếng Anh', flag: '🇬🇧' },
-	{ code: 'vi', name: 'Tiếng Việt', flag: '🇻🇳' },
-]
+	// State để theo dõi section đang focus
+	const [focusedSection, setFocusedSection] = useState(null)
 
-const refCV = [
-	{ code: 'fe', name: 'Lập trình viên Frontend' },
-	{ code: 'be', name: 'Lập trình viên Backend' },
-	{ code: 'seo', name: 'SEO' },
-	{ code: 'ac', name: 'Kế toán Giám đốc' },
-	{ code: 'uiux', name: 'Thiết kế/Designer UI/UX' },
-	{ code: 'data', name: 'Thiết kế dữ liệu' },
-	{ code: 'pm', name: 'Quản lí dự án' },
-	{ code: 'qa', name: 'Kiểm thử phần mềm' },
-]
+	// Ref để lưu vị trí con trỏ
+	const cursorPositions = useRef({})
 
-export default function LeftSidebar({
-	navItems,
-	onClose,
-	activeContent,
-	handleNavClick,
-	selectedColor,
-	onColorChange,
-	selectedRef,
-	onRefChange,
-	selectedImage,
-	onImageChange,
-}: LeftSidebarProps) {
-	// Xóa state cục bộ vì giờ sử dụng prop từ CVBuilder
-	// const [selectedColor, setSelectedColor] = useState("#FF6B35")
-	const [selectedTemplate, setSelectedTemplate] = useState(templates[0].id)
-	const [selectedLanguage, setSelectedLanguage] = useState('vi')
+	// Hàm lưu vị trí con trỏ
+	const saveCursorPosition = (element, key) => {
+		const selection = window.getSelection()
+		if (selection.rangeCount > 0) {
+			const range = selection.getRangeAt(0)
+			cursorPositions.current[key] = { startContainer: range.startContainer, startOffset: range.startOffset }
+		}
+	}
 
-	const renderColorPicker = () => (
-		<div className="space-y-3">
-			<div className="flex justify-between items-center">
-				<h3 className="text-lg font-medium text-gray-900">Màu có sẵn</h3>
-				<Button variant="ghost" className="text-gray-900 p-0 h-auto" onClick={onClose}>
-					✕
-				</Button>
-			</div>
-			{colors.map((row, rowIndex) => (
-				<div key={rowIndex} className="flex gap-3 justify-start flex-wrap">
-					{row.map((color, colorIndex) => (
-						<button
-							key={`${rowIndex}-${colorIndex}`}
-							onClick={() => onColorChange(color)}
-							className="relative w-8 h-8 rounded-full border-2 border-gray-200 hover:border-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-							style={{ backgroundColor: color }}
-							aria-label={`Select color ${color}`}
-						>
-							{selectedColor === color && (
-								<div className="absolute inset-0 flex items-center justify-center">
-									<div className="bg-green-500 rounded-full p-0.5">
-										<Check className="w-2 h-2 text-white" strokeWidth={3} />
-									</div>
-								</div>
-							)}
-						</button>
-					))}
-				</div>
-			))}
-			<div className="mt-4 space-y-2">
-				<h3 className="text-lg font-medium text-gray-900">Màu tùy chỉnh</h3>
-				<input
-					type="color"
-					value={selectedColor}
-					onChange={(e) => onColorChange(e.target.value)}
-					className="w-8 h-8 cursor-pointer p-0 border-none appearance-none"
-					aria-label={`Select color ${selectedColor}`}
-				/>
-			</div>
-			<div className="mt-4 p-2 bg-gray-50 rounded-md">
-				<p className="text-sm text-gray-600">
-					Màu đã chọn:{' '}
-					<span className="font-medium" style={{ color: selectedColor }}>
-						{selectedColor}
-					</span>
-				</p>
-			</div>
-		</div>
-	)
+	// Hàm khôi phục vị trí con trỏ
+	const restoreCursorPosition = (element, key) => {
+		const position = cursorPositions.current[key]
+		if (position && element.contains(position.startContainer)) {
+			const range = document.createRange()
+			try {
+				range.setStart(position.startContainer, position.startOffset)
+				range.collapse(true)
+				const selection = window.getSelection()
+				selection.removeAllRanges()
+				selection.addRange(range)
+			} catch (error) {
+				console.warn('Không thể khôi phục vị trí con trỏ:', error)
+			}
+		}
+	}
 
-	const renderTemplatePicker = () => (
-		<div className="space-y-3">
-			<div className="flex justify-between items-center">
-				<h3 className="text-lg font-medium text-gray-900">Chọn mẫu CV</h3>
-				<Button variant="ghost" className="text-gray-900 p-0 h-auto" onClick={onClose}>
-					✕
-				</Button>
-			</div>
-			<div className="grid grid-cols-2 gap-3">
-				{templates.map((template, index) => (
-					<div key={template.id} className={`group cursor-pointer`} onClick={() => onImageChange(template.id - 1)}>
-						<Card
-							className={`overflow-hidden transition-shadow duration-300 ${
-								index === selectedImage
-									? 'bg-blue-100 shadow-lg ring-2 ring-blue-500'
-									: 'bg-white shadow-md hover:shadow-lg'
-							}`}
-						>
-							<div className="aspect-[3/4] relative">
-								{/* <div className={`w-full h-full ${template.bgColor} flex items-center justify-center relative`}>
-									<div className="w-[85%] h-[90%] bg-white rounded-sm shadow-inner p-2 text-xs">
-										<div className="space-y-2">
-											<div className="text-center border-b pb-1">
-												<div className="w-8 h-8 bg-gray-300 rounded-full mx-auto mb-1"></div>
-												<div className="h-2 bg-gray-800 rounded mb-1"></div>
-												<div className="h-1 bg-gray-500 rounded w-3/4 mx-auto"></div>
-											</div>
-											<div className="space-y-1">
-												<div className="h-1 bg-gray-700 rounded w-1/3"></div>
-												<div className="h-1 bg-gray-400 rounded"></div>
-												<div className="h-1 bg-gray-400 rounded w-4/5"></div>
-											</div>
-											<div className="space-y-1">
-												<div className="h-1 bg-gray-700 rounded w-1/4"></div>
-												<div className="h-1 bg-gray-400 rounded w-5/6"></div>
-											</div>
-										</div>
-									</div>
-									{template.id === 2 && (
-										<div className="absolute top-2 right-2 w-4 h-4 bg-white rounded-full shadow-md"></div>
-									)}
-								</div> */}
-								<img src={`./ref_${index}.png`} alt="" />
-							</div>
-						</Card>
-						<div className="mt-2 text-center">
-							<h4 className="text-sm font-semibold text-gray-900">{template.name}</h4>
-							{template.subtitle && <p className="text-xs text-gray-500">{template.subtitle}</p>}
-						</div>
-					</div>
-				))}
-			</div>
-		</div>
-	)
+	// Hàm xử lý keydown để ngăn chặn xóa toàn bộ nội dung
+	const handleKeyDown = (e) => {
+		if (e.ctrlKey && e.key === 'a') {
+			e.preventDefault()
+			return
+		}
+		const selection = window.getSelection()
+		if (selection && selection.toString() === e.target.textContent) {
+			if (e.key === 'Delete' || e.key === 'Backspace') {
+				e.preventDefault()
+				return
+			}
+		}
+	}
 
-	const renderLanguageSelector = () => (
-		<div className="space-y-3">
-			<div className="flex justify-between items-center">
-				<h3 className="text-lg font-medium text-gray-900">Chọn ngôn ngữ CV</h3>
-				<Button variant="ghost" className="text-gray-900 p-0 h-auto" onClick={onClose}>
-					✕
-				</Button>
-			</div>
-			{languages.map((language) => (
-				<Button
-					key={language.code}
-					variant="outline"
-					className={`w-full justify-start h-10 px-3 relative bg-white text-gray-900 border-gray-200 hover:bg-gray-50 ${
-						selectedLanguage === language.code ? 'border-green-500 bg-green-50' : ''
-					}`}
-					onClick={() => setSelectedLanguage(language.code)}
-				>
-					<span className="text-xl mr-2">{language.flag}</span>
-					<span className="text-sm font-medium">{language.name}</span>
-					{selectedLanguage === language.code && <Check className="absolute right-2 h-4 w-4 text-green-600" />}
-				</Button>
-			))}
-		</div>
-	)
-	const renderReferenceSelector = () => (
-		<div className="space-y-3">
-			<div className="flex justify-between items-center">
-				<h3 className="text-lg font-medium text-gray-900">Mẫu CV Tham Khảo</h3>
-				<Button variant="ghost" className="text-gray-900 p-0 h-auto" onClick={onClose}>
-					✕
-				</Button>
-			</div>
-			{refCV.map((cv) => (
-				<Button
-					key={cv.code}
-					variant="outline"
-					className={`w-full justify-start h-10 px-3 relative bg-white text-gray-900 border-gray-200 hover:bg-gray-50 ${
-						selectedRef === cv.code ? 'border-green-500 bg-green-50' : ''
-					}`}
-					onClick={() => onRefChange(cv.code)}
-				>
-					<span className="text-sm font-medium">{cv.name}</span>
-					{selectedRef === cv.code && <Check className="absolute right-2 h-4 w-4 text-green-600" />}
-				</Button>
-			))}
-			<div className="flex justify-center">
-				<Button>Dùng mẫu này</Button>
-			</div>
-		</div>
-	)
+	//EDITED
+	// Hàm xử lý thay đổi tiêu đề mục
+	const handleTitleChange = (key, e) => {
+		try {
+			const title = e.currentTarget.textContent.trim()
+			onContentChange(key, { ...data[key], title })
+		} catch (error) {
+			console.error('Lỗi khi thay đổi tiêu đề:', error)
+		}
+	}
+	//EDITED
+
+	// Hàm xử lý thay đổi nội dung mục với debounce
+	const handleContentChange = debounce((key, e) => {
+		try {
+			const content = e.currentTarget.innerHTML
+			const parser = new DOMParser()
+			const doc = parser.parseFromString(content, 'text/html')
+			let newContent = {}
+
+			if (key === 'objective') {
+				const contentElement = doc.querySelector('p') || doc.body
+				const contentText = contentElement.textContent.trim()
+				newContent = { ...data[key], content: contentText }
+			} else if (['expertise', 'otherSkills', 'hobbies', 'certificates'].includes(key)) {
+				const listItems = Array.from(doc.querySelectorAll('li'))
+				const items = listItems
+					.map((li) => li.textContent.trim())
+					.filter((text) => text !== '' && text !== '•' && text !== '·' && text !== '-')
+				newContent = { ...data[key], items }
+			} else if (key === 'experiences') {
+				const summaryElement = doc.querySelector('p.font-medium')
+				const additionalNoteElement = doc.querySelector('p.italic')
+				const experienceItems = Array.from(doc.querySelectorAll('.experience-item'))
+				const items = experienceItems
+					.map((item) => {
+						const itemTitle = item.querySelector('h3')?.textContent.trim() || ''
+						const detailItems = Array.from(item.querySelectorAll('li'))
+						const details = detailItems
+							.map((li) => li.textContent.trim())
+							.filter((text) => text !== '' && text !== '•' && text !== '·' && text !== '-')
+						return { title: itemTitle, details }
+					})
+					.filter((item) => item.title.trim() !== '' || item.details.length > 0)
+
+				newContent = {
+					...data[key],
+					summary: summaryElement ? summaryElement.textContent.trim() : data[key]?.summary || '',
+					items,
+					additionalNote: additionalNoteElement
+						? additionalNoteElement.textContent.trim()
+						: data[key]?.additionalNote || '',
+				}
+			} else if (key === 'education') {
+				const educationItems = Array.from(doc.querySelectorAll('.education-item'))
+				const items = educationItems
+					.map((item) => {
+						const institution = item.querySelector('h3')?.textContent.trim() || ''
+						const detailItems = Array.from(item.querySelectorAll('li'))
+						const details = detailItems
+							.map((li) => li.textContent.trim())
+							.filter((text) => text !== '' && text !== '•' && text !== '·' && text !== '-')
+						return { institution, details }
+					})
+					.filter((item) => item.institution.trim() !== '' || item.details.length > 0)
+				newContent = { ...data[key], items }
+			}
+
+			if (Object.keys(newContent).length > 0) {
+				console.log('Cập nhật dữ liệu:', key, newContent)
+				onContentChange(key, newContent)
+			}
+		} catch (error) {
+			console.error('Lỗi khi xử lý thay đổi nội dung:', error)
+		}
+	}, 300)
+
+	//EDITED
+	const handleContactChange = (field, value) => {
+		try {
+			const updatedContact = {
+				...(data.contact || {}), // giữ lại mọi field khác
+				[field]: value,
+			}
+			onContentChange('contact', updatedContact)
+		} catch (error) {
+			console.error('Lỗi khi thay đổi thông tin liên hệ:', error)
+		}
+	}
+	//EDITED
+
+	// Hàm xử lý focus cho thông tin liên hệ và tiêu đề
+	const handleFocus = (e, sectionKey) => {
+		const element = e.currentTarget
+		element.classList.remove('text-gray-400')
+		setFocusedSection(sectionKey)
+	}
+
+	// Hàm xử lý blur cho thông tin liên hệ, tiêu đề, name và subtitle
+	const handleBlur = (e, defaultText, key, field = null) => {
+		const element = e.currentTarget
+		const text = element.textContent.trim()
+		try {
+			if (text === '') {
+				element.textContent = defaultText
+				if (field) {
+					handleContactChange(field, defaultText)
+				} else if (key === 'name' || key === 'subtitle') {
+					onContentChange(key, text)
+				} else {
+					onContentChange(key, { ...data[key], title: defaultText })
+				}
+			} else {
+				if (field) {
+					handleContactChange(field, text)
+				} else if (key === 'name' || key === 'subtitle') {
+					onContentChange(key, text)
+				} else {
+					onContentChange(key, { ...data[key], title: text })
+				}
+			}
+		} catch (error) {
+			console.error('Lỗi khi xử lý blur:', error)
+		}
+	}
+
+	// Hàm xử lý thêm section mới
+	const handleAddSection = (key) => {
+		try {
+			let newItem
+			if (key === 'experiences') {
+				newItem = { title: 'Vị trí mới', details: ['Mô tả công việc mới'] }
+				onContentChange(key, {
+					...data[key],
+					items: [...(data[key].items || []), newItem],
+				})
+			} else if (key === 'education') {
+				newItem = { institution: 'Trường mới', details: ['Thông tin học vấn mới'] }
+				onContentChange(key, {
+					...data[key],
+					items: [...(data[key].items || []), newItem],
+				})
+			} else if (['expertise', 'otherSkills', 'hobbies', 'certificates'].includes(key)) {
+				newItem = 'Kỹ năng/chứng chỉ/sở thích mới'
+				onContentChange(key, {
+					...data[key],
+					items: [...(data[key].items || []), newItem],
+				})
+			} else if (key === 'objective') {
+				// Objective không cần thêm section mới, chỉ có một nội dung
+				return
+			}
+			console.log(`Đã thêm section mới cho ${key}`)
+		} catch (error) {
+			console.error('Lỗi khi thêm section:', error)
+		}
+	}
+
+	// Hàm xử lý xóa section
+	const handleDeleteSection = (key, index = null) => {
+		try {
+			if (key === 'objective') {
+				// Objective chỉ có một nội dung, xóa nội dung
+				onContentChange(key, { ...data[key], content: '' })
+			} else if (['expertise', 'otherSkills', 'hobbies', 'certificates'].includes(key)) {
+				if (index !== null) {
+					const newItems = data[key].items.filter((_, i) => i !== index)
+					onContentChange(key, { ...data[key], items: newItems })
+				} else {
+					// Xóa toàn bộ section
+					onContentChange(key, { ...data[key], items: [] })
+				}
+			} else if (key === 'experiences') {
+				if (index !== null) {
+					const newItems = data[key].items.filter((_, i) => i !== index)
+					onContentChange(key, { ...data[key], items: newItems })
+				} else {
+					onContentChange(key, { ...data[key], items: [], summary: '', additionalNote: '' })
+				}
+			} else if (key === 'education') {
+				if (index !== null) {
+					const newItems = data[key].items.filter((_, i) => i !== index)
+					onContentChange(key, { ...data[key], items: newItems })
+				} else {
+					onContentChange(key, { ...data[key], items: [] })
+				}
+			}
+			console.log(`Đã xóa section ${key}${index !== null ? ` tại index ${index}` : ''}`)
+			setFocusedSection(null) // Reset focus sau khi xóa
+		} catch (error) {
+			console.error('Lỗi khi xóa section:', error)
+		}
+	}
+
+	// Helper function to render lists with proper support for both bullet and numbered lists
+	const renderList = (items, defaultItems, listType = 'ul', className = 'list-disc list-inside text-sm space-y-1') => {
+		const listItems = items?.length > 0 ? items : defaultItems
+		const listTag = listType === 'ol' ? 'ol' : 'ul'
+		const listClass = listType === 'ol' ? 'list-decimal list-inside text-sm space-y-1' : className
+
+		return `<${listTag} class="${listClass}">${listItems.map((item) => `<li>${item}</li>`).join('')}</${listTag}>`
+	}
+
+	// Helper function to render experience items with proper list support
+	const renderExperienceItems = (items, defaultItems) => {
+		if (items?.length > 0) {
+			return items
+				.map((exp, index) => {
+					const details = exp.details?.length > 0 ? exp.details : defaultItems
+					return `<div class="mt-3 experience-item relative">
+          ${
+						focusedSection === `experiences-${index}`
+							? `
+            <div class="absolute top-0 right-0 flex gap-2">
+              <button class="p-1 bg-gray-200 rounded hover:bg-gray-300" onclick="event.stopPropagation();" onClick={() => handleAddSection('experiences')}>
+                <FiPlus className="h-4 w-4" />
+              </button>
+              <button class="p-1 bg-red-200 rounded hover:bg-red-300" onclick="event.stopPropagation();" onClick={() => handleDeleteSection('experiences', ${index})}>
+                <FiTrash2 className="h-4 w-4" />
+              </button>
+            </div>
+          `
+							: ''
+					}
+          <h3 class="text-lg font-medium text-gray-700">${exp.title || 'Nhân viên kinh doanh'}</h3>
+          ${renderList(
+						details,
+						['Quản lý danh mục khách hàng', 'Đạt doanh số 500 triệu/tháng'],
+						'ul',
+						'list-disc list-inside text-sm mt-1'
+					)}
+        </div>`
+				})
+				.join('')
+		} else {
+			return `<div class="mt-3 experience-item relative">
+        ${
+					focusedSection === 'experiences-0'
+						? `
+          <div class="absolute top-0 right-0 flex gap-2">
+            <button class="p-1 bg-gray-200 rounded hover:bg-gray-300" onclick="event.stopPropagation();" onClick={() => handleAddSection('experiences')}>
+              <FiPlus className="h-4 w-4" />
+            </button>
+            <button class="p-1 bg-red-200 rounded hover:bg-red-300" onclick="event.stopPropagation();" onClick={() => handleDeleteSection('experiences', 0)}>
+              <FiTrash2 className="h-4 w-4" />
+            </button>
+          </div>
+        `
+						: ''
+				}
+        <h3 class="text-lg font-medium text-gray-700">Nhân viên kinh doanh</h3>
+        ${renderList(
+					[],
+					['Quản lý danh mục khách hàng', 'Đạt doanh số 500 triệu/tháng'],
+					'ul',
+					'list-disc list-inside text-sm mt-1'
+				)}
+      </div>
+      <div class="mt-3 experience-item relative">
+        ${
+					focusedSection === 'experiences-1'
+						? `
+          <div class="absolute top-0 right-0 flex gap-2">
+            <button class="p-1 bg-gray-200 rounded hover:bg-gray-300" onclick="event.stopPropagation();" onClick={() => handleAddSection('experiences')}>
+              <FiPlus className="h-4 w-4" />
+            </button>
+            <button class="p-1 bg-red-200 rounded hover:bg-red-300" onclick="event.stopPropagation();" onClick={() => handleDeleteSection('experiences', 1)}>
+              <FiTrash2 className="h-4 w-4" />
+            </button>
+          </div>
+        `
+						: ''
+				}
+        <h3 class="text-lg font-medium text-gray-700">Trợ lý marketing</h3>
+        ${renderList(
+					[],
+					['Lập kế hoạch quảng cáo', 'Phân tích hiệu quả chiến dịch'],
+					'ul',
+					'list-disc list-inside text-sm mt-1'
+				)}
+      </div>`
+		}
+	}
+
+	// Helper function to render education items with proper list support
+	const renderEducationItems = (items, defaultItems) => {
+		if (items?.length > 0) {
+			return items
+				.map((edu, index) => {
+					const details = edu.details?.length > 0 ? edu.details : defaultItems
+					return `<div class="mt-2 education-item relative">
+          ${
+						focusedSection === `education-${index}`
+							? `
+            <div class="absolute top-0 right-0 flex gap-2">
+              <button class="p-1 bg-gray-200 rounded hover:bg-gray-300" onclick="event.stopPropagation();" onClick={() => handleAddSection('education')}>
+                <FiPlus className="h-4 w-4" />
+              </button>
+              <button class="p-1 bg-red-200 rounded hover:bg-red-300" onclick="event.stopPropagation();" onClick={() => handleDeleteSection('education', ${index})}>
+                <FiTrash2 className="h Sama sama4 w-4" />
+              </button>
+            </div>
+          `
+							: ''
+					}
+          <h3 class="text-lg font-medium text-gray-700">${edu.institution || 'Đại học Kinh tế Quốc dân'}</h3>
+          ${renderList(
+						details,
+						['Cử nhân Quản trị Kinh doanh, 2018-2022', 'GPA 3.5/4.0'],
+						'ul',
+						'list-disc list-inside text-sm mt-1'
+					)}
+        </div>`
+				})
+				.join('')
+		} else {
+			return `<div class="mt-2 education-item relative">
+        ${
+					focusedSection === 'education-0'
+						? `
+          <div class="absolute top-0 right-0 flex gap-2">
+            <button class="p-1 bg-gray-200 rounded hover:bg-gray-300" onclick="event.stopPropagation();" onClick={() => handleAddSection('education')}>
+              <FiPlus className="h-4 w-4" />
+            </button>
+            <button class="p-1 bg-red-200 rounded hover:bg-red-300" onclick="event.stopPropagation();" onClick={() => handleDeleteSection('education', 0)}>
+              <FiTrash2 className="h-4 w-4" />
+            </button>
+          </div>
+        `
+						: ''
+				}
+        <h3 class="text-lg font-medium text-gray-700">Đại học Kinh tế Quốc dân</h3>
+        ${renderList(
+					[],
+					['Cử nhân Quản trị Kinh doanh, 2018-2022', 'GPA 3.5/4.0'],
+					'ul',
+					'list-disc list-inside text-sm mt-1'
+				)}
+      </div>
+      <div class="mt-2 education-item relative">
+        ${
+					focusedSection === 'education-1'
+						? `
+          <div class="absolute top-0 right-0 flex gap-2">
+            <button class="p-1 bg-gray-200 rounded hover:bg-gray-300" onclick="event.stopPropagation();" onClick={() => handleAddSection('education')}>
+              <FiPlus className="h-4 w-4" />
+            </button>
+            <button class="p-1 bg-red-200 rounded hover:bg-red-300" onclick="event.stopPropagation();" onClick={() => handleDeleteSection('education', 1)}>
+              <FiTrash2 className="h-4 w-4" />
+            </button>
+          </div>
+        `
+						: ''
+				}
+        <h3 class="text-lg font-medium text-gray-700">Đại học Công nghệ Thông tin</h3>
+        ${renderList(
+					[],
+					['Thạc sĩ Khoa học Máy tính, 2022-2024', 'Nghiên cứu trí tuệ nhân tạo'],
+					'ul',
+					'list-disc list-inside text-sm mt-1'
+				)}
+      </div>`
+		}
+	}
+
+	// const [sampleData, setSampleData] = useState({
+	// 	name: 'Trần Nguyễn Tâm Đan',
+	// 	subtitle: 'Nhân Viên Kinh Doanh',
+	// 	photoUrl: 'https://img6.thuthuatphanmem.vn/uploads/2022/11/18/anh-avatar-don-gian-cho-nu_081757692.jpg',
+	// 	contact: {
+	// 		phone: '0321456987',
+	// 		email: 'trannguyentamdan@gmail.com',
+	// 		birthday: '16/10/1998',
+	// 		location: 'Hà Nội',
+	// 		website: '', // thêm: đề phòng có trường website
+	// 		linkedin: '', // thêm: ví dụ bạn mở rộng sau này
+	// 	},
+	// 	objective: {
+	// 		title: 'Mục tiêu nghề nghiệp',
+	// 		content:
+	// 			'`Xin chào nhà tuyển dụng! Tôi là Trần Nguyễn Tâm Đan, một nhân viên kinh doanh trẻ tuổi đầy đam mê và nhiệt huyết...`',
+	// 	},
+	// 	expertise: {
+	// 		title: 'Lĩnh vực chuyên môn',
+	// 		items: ['Quản Lý Điều Hành', 'Chăm Sóc Khách Hàng', 'AccNet', 'Adobe Illustrator'],
+	// 	},
+	// 	otherSkills: { title: 'Kỹ năng khác', items: ['Quản lý thời gian', 'Giải quyết vấn đề', 'Làm việc nhóm'] },
+	// 	hobbies: { title: 'Sở thích', items: ['Thể thao', 'Đọc sách'] },
+	// 	references: {
+	// 		title: 'Người tham chiếu',
+	// 		name: 'Trần Lê Nguyễn Vũ',
+	// 		address: 'Trưởng khoa CNTT - Đại học ...',
+	// 		phone: '0123456789',
+	// 		email: 'abc@gmail.com',
+	// 	},
+	// 	experiences: [
+	// 		{
+	// 			title: 'Kinh nghiệm làm việc',
+	// 			summary: 'Đây là tóm tắt kinh nghiệm làm việc',
+	// 			items: [
+	// 				{
+	// 					position: 'Nhân Viên Kinh Doanh',
+	// 					duties: [
+	// 						'Thực hiện các kế hoạch kinh doanh...',
+	// 						'Lập kế hoạch hoạt động năm, quý, tháng, tuần...',
+	// 						'Khảo sát, nghiên cứu, đánh giá doanh thu dự kiến...',
+	// 					],
+	// 				},
+	// 				{
+	// 					position: 'Nhân Viên Kinh Doanh',
+	// 					duties: [
+	// 						'Thực hiện các kế hoạch kinh doanh...',
+	// 						'Lập kế hoạch hoạt động năm, quý, tháng, tuần...',
+	// 						'Khảo sát, nghiên cứu, đánh giá doanh thu dự kiến...',
+	// 					],
+	// 				},
+	// 				{
+	// 					position: 'Nhân Viên Kinh Doanh',
+	// 					duties: [
+	// 						'Thực hiện các kế hoạch kinh doanh...',
+	// 						'Lập kế hoạch hoạt động năm, quý, tháng, tuần...',
+	// 						'Khảo sát, nghiên cứu, đánh giá doanh thu dự kiến...',
+	// 					],
+	// 				},
+	// 			],
+	// 			additionalNote: 'Đây là chú thích kinh nghiệm làm việc',
+	// 		},
+	// 	],
+	// 	education: {
+	// 		title: 'Lịch sử học vấn',
+	// 		items: [
+	// 			{
+	// 				name: 'Cử nhân Công nghệ Thông tin',
+	// 				period: '2022-2026',
+	// 				description: [
+	// 					'Tốt nghiệp loại xuất sắc trường Đại học Khoa học Tự nhiên, ĐHQG TP.HCM',
+	// 					'Tốt nghiệp loại xuất sắc trường Đại học Khoa học Tự nhiên, ĐHQG TP.HCM',
+	// 				],
+	// 			},
+	// 			{
+	// 				name: 'Cử nhân Công nghệ Thông tin',
+	// 				period: '2022-2026',
+	// 				description: [
+	// 					'Tốt nghiệp loại xuất sắc trường Đại học Khoa học Tự nhiên, ĐHQG TP.HCM',
+	// 					'Tốt nghiệp loại xuất sắc trường Đại học Khoa học Tự nhiên, ĐHQG TP.HCM',
+	// 				],
+	// 			},
+	// 		],
+	// 	},
+	// 	certificates: { items: ['Tiếng Anh', 'Tiếng Pháp'] },
+	// })
+	const contactItems = [
+		{ key: 'phone', icon: <FaPhone className="mr-2 mt-1" />, placeholder: '+84 123 456 789' },
+		{ key: 'email', icon: <FaEnvelope className="mr-2 mt-1" />, placeholder: 'example@gmail.com' },
+		{ key: 'birthday', icon: <FaBirthdayCake className="mr-2 mt-1" />, placeholder: '24/12/2003' },
+		{ key: 'location', icon: <FaAddressCard className="mr-2 mt-1" />, placeholder: '123 Đường ABC, Quận 1, TP.HCM' },
+	]
+	const referencesItems = [
+		{ key: 'name', icon: <FaUser className="mr-2 mt-1" />, placeholder: '+84 123 456 789' },
+		{ key: 'address', icon: <FaSchool className="mr-2 mt-1" />, placeholder: 'example@gmail.com' },
+		{ key: 'phone', icon: <FaPhone className="mr-2 mt-1" />, placeholder: '24/12/2003' },
+		{ key: 'email', icon: <FaAddressCard className="mr-2 mt-1" />, placeholder: '123 Đường ABC, Quận 1, TP.HCM' },
+	]
+
+	// const sampleData = {
+	// 	name: 'Trần Nguyễn Tâm Đan',
+	// 	title: 'Nhân Viên Kinh Doanh',
+	// 	photoUrl: 'https://img6.thuthuatphanmem.vn/uploads/2022/11/18/anh-avatar-don-gian-cho-nu_081757692.jpg',
+	// 	contact: {
+	// 		phone: '0321456987',
+	// 		email: 'trannguyentamdan@gmail.com',
+	// 		birthday: '16/10/1998',
+	// 		location: 'Hà Nội',
+	// 	},
+	// 	skills: ['Quản Lý Điều Hành', 'Chăm Sóc Khách Hàng', 'AccNet', 'Adobe Illustrator'],
+	// 	languages: ['Tiếng Anh', 'Tiếng Pháp'],
+	// 	softSkills: ['Quản lý thời gian', 'Giải quyết vấn đề', 'Làm việc nhóm'],
+	// 	references: [
+	// 		{
+	// 			name: 'Trần Lê Nguyễn Vũ',
+	// 			title: 'Trưởng khoa CNTT - Đại học ...',
+	// 			phone: '0123456789',
+	// 			email: 'abc@gmail.com',
+	// 		},
+	// 	],
+	// 	objective:
+	// 		'Xin chào nhà tuyển dụng! Tôi là Trần Nguyễn Tâm Đan, một nhân viên kinh doanh trẻ tuổi đầy đam mê và nhiệt huyết...',
+	// 	experiences: [
+	// 		{
+	// 			position: 'Nhân Viên Kinh Doanh',
+	// 			company: 'Công Ty CP ...',
+	// 			period: '2022 - 2023',
+	// 			duties: [
+	// 				'Thực hiện các kế hoạch kinh doanh...',
+	// 				'Lập kế hoạch hoạt động năm, quý, tháng, tuần...',
+	// 				'Khảo sát, nghiên cứu, đánh giá doanh thu dự kiến...',
+	// 			],
+	// 			achievements: ['Best seller 2022', 'Nhân viên xuất sắc 2022', 'Nhân viên sáng tạo', 'Dự án sale xuất sắc'],
+	// 		},
+	// 	],
+	// 	education: [
+	// 		{
+	// 			degree: 'Quản Trị Kinh Doanh',
+	// 			school: 'Đại Học ...',
+	// 			period: '2022 - 2023',
+	// 			grade: 'Tốt nghiệp loại Giỏi',
+	// 		},
+	// 	],
+	// 	hobbies: ['Thể thao'],
+	// }
 
 	return (
-		<div className="w-100 fixed left-0 top-[105px] bottom-0 z-10">
-			<Card className="h-full flex flex-col py-0 rounded-lg">
-				<CardContent className="p-4 flex-1 overflow-y-auto">
-					{activeContent === 'color' && renderColorPicker()}
-					{activeContent === 'template' && renderTemplatePicker()}
-					{activeContent === 'language' && renderLanguageSelector()}
-					{activeContent === 'reference' && renderReferenceSelector()}
-					{!activeContent && (
-						<div className="space-y-1">
-							{navItems.map((item) => (
-								<Button
-									key={item.id}
-									variant={item.active ? 'default' : 'ghost'}
-									className={`w-full flex items-center gap-2 justify-start ${
-										item.highlight ? 'bg-red-600 hover:bg-red-700 text-white' : ''
-									} ${item.active ? 'bg-blue-500 hover:bg-blue-600 text-white' : ''}`}
-									onClick={() => handleNavClick(item.contentType)}
+		<div className="mx-auto shadow-lg p-6 flex flex-col md:flex-row font-sans w-[270mm] h-[320mm]">
+			{/* Sidebar trái */}
+			<aside
+				className="md:w-1/3 bg-gray-800 text-white border-r border-gray-300 px-4 py-4 mb-6 md:mb-0"
+				style={{ backgroundColor: selectedColor }}
+			>
+				{data.photoUrl && (
+					<div className="flex justify-center mb-4">
+						<img src={data.photoUrl} alt={data.name} className="w-32 h-32 rounded-full object-cover" />
+					</div>
+				)}
+				<div>
+					<h1
+						className="text-2xl font-bold text-center mb-2"
+						contentEditable
+						suppressContentEditableWarning
+						onFocus={(e) => handleFocus(e, 'name')}
+						onBlur={(e) => handleBlur(e, 'Họ và Tên', 'name')}
+					>
+						{data.name || 'Họ và Tên'}
+					</h1>
+					<p
+						className="text-center opacity-80 mb-4"
+						contentEditable
+						suppressContentEditableWarning
+						onFocus={(e) => handleFocus(e, 'subtitle')}
+						onBlur={(e) => handleBlur(e, 'Quản Trị Kinh Doanh', 'subtitle')}
+					>
+						{data.subtitle || 'Quản Trị Kinh Doanh'}
+					</p>
+				</div>
+
+				{/* Thông tin liên hệ */}
+				<section className="mb-6">
+					<div className="relative">
+						<h2
+							className="text-lg font-semibold border-b border-gray-400 pb-1 mb-2"
+							contentEditable
+							suppressContentEditableWarning
+							onKeyDown={handleKeyDown}
+							onFocus={(e) => handleFocus(e, 'contact')}
+							onBlur={(e) => handleTitleChange('contact', e)}
+						>
+							Thông tin
+						</h2>
+						{focusedSection === 'contact' && (
+							<div className="absolute top-0 right-0 flex gap-2">
+								<button
+									className="p-1 bg-gray-400 rounded hover:bg-gray-300"
+									onClick={() => handleAddSection('contact')}
 								>
-									<span>{item.icon}</span>
-									{item.label}
-								</Button>
+									<FiPlus className="h-4 w-4" />
+								</button>
+								<button
+									className="p-1 bg-red-400 rounded hover:bg-red-300"
+									onClick={() => handleDeleteSection('contact')}
+								>
+									<FiTrash2 className="h-4 w-4" />
+								</button>
+							</div>
+						)}
+					</div>
+
+					<ul className="text-sm space-y-1" style={{ marginLeft: '-10px' }}>
+						{contactItems.map(({ key, icon, placeholder }, index) => (
+							<li
+								key={`contact-${key}`}
+								className="flex items-start"
+								contentEditable
+								suppressContentEditableWarning
+								onFocus={(e) => handleFocus(e, `contact-${key}`)}
+								onBlur={(e) => handleBlur(e, placeholder, 'contact', key)}
+							>
+								{icon}
+								<span className="ml-2">{data.contact?.[key] || placeholder}</span>
+							</li>
+						))}
+					</ul>
+				</section>
+
+				{/* Kỹ năng */}
+				<section className="mb-6">
+					<div className="relative">
+						<h2
+							className="text-lg font-semibold border-b border-gray-400 pb-1 mb-2"
+							contentEditable
+							suppressContentEditableWarning
+							onKeyDown={handleKeyDown}
+							onFocus={(e) => handleFocus(e, 'expertise')}
+							onBlur={(e) => handleTitleChange('expertise', e)}
+						>
+							Kỹ năng
+						</h2>
+						{focusedSection === 'expertise' && (
+							<div className="absolute top-0 right-0 flex gap-2">
+								<button
+									className="p-1 bg-gray-400 rounded hover:bg-gray-300"
+									onClick={() => handleAddSection('expertise')}
+								>
+									<FiPlus className="h-4 w-4" />
+								</button>
+								<button
+									className="p-1 bg-red-400 rounded hover:bg-red-300"
+									onClick={() => handleDeleteSection('expertise')}
+								>
+									<FiTrash2 className="h-4 w-4" />
+								</button>
+							</div>
+						)}
+					</div>
+
+					<ul className="list-disc list-inside text-sm space-y-1">
+						<div
+							contentEditable
+							suppressContentEditableWarning
+							onKeyDown={handleKeyDown}
+							onFocus={(e) => handleFocus(e, 'expertise')}
+							onInput={(e) => {
+								saveCursorPosition(e.currentTarget, 'expertise')
+								handleContentChange('expertise', e)
+								setTimeout(() => restoreCursorPosition(e.currentTarget, 'expertise'), 0)
+							}}
+						>
+							{data.expertise.items?.map((skill, idx) => (
+								<li key={idx}>{skill}</li>
 							))}
 						</div>
-					)}
-				</CardContent>
-			</Card>
+					</ul>
+				</section>
+
+				{/* Ngôn ngữ */}
+				<section className="mb-6">
+					<div className="relative">
+						<h2
+							className="text-lg font-semibold border-b border-gray-400 pb-1 mb-2"
+							contentEditable
+							suppressContentEditableWarning
+							onKeyDown={handleKeyDown}
+							onFocus={(e) => handleFocus(e, 'certificates')}
+							onBlur={(e) => handleTitleChange('certificates', e)}
+						>
+							Chứng chỉ
+						</h2>
+						{focusedSection === 'certificates' && (
+							<div className="absolute top-0 right-0 flex gap-2">
+								<button
+									className="p-1 bg-gray-400 rounded hover:bg-gray-300"
+									onClick={() => handleAddSection('languages')}
+								>
+									<FiPlus className="h-4 w-4" />
+								</button>
+								<button
+									className="p-1 bg-red-400 rounded hover:bg-red-300"
+									onClick={() => handleDeleteSection('languages')}
+								>
+									<FiTrash2 className="h-4 w-4" />
+								</button>
+							</div>
+						)}
+					</div>
+
+					<ul className="list-disc list-inside text-sm space-y-1">
+						<div
+							contentEditable
+							suppressContentEditableWarning
+							onKeyDown={handleKeyDown}
+							onFocus={(e) => handleFocus(e, 'certificates')}
+							onInput={(e) => {
+								saveCursorPosition(e.currentTarget, 'certificates')
+								handleContentChange('certificates', e)
+								setTimeout(() => restoreCursorPosition(e.currentTarget, 'certificates'), 0)
+							}}
+						>
+							{data.certificates.items?.map((language, idx) => (
+								<li key={idx}>{language}</li>
+							))}
+						</div>
+					</ul>
+				</section>
+
+				{/* Kỹ năng mềm */}
+				<section className="mb-6">
+					<div className="relative">
+						<h2
+							className="text-lg font-semibold border-b border-gray-400 pb-1 mb-2"
+							contentEditable
+							suppressContentEditableWarning
+							onKeyDown={handleKeyDown}
+							onFocus={(e) => handleFocus(e, 'otherSkills')}
+							onBlur={(e) => handleTitleChange('otherSkills', e)}
+						>
+							Kỹ năng mềm
+						</h2>
+						{focusedSection === 'otherSkills' && (
+							<div className="absolute top-0 right-0 flex gap-2">
+								<button
+									className="p-1 bg-gray-400 rounded hover:bg-gray-300"
+									onClick={() => handleAddSection('otherSkills')}
+								>
+									<FiPlus className="h-4 w-4" />
+								</button>
+								<button
+									className="p-1 bg-red-400 rounded hover:bg-red-300"
+									onClick={() => handleDeleteSection('otherSkills')}
+								>
+									<FiTrash2 className="h-4 w-4" />
+								</button>
+							</div>
+						)}
+					</div>
+
+					<ul className="list-disc list-inside text-sm space-y-1">
+						<div
+							contentEditable
+							suppressContentEditableWarning
+							onKeyDown={handleKeyDown}
+							onFocus={(e) => handleFocus(e, 'otherSkills')}
+							onInput={(e) => {
+								saveCursorPosition(e.currentTarget, 'otherSkills')
+								handleContentChange('otherSkills', e)
+								setTimeout(() => restoreCursorPosition(e.currentTarget, 'otherSkills'), 0)
+							}}
+						>
+							{' '}
+							{data.otherSkills.items?.map((skill, idx) => (
+								<li key={idx}>{skill}</li>
+							))}
+						</div>
+					</ul>
+				</section>
+
+				{data.hobbies?.items?.length > 0 && (
+					<section>
+						<div className="relative">
+							<h2
+								className="text-xl font-semibold border-b border-gray-500 pb-1 mb-2"
+								contentEditable
+								suppressContentEditableWarning
+								onKeyDown={handleKeyDown}
+								onFocus={(e) => handleFocus(e, 'hobbies')}
+								onBlur={(e) => handleTitleChange('hobbies', e)}
+							>
+								Sở thích
+							</h2>
+							{focusedSection === 'hobbies' && (
+								<div className="absolute top-0 right-0 flex gap-2">
+									<button
+										className="p-1 bg-gray-400 rounded hover:bg-gray-300"
+										onClick={() => handleAddSection('hobbies')}
+									>
+										<FiPlus className="h-4 w-4" />
+									</button>
+									<button
+										className="p-1 bg-red-400 rounded hover:bg-red-300"
+										onClick={() => handleDeleteSection('hobbies')}
+									>
+										<FiTrash2 className="h-4 w-4" />
+									</button>
+								</div>
+							)}
+						</div>
+						<div
+							contentEditable
+							suppressContentEditableWarning
+							className="text-sm"
+							onInput={(e) => {
+								saveCursorPosition(e.currentTarget, 'hobbies')
+								handleContentChange('hobbies', e)
+								setTimeout(() => restoreCursorPosition(e.currentTarget, 'hobbies'), 0)
+							}}
+							onKeyDown={handleKeyDown}
+							onFocus={(e) => handleFocus(e, 'hobbies')}
+						>
+							<ul className="list-disc list-inside  text-sm">
+								{data.hobbies.items.map((hobby, idx) => (
+									<li key={idx}>{hobby}</li>
+								))}
+							</ul>
+						</div>
+					</section>
+				)}
+			</aside>
+
+			{/* Nội dung chính */}
+			<main className="md:w-2/3 bg-gray-100 pl-0 md:pl-6 py-4 px-4">
+				{data.objective && (
+					<section className="mb-6">
+						<div className="relative">
+							<h2
+								className="text-xl font-semibold border-b border-gray-500 pb-1 mb-2"
+								contentEditable
+								suppressContentEditableWarning
+								onKeyDown={handleKeyDown}
+								onFocus={(e) => handleFocus(e, 'objective')}
+								onBlur={(e) => handleTitleChange('objective', e)}
+							>
+								Mục tiêu nghề nghiệp
+							</h2>
+							{focusedSection === 'objective' && (
+								<div className="absolute top-0 right-0 flex gap-2">
+									<button
+										className="p-1 bg-gray-400 rounded hover:bg-gray-300"
+										onClick={() => handleAddSection('objective')}
+									>
+										<FiPlus className="h-4 w-4" />
+									</button>
+									<button
+										className="p-1 bg-red-400 rounded hover:bg-red-300"
+										onClick={() => handleDeleteSection('objective')}
+									>
+										<FiTrash2 className="h-4 w-4" />
+									</button>
+								</div>
+							)}
+						</div>
+
+						<p
+							className="text-gray-800 text-sm whitespace-pre-line"
+							contentEditable
+							suppressContentEditableWarning
+							onInput={(e) => {
+								saveCursorPosition(e.currentTarget, 'objective')
+								handleContentChange('objective', e)
+								setTimeout(() => restoreCursorPosition(e.currentTarget, 'objective'), 0)
+							}}
+							onKeyDown={handleKeyDown}
+							onFocus={(e) => handleFocus(e, 'objective')}
+						>
+							{data.objective.content}
+						</p>
+					</section>
+				)}
+
+				{data.experiences?.[0]?.items?.length > 0 && (
+					<section className="mb-6">
+						<div className="relative">
+							<h2
+								className="text-xl font-semibold border-b border-gray-500 pb-1 mb-2"
+								contentEditable
+								suppressContentEditableWarning
+								onKeyDown={handleKeyDown}
+								onFocus={(e) => handleFocus(e, 'experiences')}
+								onBlur={(e) => handleTitleChange('experiences', e)}
+							>
+								{data.experiences[0].title || 'Kinh nghiệm làm việc'}
+							</h2>
+							{focusedSection === 'experiences' && (
+								<div className="absolute top-0 right-0 flex gap-2">
+									<button
+										className="p-1 bg-gray-400 rounded hover:bg-gray-300"
+										onClick={() => handleAddSection('experiences')}
+									>
+										<FiPlus className="h-4 w-4" />
+									</button>
+									<button
+										className="p-1 bg-red-400 rounded hover:bg-red-300"
+										onClick={() => handleDeleteSection('experiences')}
+									>
+										<FiTrash2 className="h-4 w-4" />
+									</button>
+								</div>
+							)}
+						</div>
+
+						<div
+							contentEditable
+							suppressContentEditableWarning
+							className="text-sm text-gray-700"
+							onInput={(e) => {
+								saveCursorPosition(e.currentTarget, 'experiences')
+								handleContentChange('experiences', e)
+								setTimeout(() => restoreCursorPosition(e.currentTarget, 'experiences'), 0)
+							}}
+							onKeyDown={handleKeyDown}
+							onFocus={(e) => handleFocus(e, 'experiences')}
+						>
+							{data.experiences[0].items.map((exp, idx) => (
+								<div key={idx} className="mb-4">
+									<h3 className="text-[15px] font-medium ">{exp.position}</h3>
+									<ul className="list-disc list-inside text-gray-700 text-sm mt-2">
+										{exp.duties.map((duty, i) => (
+											<li key={i}>{duty}</li>
+										))}
+									</ul>
+								</div>
+							))}
+						</div>
+
+						{data.experiences[0].additionalNote && (
+							<p
+								className="italic text-sm text-gray-600 mt-2"
+								contentEditable
+								suppressContentEditableWarning
+								onKeyDown={handleKeyDown}
+								onFocus={(e) => handleFocus(e, 'experiences')}
+								onBlur={(e) => handleTitleChange('experiences', e)}
+							>
+								{data.experiences[0].additionalNote}
+							</p>
+						)}
+					</section>
+				)}
+
+				{data.education?.items?.length > 0 && (
+					<section className="mb-6">
+						<div className="relative">
+							{' '}
+							<h2
+								className="text-xl font-semibold border-b border-gray-500 pb-1 mb-2"
+								contentEditable
+								suppressContentEditableWarning
+								onKeyDown={handleKeyDown}
+								onFocus={(e) => handleFocus(e, 'education')}
+								onBlur={(e) => handleTitleChange('education', e)}
+							>
+								Học vấn
+							</h2>
+							{focusedSection === 'education' && (
+								<div className="absolute top-0 right-0 flex gap-2">
+									<button
+										className="p-1 bg-gray-400 rounded hover:bg-gray-300"
+										onClick={() => handleAddSection('education')}
+									>
+										<FiPlus className="h-4 w-4" />
+									</button>
+									<button
+										className="p-1 bg-red-400 rounded hover:bg-red-300"
+										onClick={() => handleDeleteSection('education')}
+									>
+										<FiTrash2 className="h-4 w-4" />
+									</button>
+								</div>
+							)}
+						</div>
+
+						<div
+							contentEditable
+							suppressContentEditableWarning
+							className="text-sm text-gray-700"
+							onInput={(e) => {
+								saveCursorPosition(e.currentTarget, 'education')
+								handleContentChange('education', e)
+								setTimeout(() => restoreCursorPosition(e.currentTarget, 'education'), 0)
+							}}
+							onKeyDown={handleKeyDown}
+							onFocus={(e) => handleFocus(e, 'education')}
+						>
+							{data.education.items.map((edu, idx) => (
+								<div key={idx} className="mb-4">
+									<div className="flex justify-between">
+										<h3 className="text-[15px] font-medium ">{edu.name}</h3>
+										<h4 className="mr-2 font-bold"> {edu.period}</h4>
+									</div>
+									<ul className="list-disc list-inside text-gray-700 text-sm mt-2">
+										{Array.isArray(edu.description) && edu.description.map((duty, i) => <li key={i}>{duty}</li>)}
+									</ul>
+								</div>
+							))}
+						</div>
+					</section>
+				)}
+
+				{/* Người tham chiếu */}
+				<section>
+					<div
+						className="relative mt-5"
+						contentEditable
+						suppressContentEditableWarning
+						onKeyDown={handleKeyDown}
+						onFocus={(e) => handleFocus(e, 'references')}
+						onBlur={(e) => handleTitleChange('references', e)}
+					>
+						<h2 className="text-lg font-semibold border-b border-gray-400 pb-1 mb-2">Người tham chiếu</h2>
+						{focusedSection === 'references' && (
+							<div className="absolute top-0 right-0 flex gap-2">
+								<button
+									className="p-1 bg-gray-400 rounded hover:bg-gray-300"
+									onClick={() => handleAddSection('references')}
+								>
+									<FiPlus className="h-4 w-4" />
+								</button>
+								<button
+									className="p-1 bg-red-400 rounded hover:bg-red-300"
+									onClick={() => handleDeleteSection('references')}
+								>
+									<FiTrash2 className="h-4 w-4" />
+								</button>
+							</div>
+						)}
+					</div>
+					<ul className="text-sm space-y-1" style={{ marginLeft: '-10px' }}>
+						{referencesItems.map(({ key, icon, placeholder }, index) => (
+							<li
+								key={`references-${key}`}
+								className="flex items-start"
+								contentEditable
+								suppressContentEditableWarning
+								onFocus={(e) => handleFocus(e, `references-${key}`)}
+								onBlur={(e) => handleBlur(e, placeholder, 'references', key)}
+							>
+								{icon}
+								<span className="ml-2">{data.references?.[key] || placeholder}</span>
+							</li>
+						))}
+					</ul>
+				</section>
+			</main>
 		</div>
 	)
 }
