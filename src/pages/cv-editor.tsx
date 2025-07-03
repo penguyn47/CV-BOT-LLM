@@ -38,47 +38,26 @@ export default function CVEditor() {
     const [isPreviewMode, setIsPreviewMode] = useState(false);
     const [selectedColor, setSelectedColor] = useState("#FF6B35");
     const [cvData, setCvData] = useState({
-        name: '',
-        subtitle: '',
+        name: 'Họ và Tên',
+        subtitle: 'Quản Trị Kinh Doanh',
         photoUrl: '/avatar2.png',
         contact: {
-            phone: '',
-            fax: '',
-            email: '',
-            facebook: '',
-            instagram: '',
-            address: '',
+            phone: '+84 123 456 789',
+            fax: '+84 123 456 789',
+            email: 'email@example.com',
+            facebook: 'facebook.com/username',
+            instagram: 'instagram.com/username',
+            address: '123 Đường ABC, Quận 1, TP.HCM',
         },
-        objective: {
-            title: 'Mục tiêu nghề nghiệp',
-            content: '',
-        },
-        expertise: {
-            title: 'Lĩnh vực chuyên môn',
-            items: [],
-        },
-        otherSkills: {
-            title: 'Kỹ năng khác',
-            items: [],
-        },
-        hobbies: {
-            title: 'Sở thích',
-            items: [],
-        },
-        experiences: {
-            title: 'Kinh nghiệm làm việc',
-            summary: '',
-            items: [],
-            additionalNote: '',
-        },
-        education: {
-            title: 'Lịch sử học vấn',
-            items: [],
-        },
-        certificates: {
-            title: 'Một số chứng chỉ đạt được',
-            items: [],
-        },
+        sections: [
+            { title: 'Mục tiêu nghề nghiệp', content: 'Định hướng trở thành một chuyên gia trong lĩnh vực quản trị kinh doanh, đóng góp vào sự phát triển chiến của công ty.' },
+            { title: 'Lĩnh vực chuyên môn', content: '<ul><li>Quản trị kinh doanh</li><li>Phân tích tài chính</li><li>Quản lý dự án</li></ul>' },
+            { title: 'Kỹ năng khác', content: '<ul><li>Thành thạo Microsoft Office</li><li>Giao tiếp tiếng Anh lưu loát</li><li>Kỹ năng đàm phán</li></ul>' },
+            { title: 'Sở thích', content: '<ul><li>Đọc sách về kinh doanh</li><li>Du lịch khám phá</li><li>Chơi cờ vua</li></ul>' },
+            { title: 'Kinh nghiệm làm việc', content: '<h3>Quản lý dự án - Công ty ABC</h3><ul><li>2018 - 2020: Dẫn dắt đội ngũ thực hiện dự án XYZ</li><li>2020 - 2022: Quản lý ngân sách và tiến độ dự án</li></ul>' },
+            { title: 'Lịch sử học vấn', content: '<h3>Đại học Kinh tế TP.HCM</h3><ul><li>2014 - 2018: Cử nhân Quản trị Kinh doanh</li></ul>' },
+            { title: 'Chứng chỉ', content: '<ul><li>Chứng chỉ PMP - 2020</li><li>Chứng chỉ CFA Level 1 - 2021</li></ul>' },
+        ],
     });
 
     const editorRef = useRef<HTMLDivElement>(null);
@@ -105,7 +84,6 @@ export default function CVEditor() {
             
             // Handle list formatting
             if (command === "insertOrderedList" || command === "insertUnorderedList") {
-                // Check if we're already in a list
                 const listItem = container.nodeType === Node.ELEMENT_NODE 
                     ? (container as Element).closest('li')
                     : container.parentElement?.closest('li');
@@ -113,25 +91,20 @@ export default function CVEditor() {
                 if (listItem) {
                     const currentList = listItem.parentElement;
                     if (currentList) {
-                        // If we're in a list, convert it to the new type
                         const newListType = command === "insertOrderedList" ? 'ol' : 'ul';
                         const currentListType = currentList.tagName.toLowerCase();
                         
                         if (newListType !== currentListType) {
-                            // Convert list type
                             const newList = document.createElement(newListType);
                             newList.className = currentList.className;
                             newList.style.cssText = currentList.style.cssText;
                             
-                            // Move all list items to the new list
                             while (currentList.firstChild) {
                                 newList.appendChild(currentList.firstChild);
                             }
                             
-                            // Replace the old list with the new one
                             currentList.parentNode?.replaceChild(newList, currentList);
                             
-                            // Set proper list style
                             if (newListType === 'ol') {
                                 newList.style.listStyleType = 'decimal';
                                 newList.style.paddingLeft = '20px';
@@ -140,15 +113,12 @@ export default function CVEditor() {
                                 newList.style.paddingLeft = '20px';
                             }
                         } else {
-                            // Same type, toggle it off
                             document.execCommand('outdent', false);
                         }
                     }
                 } else {
-                    // Create new list
                     document.execCommand(command, false);
                     
-                    // For ordered lists, ensure proper numbering
                     if (command === "insertOrderedList") {
                         const newList = selection.anchorNode?.parentElement?.closest('ol');
                         if (newList) {
@@ -164,7 +134,6 @@ export default function CVEditor() {
                     }
                 }
             } else {
-                // Handle other formatting commands
                 document.execCommand(command, false, value);
             }
             
@@ -174,17 +143,14 @@ export default function CVEditor() {
 
     // Enhanced keyboard shortcuts for list formatting
     const handleKeyDown = (e: KeyboardEvent) => {
-        // Ctrl+Shift+7 for ordered list
         if (e.ctrlKey && e.shiftKey && e.key === '7') {
             e.preventDefault();
             handleFormat('insertOrderedList');
         }
-        // Ctrl+Shift+8 for unordered list
         else if (e.ctrlKey && e.shiftKey && e.key === '8') {
             e.preventDefault();
             handleFormat('insertUnorderedList');
         }
-        // Enter to create new list item
         else if (e.key === 'Enter') {
             const selection = window.getSelection();
             if (selection && selection.rangeCount > 0) {
@@ -194,16 +160,13 @@ export default function CVEditor() {
                     : range.commonAncestorContainer.parentElement?.closest('li');
                 
                 if (listItem) {
-                    // If we're at the end of a list item, create a new one
                     const listItemText = listItem.textContent || '';
                     const cursorPosition = range.startOffset;
                     
                     if (cursorPosition >= listItemText.length) {
-                        // Create new list item
                         const newLi = document.createElement('li');
                         listItem.parentNode?.insertBefore(newLi, listItem.nextSibling);
                         
-                        // Move cursor to new list item
                         const newRange = document.createRange();
                         newRange.setStart(newLi, 0);
                         newRange.collapse(true);
@@ -215,7 +178,6 @@ export default function CVEditor() {
                 }
             }
         }
-        // Backspace to remove empty list items
         else if (e.key === 'Backspace') {
             const selection = window.getSelection();
             if (selection && selection.rangeCount > 0) {
@@ -227,11 +189,9 @@ export default function CVEditor() {
                 if (listItem && (listItem.textContent || '').trim() === '') {
                     const list = listItem.parentElement;
                     if (list && (list.tagName === 'OL' || list.tagName === 'UL')) {
-                        // If this is the only list item, remove the entire list
                         if (list.children.length === 1) {
                             list.remove();
                         } else {
-                            // Remove just this list item
                             listItem.remove();
                         }
                         e.preventDefault();
@@ -241,7 +201,6 @@ export default function CVEditor() {
         }
     };
 
-    // Add keyboard event listener
     useEffect(() => {
         document.addEventListener('keydown', handleKeyDown);
         return () => {
@@ -299,7 +258,9 @@ export default function CVEditor() {
                 console.log('Text from backend:', textFromBackend);
                 setCvData((prev) => ({
                     ...prev,
-                    objective: { ...prev.objective, content: textFromBackend },
+                    sections: prev.sections.map((section, index) =>
+                        index === 0 ? { ...section, content: textFromBackend } : section
+                    ),
                 }));
             } catch (error) {
                 console.error('Error fetching layout:', error);
@@ -371,7 +332,7 @@ export default function CVEditor() {
         --primary-foreground: #1F2937;
         --secondary: #4B5563;
         --secondary-foreground: #F9FAFB;
-        --muted: #4B5563;
+        -- --muted: #4B5563;
         --muted-foreground: #9CA3AF;
         --accent: #4B5563;
         --accent-foreground: #F9FAFB;
@@ -454,7 +415,6 @@ export default function CVEditor() {
         }
     };
 
-    // Chọn template dựa trên selectedLayout
     const renderTemplate = () => {
         switch (selectedLayout) {
             case "CVTemplate2":
@@ -466,15 +426,6 @@ export default function CVEditor() {
                         selectedColor={selectedColor}
                     />
                 );
-            // case "CVTemplate1":
-            //     return (
-            //         <CVTemplate1
-            //             data={cvData}
-            //             onContentChange={handleContentChange}
-            //             selectedFont={selectedFont}
-            //             selectedColor={selectedColor}
-            //         />
-            //     );
             default:
                 return (
                     <CVTemplate2
@@ -489,7 +440,6 @@ export default function CVEditor() {
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">
-            {/* Preview Mode */}
             {isPreviewMode && (
                 <div className="fixed inset-0 z-50 flex flex-col">
                     <div className="bg-black text-white p-4 flex items-center justify-between">
@@ -526,7 +476,6 @@ export default function CVEditor() {
                 </div>
             )}
 
-            {/* Navigation Header */}
             {!isPreviewMode && (
                 <div className="bg-white border-b border-gray-200 px-4 py-3 fixed top-0 left-0 right-0 z-20">
                     <div className="flex flex-wrap gap-2 items-center justify-center">
@@ -546,7 +495,6 @@ export default function CVEditor() {
                 </div>
             )}
 
-            {/* Formatting Toolbar */}
             {!isPreviewMode && (
                 <div className="bg-white border-b border-gray-200 px-4 py-3 fixed top-[57px] left-0 right-0 z-20 flex justify-center">
                     <div className="flex items-center gap-2">
@@ -635,10 +583,8 @@ export default function CVEditor() {
                 </div>
             )}
 
-            {/* Main Content */}
             {!isPreviewMode && (
                 <div className="flex min-h-[calc(100vh-120px)] mt-[120px] cv-editor">
-                    {/* Left Sidebar */}
                     {isLeftSidebarOpen && (
                         <div className="w-80 fixed left-0 top-[105px] bottom-0 z-10">
                             <LeftSidebar
@@ -652,7 +598,6 @@ export default function CVEditor() {
                         </div>
                     )}
 
-                    {/* Main CV Editor */}
                     <div
                         ref={editorRef}
                         className={`flex-1 flex justify-center transition-all duration-300 ${isLeftSidebarOpen ? "pl-100" : ""} ${isRightSidebarOpen ? "pr-100" : ""}`}
@@ -662,14 +607,12 @@ export default function CVEditor() {
                         </div>
                     </div>
 
-                    {/* Right Sidebar */}
                     {isRightSidebarOpen && (
                         <div className="w-80 fixed right-0 top-[105px] bottom-0 z-10">
                             <RightSidebar />
                         </div>
                     )}
 
-                    {/* Arrow Button to Open Right Sidebar */}
                     {!isRightSidebarOpen && (
                         <Button
                             variant="ghost"
