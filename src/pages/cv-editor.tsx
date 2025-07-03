@@ -29,7 +29,7 @@ import { jsPDF } from "jspdf";
 // Giả lập CVTemplate1 cho khả năng chuyển đổi template
 const CVTemplate1 = () => <div>Template 1 Placeholder</div>;
 
-export default function CVBuilder() {
+export default function CVEditor() {
     const [selectedFont, setSelectedFont] = useState("Be Vietnam");
     const [selectedLayout, setSelectedLayout] = useState("CVTemplate2");
     const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(false);
