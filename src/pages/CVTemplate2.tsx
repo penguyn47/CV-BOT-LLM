@@ -35,8 +35,12 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
   }
 
   const [focusedSection, setFocusedSection] = useState<string | null>(null);
+  // Sao chép sâu dữ liệu để tránh tham chiếu trực tiếp
   const [pages, setPages] = useState<Page[]>([
-    { leftSections: data.leftSections, rightSections: data.rightSections },
+    {
+      leftSections: data.leftSections.map((s) => ({ ...s })),
+      rightSections: data.rightSections.map((s) => ({ ...s })),
+    },
   ]);
   const mainPageRef = useRef<HTMLDivElement>(null);
   const extraPageRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -115,52 +119,80 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
     let currentLeftHeight = 0;
     let currentRightHeight = 0;
     let currentPageIndex = 0;
-    let leftIndex = 0;
-    let rightIndex = 0;
+
+    // Hàm tìm section trong pages dựa trên id
+    const findSectionInPages = (id: string, side: 'left' | 'right') => {
+      for (const page of pages) {
+        const sections = side === 'left' ? page.leftSections : page.rightSections;
+        const section = sections.find((s) => s.id === id);
+        if (section) return section;
+      }
+      return null;
+    };
 
     const addSectionToPage = (section: { id: string; title: string; content: string }, side: 'left' | 'right') => {
-      const height = estimateSectionHeight(section);
+      // Lấy section từ pages nếu đã tồn tại, nếu không thì dùng section từ data
+      const existingSection = findSectionInPages(section.id, side) || { ...section };
+      const height = estimateSectionHeight(existingSection);
       const maxHeight = currentPageIndex === 0 ? MAX_PAGE_HEIGHT : MAX_PAGE_HEIGHT_SUBSEQUENT;
 
       if (side === 'left') {
         if (currentLeftHeight + height > maxHeight) {
           currentPageIndex++;
-          newPages.push({ leftSections: [], rightSections: [] }); // Khởi tạo trang mới với cả hai bên rỗng
+          newPages.push({ leftSections: [], rightSections: [] });
           currentLeftHeight = 0;
         }
-        newPages[currentPageIndex].leftSections.push(section);
+        newPages[currentPageIndex].leftSections.push(existingSection);
         currentLeftHeight += height;
       } else {
         if (currentRightHeight + height > maxHeight) {
           currentPageIndex++;
-          newPages.push({ leftSections: [], rightSections: [] }); // Khởi tạo trang mới với cả hai bên rỗng
+          newPages.push({ leftSections: [], rightSections: [] });
           currentRightHeight = 0;
         }
-        newPages[currentPageIndex].rightSections.push(section);
+        newPages[currentPageIndex].rightSections.push(existingSection);
         currentRightHeight += height;
       }
     };
 
-    // Phân phối các section lần lượt
-    while (leftIndex < data.leftSections.length || rightIndex < data.rightSections.length) {
-      if (leftIndex < data.leftSections.length) {
-        addSectionToPage(data.leftSections[leftIndex], 'left');
+    // Đồng bộ dữ liệu từ pages vào data trước khi phân trang
+    const allSections = new Map<string, { title: string; content: string }>();
+    pages.forEach((page) => {
+      page.leftSections.forEach((section) => allSections.set(section.id, section));
+      page.rightSections.forEach((section) => allSections.set(section.id, section));
+    });
+
+    const updatedLeftSections = data.leftSections.map((section) => {
+      const existing = allSections.get(section.id);
+      return existing ? { ...section, title: existing.title, content: existing.content } : section;
+    });
+    const updatedRightSections = data.rightSections.map((section) => {
+      const existing = allSections.get(section.id);
+      return existing ? { ...section, title: existing.title, content: existing.content } : section;
+    });
+
+    onContentChange('leftSections', updatedLeftSections);
+    onContentChange('rightSections', updatedRightSections);
+
+    let leftIndex = 0;
+    let rightIndex = 0;
+
+    while (leftIndex < updatedLeftSections.length || rightIndex < updatedRightSections.length) {
+      if (leftIndex < updatedLeftSections.length) {
+        addSectionToPage(updatedLeftSections[leftIndex], 'left');
         leftIndex++;
       }
-      if (rightIndex < data.rightSections.length) {
-        addSectionToPage(data.rightSections[rightIndex], 'right');
+      if (rightIndex < updatedRightSections.length) {
+        addSectionToPage(updatedRightSections[rightIndex], 'right');
         rightIndex++;
       }
     }
 
-    // Loại bỏ trang trống cuối cùng
-    if (
-      newPages[newPages.length - 1].leftSections.length === 0 &&
-      newPages[newPages.length - 1].rightSections.length === 0
-    ) {
-      setPages(newPages.slice(0, -1));
-    } else {
+    // Chỉ cập nhật pages nếu có nội dung
+    if (newPages[newPages.length - 1].leftSections.length > 0 || newPages[newPages.length - 1].rightSections.length > 0) {
       setPages(newPages);
+    } else {
+      setPages(newPages.slice(0, -1));
     }
   };
 
@@ -181,7 +213,7 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
       }
 
       console.log(`Đã thêm section mới vào ${side} tại vị trí sau section ${sectionId}`);
-      setTimeout(distributeSectionsToPages, 0); // Redistribute after render
+      setTimeout(distributeSectionsToPages, 0); // Redistribute sau khi render
     } catch (error) {
       console.error('Lỗi khi thêm section:', error);
     }
@@ -189,7 +221,6 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
 
   const handleDeleteSection = (sectionId: string, side: 'left' | 'right', pageIndex: number) => {
     try {
-      // Luôn cập nhật dữ liệu gốc
       let newLeftSections = [...data.leftSections];
       let newRightSections = [...data.rightSections];
 
@@ -203,7 +234,7 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
 
       // Cập nhật state pages
       const newPages = [...pages];
-      if (pageIndex > 0) {
+      if (pageIndex >= 0 && pageIndex < newPages.length) {
         if (side === 'left') {
           newPages[pageIndex].leftSections = newPages[pageIndex].leftSections.filter((s) => s.id !== sectionId);
         } else {
@@ -214,7 +245,7 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
 
       console.log(`Đã xóa section tại ${side}, id ${sectionId}, page ${pageIndex}`);
       setFocusedSection(null);
-      setTimeout(distributeSectionsToPages, 0); // Redistribute after render
+      setTimeout(distributeSectionsToPages, 0); // Redistribute sau khi render
     } catch (error) {
       console.error('Lỗi khi xóa section:', error);
     }
@@ -222,7 +253,7 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
 
   const handleSectionContentChange = (sectionId: string, side: 'left' | 'right', value: { title: string; content: string }, pageIndex: number) => {
     try {
-      // Luôn cập nhật dữ liệu gốc
+      // Cập nhật dữ liệu gốc
       let newLeftSections = [...data.leftSections];
       let newRightSections = [...data.rightSections];
 
@@ -242,7 +273,7 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
 
       // Cập nhật state pages để đồng bộ ngay lập tức
       const newPages = [...pages];
-      if (pageIndex > 0) {
+      if (pageIndex >= 0 && pageIndex < newPages.length) {
         if (side === 'left') {
           const sectionIndex = newPages[pageIndex].leftSections.findIndex((s) => s.id === sectionId);
           if (sectionIndex !== -1) {
@@ -257,7 +288,8 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
         setPages(newPages);
       }
 
-      setTimeout(distributeSectionsToPages, 0); // Redistribute after render
+      // Gọi lại distributeSectionsToPages để đảm bảo phân trang đúng
+      setTimeout(distributeSectionsToPages, 0);
     } catch (error) {
       console.error('Lỗi khi chỉnh sửa section:', error);
     }
