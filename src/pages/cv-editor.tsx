@@ -37,6 +37,7 @@ export default function CVEditor() {
     const [activeContent, setActiveContent] = useState<string | null>(null);
     const [isPreviewMode, setIsPreviewMode] = useState(false);
     const [selectedColor, setSelectedColor] = useState("#FF6B35");
+    // Trong cv-editor.tsx
     const [cvData, setCvData] = useState({
         name: 'Họ và Tên',
         subtitle: 'Quản Trị Kinh Doanh',
@@ -49,11 +50,12 @@ export default function CVEditor() {
             instagram: 'instagram.com/username',
             address: '123 Đường ABC, Quận 1, TP.HCM',
         },
-        sections: [
+        leftSections: [
             { title: 'Mục tiêu nghề nghiệp', content: 'Định hướng trở thành một chuyên gia trong lĩnh vực quản trị kinh doanh, đóng góp vào sự phát triển chiến của công ty.' },
             { title: 'Lĩnh vực chuyên môn', content: '<ul><li>Quản trị kinh doanh</li><li>Phân tích tài chính</li><li>Quản lý dự án</li></ul>' },
             { title: 'Kỹ năng khác', content: '<ul><li>Thành thạo Microsoft Office</li><li>Giao tiếp tiếng Anh lưu loát</li><li>Kỹ năng đàm phán</li></ul>' },
-            { title: 'Sở thích', content: '<ul><li>Đọc sách về kinh doanh</li><li>Du lịch khám phá</li><li>Chơi cờ vua</li></ul>' },
+        ],
+        rightSections: [
             { title: 'Kinh nghiệm làm việc', content: '<h3>Quản lý dự án - Công ty ABC</h3><ul><li>2018 - 2020: Dẫn dắt đội ngũ thực hiện dự án XYZ</li><li>2020 - 2022: Quản lý ngân sách và tiến độ dự án</li></ul>' },
             { title: 'Lịch sử học vấn', content: '<h3>Đại học Kinh tế TP.HCM</h3><ul><li>2014 - 2018: Cử nhân Quản trị Kinh doanh</li></ul>' },
             { title: 'Chứng chỉ', content: '<ul><li>Chứng chỉ PMP - 2020</li><li>Chứng chỉ CFA Level 1 - 2021</li></ul>' },
@@ -81,30 +83,30 @@ export default function CVEditor() {
 
             const range = selection.getRangeAt(0);
             const container = range.commonAncestorContainer;
-            
+
             // Handle list formatting
             if (command === "insertOrderedList" || command === "insertUnorderedList") {
-                const listItem = container.nodeType === Node.ELEMENT_NODE 
+                const listItem = container.nodeType === Node.ELEMENT_NODE
                     ? (container as Element).closest('li')
                     : container.parentElement?.closest('li');
-                
+
                 if (listItem) {
                     const currentList = listItem.parentElement;
                     if (currentList) {
                         const newListType = command === "insertOrderedList" ? 'ol' : 'ul';
                         const currentListType = currentList.tagName.toLowerCase();
-                        
+
                         if (newListType !== currentListType) {
                             const newList = document.createElement(newListType);
                             newList.className = currentList.className;
                             newList.style.cssText = currentList.style.cssText;
-                            
+
                             while (currentList.firstChild) {
                                 newList.appendChild(currentList.firstChild);
                             }
-                            
+
                             currentList.parentNode?.replaceChild(newList, currentList);
-                            
+
                             if (newListType === 'ol') {
                                 newList.style.listStyleType = 'decimal';
                                 newList.style.paddingLeft = '20px';
@@ -118,7 +120,7 @@ export default function CVEditor() {
                     }
                 } else {
                     document.execCommand(command, false);
-                    
+
                     if (command === "insertOrderedList") {
                         const newList = selection.anchorNode?.parentElement?.closest('ol');
                         if (newList) {
@@ -136,7 +138,7 @@ export default function CVEditor() {
             } else {
                 document.execCommand(command, false, value);
             }
-            
+
             editorRef.current.focus();
         }
     };
@@ -155,24 +157,24 @@ export default function CVEditor() {
             const selection = window.getSelection();
             if (selection && selection.rangeCount > 0) {
                 const range = selection.getRangeAt(0);
-                const listItem = range.commonAncestorContainer.nodeType === Node.ELEMENT_NODE 
+                const listItem = range.commonAncestorContainer.nodeType === Node.ELEMENT_NODE
                     ? (range.commonAncestorContainer as Element).closest('li')
                     : range.commonAncestorContainer.parentElement?.closest('li');
-                
+
                 if (listItem) {
                     const listItemText = listItem.textContent || '';
                     const cursorPosition = range.startOffset;
-                    
+
                     if (cursorPosition >= listItemText.length) {
                         const newLi = document.createElement('li');
                         listItem.parentNode?.insertBefore(newLi, listItem.nextSibling);
-                        
+
                         const newRange = document.createRange();
                         newRange.setStart(newLi, 0);
                         newRange.collapse(true);
                         selection.removeAllRanges();
                         selection.addRange(newRange);
-                        
+
                         e.preventDefault();
                     }
                 }
@@ -182,10 +184,10 @@ export default function CVEditor() {
             const selection = window.getSelection();
             if (selection && selection.rangeCount > 0) {
                 const range = selection.getRangeAt(0);
-                const listItem = range.commonAncestorContainer.nodeType === Node.ELEMENT_NODE 
+                const listItem = range.commonAncestorContainer.nodeType === Node.ELEMENT_NODE
                     ? (range.commonAncestorContainer as Element).closest('li')
                     : range.commonAncestorContainer.parentElement?.closest('li');
-                
+
                 if (listItem && (listItem.textContent || '').trim() === '') {
                     const list = listItem.parentElement;
                     if (list && (list.tagName === 'OL' || list.tagName === 'UL')) {
@@ -256,9 +258,11 @@ export default function CVEditor() {
                 const data = await response.json();
                 const textFromBackend = data.text;
                 console.log('Text from backend:', textFromBackend);
+
+                // Cập nhật section đầu tiên của leftSections (hoặc rightSections nếu cần)
                 setCvData((prev) => ({
                     ...prev,
-                    sections: prev.sections.map((section, index) =>
+                    leftSections: prev.leftSections.map((section, index) =>
                         index === 0 ? { ...section, content: textFromBackend } : section
                     ),
                 }));
@@ -556,28 +560,28 @@ export default function CVEditor() {
                         <div className="w-px h-4 bg-gray-300 mx-1" />
 
                         <div className="tooltip">
-                            <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                className="h-6 w-6 p-0 list-button" 
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-6 w-6 p-0 list-button"
                                 onClick={() => handleFormat("insertUnorderedList")}
                                 title="Danh sách không đánh số (Ctrl+Shift+8)"
                             >
                                 <List className="h-3 w-3" />
                             </Button>
-                            <span className="tooltiptext">Danh sách không đánh số<br/>Ctrl+Shift+8</span>
+                            <span className="tooltiptext">Danh sách không đánh số<br />Ctrl+Shift+8</span>
                         </div>
                         <div className="tooltip">
-                            <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                className="h-6 w-6 p-0 list-button" 
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-6 w-6 p-0 list-button"
                                 onClick={() => handleFormat("insertOrderedList")}
                                 title="Danh sách đánh số (Ctrl+Shift+7)"
                             >
                                 <ListOrdered className="h-3 w-3" />
                             </Button>
-                            <span className="tooltiptext">Danh sách đánh số<br/>Ctrl+Shift+7</span>
+                            <span className="tooltiptext">Danh sách đánh số<br />Ctrl+Shift+7</span>
                         </div>
                     </div>
                 </div>

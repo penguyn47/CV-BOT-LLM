@@ -22,7 +22,8 @@ interface CVTemplate2Props {
       instagram: string;
       address: string;
     };
-    sections: { title: string; content: string }[];
+    leftSections: { title: string; content: string }[];
+    rightSections: { title: string; content: string }[];
   };
   onContentChange: (key: keyof CVTemplate2Props['data'], value: any) => void;
   selectedFont: string;
@@ -93,48 +94,42 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
   const handleAddSection = (index: number, side: 'left' | 'right') => {
     try {
       const newSection = { title: 'Tiêu đề', content: 'Nội dung' };
-      const splitIndex = Math.ceil(data.sections.length / 2);
-      let newSections: { title: string; content: string }[];
+      let newLeftSections = [...data.leftSections];
+      let newRightSections = [...data.rightSections];
 
       if (side === 'left') {
-        // Thêm vào cột trái
-        newSections = [
-          ...data.sections.slice(0, index + 1),
-          newSection,
-          ...data.sections.slice(index + 1),
-        ];
+        newLeftSections.splice(index + 1, 0, newSection);
+        onContentChange('leftSections', newLeftSections);
       } else {
-        // Thêm vào cột phải
-        const rightIndex = index - splitIndex;
-        newSections = [
-          ...data.sections.slice(0, splitIndex),
-          ...data.sections.slice(splitIndex, splitIndex + rightIndex + 1),
-          newSection,
-          ...data.sections.slice(splitIndex + rightIndex + 1),
-        ];
+        newRightSections.splice(index + 1, 0, newSection);
+        onContentChange('rightSections', newRightSections);
       }
 
-      onContentChange('sections', newSections);
       console.log(`Đã thêm section mới vào ${side} tại vị trí ${index}`);
     } catch (error) {
       console.error('Lỗi khi thêm section:', error);
     }
   };
 
-  const handleDeleteSection = (index: number) => {
+  const handleDeleteSection = (index: number, side: 'left' | 'right') => {
     try {
-      const newSections = data.sections.filter((_, i) => i !== index);
-      onContentChange('sections', newSections);
-      console.log(`Đã xóa section tại vị trí ${index}`);
+      let newLeftSections = [...data.leftSections];
+      let newRightSections = [...data.rightSections];
+
+      if (side === 'left') {
+        newLeftSections = newLeftSections.filter((_, i) => i !== index);
+        onContentChange('leftSections', newLeftSections);
+      } else {
+        newRightSections = newRightSections.filter((_, i) => i !== index);
+        onContentChange('rightSections', newRightSections);
+      }
+
+      console.log(`Đã xóa section tại ${side}, vị trí ${index}`);
       setFocusedSection(null);
     } catch (error) {
       console.error('Lỗi khi xóa section:', error);
     }
   };
-
-  const splitIndex = Math.ceil(data.sections.length / 2);
-  const leftSections = data.sections.slice(0, splitIndex);
-  const rightSections = data.sections.slice(splitIndex);
 
   return (
     <div
@@ -268,45 +263,45 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
           style={{ height: '202mm' }}
         ></div>
         <aside className="md:w-1/3 bg-white p-6">
-          {leftSections.map((section, index) => (
+          {data.leftSections.map((section, index) => (
             <EditableSection
-              key={`section-${index}`}
-              sectionKey={`section-${index}`}
+              key={`left-section-${index}`}
+              sectionKey={`left-section-${index}`}
               title={section.title}
               content={section.content}
               defaultContent="Nội dung"
               onContentChange={(key, value) => {
-                const newSections = [...data.sections];
-                newSections[index] = value;
-                onContentChange('sections', newSections);
+                const newLeftSections = [...data.leftSections];
+                newLeftSections[index] = value;
+                onContentChange('leftSections', newLeftSections);
               }}
               onKeyDown={handleKeyDown}
               selectedFont={selectedFont}
               selectedColor={selectedColor}
               onAddSection={() => handleAddSection(index, 'left')}
-              onDeleteSection={() => handleDeleteSection(index)}
+              onDeleteSection={() => handleDeleteSection(index, 'left')}
               setFocusedSection={setFocusedSection}
             />
           ))}
         </aside>
         <main className="md:w-2/3 bg-white p-6">
-          {rightSections.map((section, index) => (
+          {data.rightSections.map((section, index) => (
             <EditableSection
-              key={`section-${splitIndex + index}`}
-              sectionKey={`section-${splitIndex + index}`}
+              key={`right-section-${index}`}
+              sectionKey={`right-section-${index}`}
               title={section.title}
               content={section.content}
               defaultContent="Nội dung"
               onContentChange={(key, value) => {
-                const newSections = [...data.sections];
-                newSections[splitIndex + index] = value;
-                onContentChange('sections', newSections);
+                const newRightSections = [...data.rightSections];
+                newRightSections[index] = value;
+                onContentChange('rightSections', newRightSections);
               }}
               onKeyDown={handleKeyDown}
               selectedFont={selectedFont}
               selectedColor={selectedColor}
-              onAddSection={() => handleAddSection(splitIndex + index, 'right')}
-              onDeleteSection={() => handleDeleteSection(splitIndex + index)}
+              onAddSection={() => handleAddSection(index, 'right')}
+              onDeleteSection={() => handleDeleteSection(index, 'right')}
               setFocusedSection={setFocusedSection}
             />
           ))}
