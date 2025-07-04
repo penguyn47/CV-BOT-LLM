@@ -298,14 +298,13 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
   ) => (
     <div
       key={index}
-      className="mx-auto bg-white shadow-lg font-sans relative body-container"
+      className=" bg-white shadow-lg font-sans relative body-container"
       style={{
         fontFamily: selectedFont,
         width: '210mm',
         height: index === 0 ? '202mm' : '297mm',
         minHeight: index === 0 ? '202mm' : '297mm',
         maxWidth: '210mm',
-        margin: index === 0 ? '0 auto' : '20mm auto',
         padding: '0',
         boxSizing: 'border-box',
       }}

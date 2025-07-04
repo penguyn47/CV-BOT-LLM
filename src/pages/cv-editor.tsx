@@ -73,7 +73,7 @@ export default function CVEditor() {
         { id: "reference", label: "CV tham khảo", icon: "📋", contentType: null },
         { id: "preview", label: "Xem trước", icon: "👁️", contentType: null },
         { id: "save", label: "Lưu CV", icon: "💾", contentType: null },
-        { id: "download", label: "*Tải xuống", icon: "⬇️", contentType: null },
+        { id: "download", label: "Tải xuống", icon: "⬇️", contentType: null },
     ];
 
     const handleFormat = (command: string, value?: string) => {
@@ -380,7 +380,15 @@ export default function CVEditor() {
     };
 
     const handleDownloadPDF = async () => {
-        if (!cvTemplateRef.current || !mainPageRef.current) return;
+        console.log('handleDownloadPDF called');
+        console.log('cvTemplateRef.current:', cvTemplateRef.current);
+        console.log('mainPageRef.current:', mainPageRef.current);
+        console.log('extraPageRefs.current:', extraPageRefs.current);
+
+        if (!cvTemplateRef.current || !mainPageRef.current) {
+            console.error('Error: cvTemplateRef or mainPageRef is null');
+            return;
+        }
 
         try {
             const pdf = new jsPDF({
@@ -393,6 +401,7 @@ export default function CVEditor() {
 
             // Chụp trang đầu tiên
             const mainPage = mainPageRef.current;
+            console.log('Processing main page:', mainPage);
             let tempStyle = overrideOklchColors(mainPage);
             cleanOklchStyles(mainPage);
 
@@ -401,6 +410,8 @@ export default function CVEditor() {
                 useCORS: true,
                 backgroundColor: '#FFFFFF',
                 logging: true,
+                windowWidth: 210 * 3.779527559, // 210mm in pixels
+                windowHeight: 297 * 3.779527559, // 297mm in pixels
             });
 
             tempStyle.remove();
@@ -413,6 +424,7 @@ export default function CVEditor() {
             for (let i = 1; i < extraPageRefs.current.length; i++) {
                 const extraPage = extraPageRefs.current[i];
                 if (extraPage) {
+                    console.log(`Processing extra page ${i}:`, extraPage);
                     tempStyle = overrideOklchColors(extraPage);
                     cleanOklchStyles(extraPage);
 
@@ -421,6 +433,8 @@ export default function CVEditor() {
                         useCORS: true,
                         backgroundColor: '#FFFFFF',
                         logging: true,
+                        windowWidth: 210 * 3.779527559, // 210mm in pixels
+                        windowHeight: 297 * 3.779527559, // 297mm in pixels
                     });
 
                     tempStyle.remove();
@@ -433,9 +447,10 @@ export default function CVEditor() {
                 }
             }
 
+            console.log('Saving PDF...');
             pdf.save('cv-preview.pdf');
         } catch (error) {
-            console.error('Lỗi khi tạo PDF:', error);
+            console.error('Error generating PDF:', error);
         }
     };
 
@@ -492,7 +507,7 @@ export default function CVEditor() {
                             ✕
                         </Button>
                     </div>
-                    <div className="flex-1 overflow-y-auto p-8 bg-gray-900/90 flex flex-col items-center gap-8">
+                    <div className="flex-1 overflow-y-auto p-8 bg-gray Chainsaw Man/90 flex flex-col items-center gap-8">
                         <div ref={cvTemplateRef} className="flex flex-col gap-8 w-[210mm]">
                             {renderTemplate()}
                         </div>
@@ -509,7 +524,7 @@ export default function CVEditor() {
                                 variant={item.active ? "default" : "ghost"}
                                 size="sm"
                                 className={`flex items-center gap-2 ${item.highlight ? "bg-red-500 hover:bg-red-600 text-white" : ""} ${item.active ? "bg-blue-500 hover:bg-blue-600" : ""}`}
-                                onClick={() => handleNavClick(item.contentType)}
+                                onClick={item.id === 'download' ? handleDownloadPDF : () => handleNavClick(item.contentType)}
                             >
                                 <span>{item.icon}</span>
                                 {item.label}
@@ -624,9 +639,12 @@ export default function CVEditor() {
 
                     <div
                         ref={editorRef}
-                        className={`flex-1 flex justify-center transition-all duration-300 ${isLeftSidebarOpen ? "pl-100" : ""} ${isRightSidebarOpen ? "pr-100" : ""}`}
+                        className={`flex-1 flex justify-center transition-all duration-300 ${isLeftSidebarOpen ? "pl-80" : ""} ${isRightSidebarOpen ? "pr-80" : ""}`}
                     >
-                        <div className="max-w-4xl w-full pb-20">
+                        <div
+                            ref={cvTemplateRef}
+                            className="flex flex-col gap-20 w-[210mm] max-w-[210mm] bg-white pb-20" // Thêm pb-20
+                        >
                             {renderTemplate()}
                         </div>
                     </div>
