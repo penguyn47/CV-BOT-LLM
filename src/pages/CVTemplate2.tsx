@@ -219,27 +219,37 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
 
   const handleSectionContentChange = (sectionId: string, side: 'left' | 'right', value: { title: string; content: string }, pageIndex: number) => {
     try {
-      if (pageIndex === 0) {
-        let newLeftSections = [...data.leftSections];
-        let newRightSections = [...data.rightSections];
+      // Luôn cập nhật dữ liệu gốc
+      let newLeftSections = [...data.leftSections];
+      let newRightSections = [...data.rightSections];
 
-        if (side === 'left') {
-          const sectionIndex = newLeftSections.findIndex((s) => s.id === sectionId);
+      if (side === 'left') {
+        const sectionIndex = newLeftSections.findIndex((s) => s.id === sectionId);
+        if (sectionIndex !== -1) {
           newLeftSections[sectionIndex] = { ...newLeftSections[sectionIndex], ...value };
           onContentChange('leftSections', newLeftSections);
-        } else {
-          const sectionIndex = newRightSections.findIndex((s) => s.id === sectionId);
+        }
+      } else {
+        const sectionIndex = newRightSections.findIndex((s) => s.id === sectionId);
+        if (sectionIndex !== -1) {
           newRightSections[sectionIndex] = { ...newRightSections[sectionIndex], ...value };
           onContentChange('rightSections', newRightSections);
         }
-      } else {
-        const newPages = [...pages];
+      }
+
+      // Cập nhật state pages để đồng bộ ngay lập tức
+      const newPages = [...pages];
+      if (pageIndex > 0) {
         if (side === 'left') {
           const sectionIndex = newPages[pageIndex].leftSections.findIndex((s) => s.id === sectionId);
-          newPages[pageIndex].leftSections[sectionIndex] = { ...newPages[pageIndex].leftSections[sectionIndex], ...value };
+          if (sectionIndex !== -1) {
+            newPages[pageIndex].leftSections[sectionIndex] = { ...newPages[pageIndex].leftSections[sectionIndex], ...value };
+          }
         } else {
           const sectionIndex = newPages[pageIndex].rightSections.findIndex((s) => s.id === sectionId);
-          newPages[pageIndex].rightSections[sectionIndex] = { ...newPages[pageIndex].rightSections[sectionIndex], ...value };
+          if (sectionIndex !== -1) {
+            newPages[pageIndex].rightSections[sectionIndex] = { ...newPages[pageIndex].rightSections[sectionIndex], ...value };
+          }
         }
         setPages(newPages);
       }
