@@ -115,6 +115,8 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
     let currentLeftHeight = 0;
     let currentRightHeight = 0;
     let currentPageIndex = 0;
+    let leftIndex = 0;
+    let rightIndex = 0;
 
     const addSectionToPage = (section: { id: string; title: string; content: string }, side: 'left' | 'right') => {
       const height = estimateSectionHeight(section);
@@ -123,7 +125,7 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
       if (side === 'left') {
         if (currentLeftHeight + height > maxHeight) {
           currentPageIndex++;
-          newPages.push({ leftSections: [], rightSections: newPages[currentPageIndex - 1].rightSections });
+          newPages.push({ leftSections: [], rightSections: [] }); // Khởi tạo trang mới với cả hai bên rỗng
           currentLeftHeight = 0;
         }
         newPages[currentPageIndex].leftSections.push(section);
@@ -131,7 +133,7 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
       } else {
         if (currentRightHeight + height > maxHeight) {
           currentPageIndex++;
-          newPages.push({ leftSections: newPages[currentPageIndex - 1].leftSections, rightSections: [] });
+          newPages.push({ leftSections: [], rightSections: [] }); // Khởi tạo trang mới với cả hai bên rỗng
           currentRightHeight = 0;
         }
         newPages[currentPageIndex].rightSections.push(section);
@@ -139,9 +141,7 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
       }
     };
 
-    let leftIndex = 0;
-    let rightIndex = 0;
-
+    // Phân phối các section lần lượt
     while (leftIndex < data.leftSections.length || rightIndex < data.rightSections.length) {
       if (leftIndex < data.leftSections.length) {
         addSectionToPage(data.leftSections[leftIndex], 'left');
@@ -153,11 +153,14 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
       }
     }
 
-    // Only update pages if they have content
-    if (newPages[newPages.length - 1].leftSections.length > 0 || newPages[newPages.length - 1].rightSections.length > 0) {
-      setPages(newPages);
-    } else {
+    // Loại bỏ trang trống cuối cùng
+    if (
+      newPages[newPages.length - 1].leftSections.length === 0 &&
+      newPages[newPages.length - 1].rightSections.length === 0
+    ) {
       setPages(newPages.slice(0, -1));
+    } else {
+      setPages(newPages);
     }
   };
 
