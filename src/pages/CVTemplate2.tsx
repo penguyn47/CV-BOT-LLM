@@ -186,19 +186,21 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
 
   const handleDeleteSection = (sectionId: string, side: 'left' | 'right', pageIndex: number) => {
     try {
-      if (pageIndex === 0) {
-        let newLeftSections = [...data.leftSections];
-        let newRightSections = [...data.rightSections];
+      // Luôn cập nhật dữ liệu gốc
+      let newLeftSections = [...data.leftSections];
+      let newRightSections = [...data.rightSections];
 
-        if (side === 'left') {
-          newLeftSections = newLeftSections.filter((s) => s.id !== sectionId);
-          onContentChange('leftSections', newLeftSections);
-        } else {
-          newRightSections = newRightSections.filter((s) => s.id !== sectionId);
-          onContentChange('rightSections', newRightSections);
-        }
+      if (side === 'left') {
+        newLeftSections = newLeftSections.filter((s) => s.id !== sectionId);
+        onContentChange('leftSections', newLeftSections);
       } else {
-        const newPages = [...pages];
+        newRightSections = newRightSections.filter((s) => s.id !== sectionId);
+        onContentChange('rightSections', newRightSections);
+      }
+
+      // Cập nhật state pages
+      const newPages = [...pages];
+      if (pageIndex > 0) {
         if (side === 'left') {
           newPages[pageIndex].leftSections = newPages[pageIndex].leftSections.filter((s) => s.id !== sectionId);
         } else {
