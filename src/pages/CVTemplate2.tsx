@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FaPhone, FaFax, FaEnvelope, FaFacebook, FaInstagram, FaMapMarkerAlt } from 'react-icons/fa';
 import EditableSection from '@/components/EditableSection';
+import { v4 as uuidv4 } from 'uuid'; // Thêm import uuid
 
 const debounce = (func: (...args: any[]) => void, delay: number) => {
   let timeoutId: NodeJS.Timeout;
@@ -22,8 +23,8 @@ interface CVTemplate2Props {
       instagram: string;
       address: string;
     };
-    leftSections: { title: string; content: string }[];
-    rightSections: { title: string; content: string }[];
+    leftSections: { id: string; title: string; content: string }[];
+    rightSections: { id: string; title: string; content: string }[];
   };
   onContentChange: (key: keyof CVTemplate2Props['data'], value: any) => void;
   selectedFont: string;
@@ -91,40 +92,42 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
     }
   };
 
-  const handleAddSection = (index: number, side: 'left' | 'right') => {
+  const handleAddSection = (sectionId: string, side: 'left' | 'right') => {
     try {
-      const newSection = { title: 'Tiêu đề', content: 'Nội dung' };
+      const newSection = { id: uuidv4(), title: 'Tiêu đề', content: 'Nội dung' }; // Sử dụng uuid để tạo ID
       let newLeftSections = [...data.leftSections];
       let newRightSections = [...data.rightSections];
 
       if (side === 'left') {
+        const index = newLeftSections.findIndex((s) => s.id === sectionId);
         newLeftSections.splice(index + 1, 0, newSection);
         onContentChange('leftSections', newLeftSections);
       } else {
+        const index = newRightSections.findIndex((s) => s.id === sectionId);
         newRightSections.splice(index + 1, 0, newSection);
         onContentChange('rightSections', newRightSections);
       }
 
-      console.log(`Đã thêm section mới vào ${side} tại vị trí ${index}`);
+      console.log(`Đã thêm section mới vào ${side} tại vị trí sau section ${sectionId}`);
     } catch (error) {
       console.error('Lỗi khi thêm section:', error);
     }
   };
 
-  const handleDeleteSection = (index: number, side: 'left' | 'right') => {
+  const handleDeleteSection = (sectionId: string, side: 'left' | 'right') => {
     try {
       let newLeftSections = [...data.leftSections];
       let newRightSections = [...data.rightSections];
 
       if (side === 'left') {
-        newLeftSections = newLeftSections.filter((_, i) => i !== index);
+        newLeftSections = newLeftSections.filter((s) => s.id !== sectionId);
         onContentChange('leftSections', newLeftSections);
       } else {
-        newRightSections = newRightSections.filter((_, i) => i !== index);
+        newRightSections = newRightSections.filter((s) => s.id !== sectionId);
         onContentChange('rightSections', newRightSections);
       }
 
-      console.log(`Đã xóa section tại ${side}, vị trí ${index}`);
+      console.log(`Đã xóa section tại ${side}, id ${sectionId}`);
       setFocusedSection(null);
     } catch (error) {
       console.error('Lỗi khi xóa section:', error);
@@ -263,45 +266,47 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
           style={{ height: '202mm' }}
         ></div>
         <aside className="md:w-1/3 bg-white p-6">
-          {data.leftSections.map((section, index) => (
+          {data.leftSections.map((section) => (
             <EditableSection
-              key={`left-section-${index}`}
-              sectionKey={`left-section-${index}`}
+              key={section.id} // Sử dụng section.id làm key
+              sectionKey={section.id}
               title={section.title}
               content={section.content}
               defaultContent="Nội dung"
               onContentChange={(key, value) => {
                 const newLeftSections = [...data.leftSections];
-                newLeftSections[index] = value;
+                const sectionIndex = newLeftSections.findIndex((s) => s.id === section.id);
+                newLeftSections[sectionIndex] = { ...newLeftSections[sectionIndex], ...value };
                 onContentChange('leftSections', newLeftSections);
               }}
               onKeyDown={handleKeyDown}
               selectedFont={selectedFont}
               selectedColor={selectedColor}
-              onAddSection={() => handleAddSection(index, 'left')}
-              onDeleteSection={() => handleDeleteSection(index, 'left')}
+              onAddSection={() => handleAddSection(section.id, 'left')}
+              onDeleteSection={() => handleDeleteSection(section.id, 'left')}
               setFocusedSection={setFocusedSection}
             />
           ))}
         </aside>
         <main className="md:w-2/3 bg-white p-6">
-          {data.rightSections.map((section, index) => (
+          {data.rightSections.map((section) => (
             <EditableSection
-              key={`right-section-${index}`}
-              sectionKey={`right-section-${index}`}
+              key={section.id} // Sử dụng section.id làm key
+              sectionKey={section.id}
               title={section.title}
               content={section.content}
               defaultContent="Nội dung"
               onContentChange={(key, value) => {
                 const newRightSections = [...data.rightSections];
-                newRightSections[index] = value;
+                const sectionIndex = newRightSections.findIndex((s) => s.id === section.id);
+                newRightSections[sectionIndex] = { ...newRightSections[sectionIndex], ...value };
                 onContentChange('rightSections', newRightSections);
               }}
               onKeyDown={handleKeyDown}
               selectedFont={selectedFont}
               selectedColor={selectedColor}
-              onAddSection={() => handleAddSection(index, 'right')}
-              onDeleteSection={() => handleDeleteSection(index, 'right')}
+              onAddSection={() => handleAddSection(section.id, 'right')}
+              onDeleteSection={() => handleDeleteSection(section.id, 'right')}
               setFocusedSection={setFocusedSection}
             />
           ))}

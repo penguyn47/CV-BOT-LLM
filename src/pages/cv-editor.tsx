@@ -25,6 +25,7 @@ import RightSidebar from "@/components/RightSidebar";
 import LeftSidebar from "@/components/LeftSidebar";
 import html2canvas from "html2canvas-pro";
 import { jsPDF } from "jspdf";
+import { v4 as uuidv4 } from 'uuid'; // Thêm import uuid
 
 // Giả lập CVTemplate1 cho khả năng chuyển đổi template
 const CVTemplate1 = () => <div>Template 1 Placeholder</div>;
@@ -37,7 +38,6 @@ export default function CVEditor() {
     const [activeContent, setActiveContent] = useState<string | null>(null);
     const [isPreviewMode, setIsPreviewMode] = useState(false);
     const [selectedColor, setSelectedColor] = useState("#FF6B35");
-    // Trong cv-editor.tsx
     const [cvData, setCvData] = useState({
         name: 'Họ và Tên',
         subtitle: 'Quản Trị Kinh Doanh',
@@ -51,14 +51,14 @@ export default function CVEditor() {
             address: '123 Đường ABC, Quận 1, TP.HCM',
         },
         leftSections: [
-            { title: 'Mục tiêu nghề nghiệp', content: 'Định hướng trở thành một chuyên gia trong lĩnh vực quản trị kinh doanh, đóng góp vào sự phát triển chiến của công ty.' },
-            { title: 'Lĩnh vực chuyên môn', content: '<ul><li>Quản trị kinh doanh</li><li>Phân tích tài chính</li><li>Quản lý dự án</li></ul>' },
-            { title: 'Kỹ năng khác', content: '<ul><li>Thành thạo Microsoft Office</li><li>Giao tiếp tiếng Anh lưu loát</li><li>Kỹ năng đàm phán</li></ul>' },
+            { id: uuidv4(), title: 'Mục tiêu nghề nghiệp', content: 'Định hướng trở thành một chuyên gia trong lĩnh vực quản trị kinh doanh, đóng góp vào sự phát triển chiến lược của công ty.' },
+            { id: uuidv4(), title: 'Lĩnh vực chuyên môn', content: '<ul><li>Quản trị kinh doanh</li><li>Phân tích tài chính</li><li>Quản lý dự án</li></ul>' },
+            { id: uuidv4(), title: 'Kỹ năng khác', content: '<ul><li>Thành thạo Microsoft Office</li><li>Giao tiếp tiếng Anh lưu loát</li><li>Kỹ năng đàm phán</li></ul>' },
         ],
         rightSections: [
-            { title: 'Kinh nghiệm làm việc', content: '<h3>Quản lý dự án - Công ty ABC</h3><ul><li>2018 - 2020: Dẫn dắt đội ngũ thực hiện dự án XYZ</li><li>2020 - 2022: Quản lý ngân sách và tiến độ dự án</li></ul>' },
-            { title: 'Lịch sử học vấn', content: '<h3>Đại học Kinh tế TP.HCM</h3><ul><li>2014 - 2018: Cử nhân Quản trị Kinh doanh</li></ul>' },
-            { title: 'Chứng chỉ', content: '<ul><li>Chứng chỉ PMP - 2020</li><li>Chứng chỉ CFA Level 1 - 2021</li></ul>' },
+            { id: uuidv4(), title: 'Kinh nghiệm làm việc', content: '<h3>Quản lý dự án - Công ty ABC</h3><ul><li>2018 - 2020: Dẫn dắt đội ngũ thực hiện dự án XYZ</li><li>2020 - 2022: Quản lý ngân sách và tiến độ dự án</li></ul>' },
+            { id: uuidv4(), title: 'Lịch sử học vấn', content: '<h3>Đại học Kinh tế TP.HCM</h3><ul><li>2014 - 2018: Cử nhân Quản trị Kinh doanh</li></ul>' },
+            { id: uuidv4(), title: 'Chứng chỉ', content: '<ul><li>Chứng chỉ PMP - 2020</li><li>Chứng chỉ CFA Level 1 - 2021</li></ul>' },
         ],
     });
 
@@ -72,7 +72,7 @@ export default function CVEditor() {
         { id: "reference", label: "CV tham khảo", icon: "📋", contentType: null },
         { id: "preview", label: "Xem trước", icon: "👁️", contentType: null },
         { id: "save", label: "Lưu CV", icon: "💾", contentType: null },
-        { id: "download", label: "Tải xuống", icon: "⬇️", contentType: null },
+        { id: "download", label: "*Tải xuống", icon: "⬇️", contentType: null },
     ];
 
     // Enhanced handleFormat function with better list support
@@ -336,7 +336,7 @@ export default function CVEditor() {
         --primary-foreground: #1F2937;
         --secondary: #4B5563;
         --secondary-foreground: #F9FAFB;
-        -- --muted: #4B5563;
+        --muted: #4B5563;
         --muted-foreground: #9CA3AF;
         --accent: #4B5563;
         --accent-foreground: #F9FAFB;
@@ -394,7 +394,7 @@ export default function CVEditor() {
                     scale: 2,
                     useCORS: true,
                     backgroundColor: '#FFFFFF',
-                    logging: true,
+                    logging: true,  
                 });
 
                 tempStyle.remove();
