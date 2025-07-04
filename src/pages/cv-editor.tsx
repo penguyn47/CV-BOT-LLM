@@ -27,7 +27,6 @@ import html2canvas from "html2canvas-pro";
 import { jsPDF } from "jspdf";
 import { v4 as uuidv4 } from 'uuid';
 
-// Giả lập CVTemplate1 cho khả năng chuyển đổi template
 const CVTemplate1 = () => <div>Template 1 Placeholder</div>;
 
 export default function CVEditor() {
@@ -64,7 +63,7 @@ export default function CVEditor() {
 
     const editorRef = useRef<HTMLDivElement>(null);
     const cvTemplateRef = useRef<HTMLDivElement>(null);
-    const mainPageRef = useRef<HTMLDivElement>(null);
+    const mainPageRef = useRef<HTMLDivElement | null>(null);
     const extraPageRefs = useRef<(HTMLDivElement | null)[]>([]);
 
     const navItems = [
@@ -77,7 +76,6 @@ export default function CVEditor() {
         { id: "download", label: "*Tải xuống", icon: "⬇️", contentType: null },
     ];
 
-    // Enhanced handleFormat function with better list support
     const handleFormat = (command: string, value?: string) => {
         if (editorRef.current) {
             const selection = window.getSelection();
@@ -86,7 +84,6 @@ export default function CVEditor() {
             const range = selection.getRangeAt(0);
             const container = range.commonAncestorContainer;
 
-            // Handle list formatting
             if (command === "insertOrderedList" || command === "insertUnorderedList") {
                 const listItem = container.nodeType === Node.ELEMENT_NODE
                     ? (container as Element).closest('li')
@@ -145,7 +142,6 @@ export default function CVEditor() {
         }
     };
 
-    // Enhanced keyboard shortcuts for list formatting
     const handleKeyDown = (e: KeyboardEvent) => {
         if (e.ctrlKey && e.shiftKey && e.key === '7') {
             e.preventDefault();
@@ -307,7 +303,7 @@ export default function CVEditor() {
         --muted: #F3F4F6;
         --muted-foreground: #6B7280;
         --accent: #F3F4F6;
-        --accent-foreground:: #1F2937;
+        --accent-foreground: #1F2937;
         --destructive: #EF4444;
         --border: #E5E7EB;
         --input: #E5E7EB;
@@ -395,7 +391,7 @@ export default function CVEditor() {
 
             const pageWidth = pdf.internal.pageSize.getWidth();
 
-            // Chụp trang đầu tiên (bao gồm tiêu đề và body)
+            // Chụp trang đầu tiên
             const mainPage = mainPageRef.current;
             let tempStyle = overrideOklchColors(mainPage);
             cleanOklchStyles(mainPage);
@@ -413,7 +409,7 @@ export default function CVEditor() {
             const mainImgHeight = (mainCanvas.height * pageWidth) / mainCanvas.width;
             pdf.addImage(mainImgData, 'PNG', 0, 0, pageWidth, mainImgHeight);
 
-            // Chụp các trang bổ sung (bắt đầu từ index 1 để bỏ qua body của trang đầu tiên nếu cần)
+            // Chụp các trang bổ sung
             for (let i = 1; i < extraPageRefs.current.length; i++) {
                 const extraPage = extraPageRefs.current[i];
                 if (extraPage) {
@@ -496,11 +492,8 @@ export default function CVEditor() {
                             ✕
                         </Button>
                     </div>
-                    <div className="flex-1 overflow-y-auto p-6 pt-12 pb-20 bg-gray-900/90 flex justify-center items-start gap-4">
-                        <div
-                            ref={cvTemplateRef}
-                            className="w-[210mm] bg-white shadow-lg"
-                        >
+                    <div className="flex-1 overflow-y-auto p-8 bg-gray-900/90 flex flex-col items-center gap-8">
+                        <div ref={cvTemplateRef} className="flex flex-col gap-8 w-[210mm]">
                             {renderTemplate()}
                         </div>
                     </div>
