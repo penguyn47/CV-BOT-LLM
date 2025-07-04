@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { FiPlus, FiTrash2 } from 'react-icons/fi';
 
 const debounce = (func: (...args: any[]) => void, delay: number) => {
@@ -40,30 +40,6 @@ export default function EditableSection({
     const contentRef = useRef<HTMLDivElement>(null);
     const sectionRef = useRef<HTMLDivElement>(null);
 
-    const saveCursorPosition = (element: HTMLElement) => {
-        const selection = window.getSelection();
-        if (selection && selection.rangeCount > 0) {
-            const range = selection.getRangeAt(0);
-            return { startContainer: range.startContainer, startOffset: range.startOffset };
-        }
-        return null;
-    };
-
-    const restoreCursorPosition = (element: HTMLElement, position: any) => {
-        if (position && element.contains(position.startContainer)) {
-            const range = document.createRange();
-            try {
-                range.setStart(position.startContainer, position.startOffset);
-                range.collapse(true);
-                const selection = window.getSelection();
-                selection?.removeAllRanges();
-                selection?.addRange(range);
-            } catch (error) {
-                console.warn('Không thể khôi phục vị trí con trỏ:', error);
-            }
-        }
-    };
-
     const handleTitleChange = (e: React.FocusEvent<HTMLDivElement>) => {
         const text = e.currentTarget.textContent?.trim() || title;
         onContentChange(sectionKey, { title: text, content });
@@ -72,7 +48,11 @@ export default function EditableSection({
     const handleContentChange = debounce((e: React.FormEvent<HTMLDivElement>) => {
         try {
             const element = e.currentTarget;
-            const contentText = element.textContent?.trim() || '';
+            if (!element) {
+                console.warn('Element is null in handleContentChange');
+                return;
+            }
+            const contentText = element.innerHTML.trim() || defaultContent;
             onContentChange(sectionKey, { title, content: contentText });
             console.log('Cập nhật dữ liệu:', sectionKey, { title, content: contentText });
         } catch (error) {
@@ -98,6 +78,58 @@ export default function EditableSection({
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
+
+    // Memoize renderContent để tránh tái render không cần thiết
+    const renderedContent = useMemo(() => {
+        if (!content || content === defaultContent) {
+            return (
+                <div className="text-sm text-gray-700" style={{ color: selectedColor }}>
+                    {content || defaultContent}
+                </div>
+            );
+        }
+
+        try {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(content, 'text/html');
+            const list = doc.querySelector('ul') || doc.querySelector('ol');
+            const heading = doc.querySelector('h3');
+
+            if (list) {
+                const items = Array.from(list.children).map((li, index) => (
+                    <li key={index}>{li.textContent}</li>
+                ));
+                return list.tagName === 'UL' ? (
+                    <ul className="text-sm text-gray-700" style={{ color: selectedColor }}>
+                        {items}
+                    </ul>
+                ) : (
+                    <ol className="text-sm text-gray-700" style={{ color: selectedColor }}>
+                        {items}
+                    </ol>
+                );
+            } else if (heading) {
+                return (
+                    <div className="text-sm text-gray-700" style={{ color: selectedColor }}>
+                        <h3>{heading.textContent}</h3>
+                        {Array.from(doc.body.children)
+                            .filter((child) => child !== heading)
+                            .map((child, index) => (
+                                <div key={index} dangerouslySetInnerHTML={{ __html: child.outerHTML }} />
+                            ))}
+                    </div>
+                );
+            }
+        } catch (error) {
+            console.error('Lỗi khi parse HTML:', error);
+        }
+
+        return (
+            <div className="text-sm text-gray-700" style={{ color: selectedColor }}>
+                {content}
+            </div>
+        );
+    }, [content, defaultContent, selectedColor]);
 
     return (
         <section className="mb-6 relative" style={{ fontFamily: selectedFont }} ref={sectionRef}>
@@ -130,16 +162,13 @@ export default function EditableSection({
                 contentEditable
                 suppressContentEditableWarning
                 className="text-sm text-gray-700"
-                onInput={(e) => {
-                    const position = saveCursorPosition(e.currentTarget);
-                    handleContentChange(e);
-                    if (position) setTimeout(() => restoreCursorPosition(e.currentTarget, position), 0);
-                }}
+                onInput={handleContentChange}
                 onKeyDown={onKeyDown}
                 onFocus={handleFocus}
                 style={{ color: selectedColor }}
-                dangerouslySetInnerHTML={{ __html: content || defaultContent }}
-            />
+            >
+                {renderedContent}
+            </div>
         </section>
     );
 }
