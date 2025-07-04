@@ -25,7 +25,7 @@ import RightSidebar from "@/components/RightSidebar";
 import LeftSidebar from "@/components/LeftSidebar";
 import html2canvas from "html2canvas-pro";
 import { jsPDF } from "jspdf";
-import { v4 as uuidv4 } from 'uuid'; // Thêm import uuid
+import { v4 as uuidv4 } from 'uuid';
 
 // Giả lập CVTemplate1 cho khả năng chuyển đổi template
 const CVTemplate1 = () => <div>Template 1 Placeholder</div>;
@@ -64,6 +64,8 @@ export default function CVEditor() {
 
     const editorRef = useRef<HTMLDivElement>(null);
     const cvTemplateRef = useRef<HTMLDivElement>(null);
+    const mainPageRef = useRef<HTMLDivElement>(null);
+    const extraPageRefs = useRef<(HTMLDivElement | null)[]>([]);
 
     const navItems = [
         { id: "color", label: "Đổi màu CV", icon: "🎨", contentType: "color" },
@@ -259,7 +261,6 @@ export default function CVEditor() {
                 const textFromBackend = data.text;
                 console.log('Text from backend:', textFromBackend);
 
-                // Cập nhật section đầu tiên của leftSections (hoặc rightSections nếu cần)
                 setCvData((prev) => ({
                     ...prev,
                     leftSections: prev.leftSections.map((section, index) =>
@@ -306,7 +307,7 @@ export default function CVEditor() {
         --muted: #F3F4F6;
         --muted-foreground: #6B7280;
         --accent: #F3F4F6;
-        --accent-foreground: #1F2937;
+        --accent-foreground:: #1F2937;
         --destructive: #EF4444;
         --border: #E5E7EB;
         --input: #E5E7EB;
@@ -383,39 +384,62 @@ export default function CVEditor() {
     };
 
     const handleDownloadPDF = async () => {
-        if (cvTemplateRef.current) {
-            try {
-                const oldClass = cvTemplateRef.current.className;
-                cvTemplateRef.current.className = "w-[210mm] h-[297mm] bg-white shadow-lg";
-                const tempStyle = overrideOklchColors(cvTemplateRef.current);
-                cleanOklchStyles(cvTemplateRef.current);
+        if (!cvTemplateRef.current || !mainPageRef.current) return;
 
-                const canvas = await html2canvas(cvTemplateRef.current, {
-                    scale: 2,
-                    useCORS: true,
-                    backgroundColor: '#FFFFFF',
-                    logging: true,  
-                });
+        try {
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4',
+            });
 
-                tempStyle.remove();
-                cvTemplateRef.current.className = oldClass;
+            const pageWidth = pdf.internal.pageSize.getWidth();
 
-                const imgData = canvas.toDataURL('image/png');
-                const pdf = new jsPDF({
-                    orientation: 'portrait',
-                    unit: 'mm',
-                    format: 'a4'
-                });
+            // Chụp trang đầu tiên (bao gồm tiêu đề và body)
+            const mainPage = mainPageRef.current;
+            let tempStyle = overrideOklchColors(mainPage);
+            cleanOklchStyles(mainPage);
 
-                const pageWidth = pdf.internal.pageSize.getWidth();
-                const imgWidth = pageWidth;
-                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            const mainCanvas = await html2canvas(mainPage, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: '#FFFFFF',
+                logging: true,
+            });
 
-                pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-                pdf.save('cv-preview.pdf');
-            } catch (error) {
-                console.error('Lỗi khi tạo PDF:', error);
+            tempStyle.remove();
+
+            const mainImgData = mainCanvas.toDataURL('image/png');
+            const mainImgHeight = (mainCanvas.height * pageWidth) / mainCanvas.width;
+            pdf.addImage(mainImgData, 'PNG', 0, 0, pageWidth, mainImgHeight);
+
+            // Chụp các trang bổ sung (bắt đầu từ index 1 để bỏ qua body của trang đầu tiên nếu cần)
+            for (let i = 1; i < extraPageRefs.current.length; i++) {
+                const extraPage = extraPageRefs.current[i];
+                if (extraPage) {
+                    tempStyle = overrideOklchColors(extraPage);
+                    cleanOklchStyles(extraPage);
+
+                    const extraCanvas = await html2canvas(extraPage, {
+                        scale: 2,
+                        useCORS: true,
+                        backgroundColor: '#FFFFFF',
+                        logging: true,
+                    });
+
+                    tempStyle.remove();
+
+                    const extraImgData = extraCanvas.toDataURL('image/png');
+                    const extraImgHeight = (extraCanvas.height * pageWidth) / extraCanvas.width;
+
+                    pdf.addPage();
+                    pdf.addImage(extraImgData, 'PNG', 0, 0, pageWidth, extraImgHeight);
+                }
             }
+
+            pdf.save('cv-preview.pdf');
+        } catch (error) {
+            console.error('Lỗi khi tạo PDF:', error);
         }
     };
 
@@ -428,6 +452,8 @@ export default function CVEditor() {
                         onContentChange={handleContentChange}
                         selectedFont={selectedFont}
                         selectedColor={selectedColor}
+                        mainPageRef={mainPageRef}
+                        extraPageRefs={extraPageRefs}
                     />
                 );
             default:
@@ -437,6 +463,8 @@ export default function CVEditor() {
                         onContentChange={handleContentChange}
                         selectedFont={selectedFont}
                         selectedColor={selectedColor}
+                        mainPageRef={mainPageRef}
+                        extraPageRefs={extraPageRefs}
                     />
                 );
         }
@@ -471,8 +499,7 @@ export default function CVEditor() {
                     <div className="flex-1 overflow-y-auto p-6 pt-12 pb-20 bg-gray-900/90 flex justify-center items-start gap-4">
                         <div
                             ref={cvTemplateRef}
-                            className="w-[210mm] h-[297mm] bg-white shadow-lg"
-                            style={{ aspectRatio: '210 / 297' }}
+                            className="w-[210mm] bg-white shadow-lg"
                         >
                             {renderTemplate()}
                         </div>

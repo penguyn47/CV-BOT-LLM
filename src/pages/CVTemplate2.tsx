@@ -21,6 +21,8 @@ interface CVTemplate2Props {
   onContentChange: (key: keyof CVTemplate2Props['data'], value: any) => void;
   selectedFont: string;
   selectedColor: string;
+  mainPageRef: React.RefObject<HTMLDivElement | null>;
+  extraPageRefs: React.MutableRefObject<(HTMLDivElement | null)[]>;
 }
 
 interface Page {
@@ -28,22 +30,19 @@ interface Page {
   rightSections: { id: string; title: string; content: string }[];
 }
 
-export default function CVTemplate2({ data, onContentChange, selectedFont, selectedColor }: CVTemplate2Props) {
+export default function CVTemplate2({ data, onContentChange, selectedFont, selectedColor, mainPageRef, extraPageRefs }: CVTemplate2Props) {
   if (!data) {
     console.error('Dữ liệu CV không tồn tại');
     return <div className="p-4 text-red-500">Lỗi: Dữ liệu CV không tồn tại</div>;
   }
 
   const [focusedSection, setFocusedSection] = useState<string | null>(null);
-  // Sao chép sâu dữ liệu để tránh tham chiếu trực tiếp
   const [pages, setPages] = useState<Page[]>([
     {
       leftSections: data.leftSections.map((s) => ({ ...s })),
       rightSections: data.rightSections.map((s) => ({ ...s })),
     },
   ]);
-  const mainPageRef = useRef<HTMLDivElement>(null);
-  const extraPageRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const MAX_PAGE_HEIGHT = 115 * 3.779527559; // 202mm for first page body
   const MAX_PAGE_HEIGHT_SUBSEQUENT = 213 * 3.779527559; // 297mm for subsequent pages
@@ -131,7 +130,6 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
     };
 
     const addSectionToPage = (section: { id: string; title: string; content: string }, side: 'left' | 'right') => {
-      // Lấy section từ pages nếu đã tồn tại, nếu không thì dùng section từ data
       const existingSection = findSectionInPages(section.id, side) || { ...section };
       const height = estimateSectionHeight(existingSection);
       const maxHeight = currentPageIndex === 0 ? MAX_PAGE_HEIGHT : MAX_PAGE_HEIGHT_SUBSEQUENT;
@@ -155,7 +153,6 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
       }
     };
 
-    // Đồng bộ dữ liệu từ pages vào data trước khi phân trang
     const allSections = new Map<string, { title: string; content: string }>();
     pages.forEach((page) => {
       page.leftSections.forEach((section) => allSections.set(section.id, section));
@@ -188,7 +185,6 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
       }
     }
 
-    // Chỉ cập nhật pages nếu có nội dung
     if (newPages[newPages.length - 1].leftSections.length > 0 || newPages[newPages.length - 1].rightSections.length > 0) {
       setPages(newPages);
     } else {
@@ -213,7 +209,7 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
       }
 
       console.log(`Đã thêm section mới vào ${side} tại vị trí sau section ${sectionId}`);
-      setTimeout(distributeSectionsToPages, 0); // Redistribute sau khi render
+      setTimeout(distributeSectionsToPages, 0);
     } catch (error) {
       console.error('Lỗi khi thêm section:', error);
     }
@@ -232,7 +228,6 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
         onContentChange('rightSections', newRightSections);
       }
 
-      // Cập nhật state pages
       const newPages = [...pages];
       if (pageIndex >= 0 && pageIndex < newPages.length) {
         if (side === 'left') {
@@ -245,7 +240,7 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
 
       console.log(`Đã xóa section tại ${side}, id ${sectionId}, page ${pageIndex}`);
       setFocusedSection(null);
-      setTimeout(distributeSectionsToPages, 0); // Redistribute sau khi render
+      setTimeout(distributeSectionsToPages, 0);
     } catch (error) {
       console.error('Lỗi khi xóa section:', error);
     }
@@ -253,7 +248,6 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
 
   const handleSectionContentChange = (sectionId: string, side: 'left' | 'right', value: { title: string; content: string }, pageIndex: number) => {
     try {
-      // Cập nhật dữ liệu gốc
       let newLeftSections = [...data.leftSections];
       let newRightSections = [...data.rightSections];
 
@@ -271,7 +265,6 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
         }
       }
 
-      // Cập nhật state pages để đồng bộ ngay lập tức
       const newPages = [...pages];
       if (pageIndex >= 0 && pageIndex < newPages.length) {
         if (side === 'left') {
@@ -288,7 +281,6 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
         setPages(newPages);
       }
 
-      // Gọi lại distributeSectionsToPages để đảm bảo phân trang đúng
       setTimeout(distributeSectionsToPages, 0);
     } catch (error) {
       console.error('Lỗi khi chỉnh sửa section:', error);
@@ -296,7 +288,7 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
   };
 
   useEffect(() => {
-    setTimeout(distributeSectionsToPages, 0); // Redistribute on initial render or data change
+    setTimeout(distributeSectionsToPages, 0);
   }, [data.leftSections, data.rightSections]);
 
   const renderPage = (
@@ -494,9 +486,67 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
           </div>
         </div>
 
-        {renderPage(pages[0]?.leftSections || [], pages[0]?.rightSections || [], 0)}
+        {/* Chỉ render body của trang đầu tiên nếu cần */}
+        {pages[0]?.leftSections.length > 0 || pages[0]?.rightSections.length > 0 ? (
+          <div
+            className="mx-auto bg-white font-sans relative body-container"
+            style={{
+              fontFamily: selectedFont,
+              width: '210mm',
+              minHeight: '202mm',
+              maxWidth: '210mm',
+              margin: '0 auto',
+              padding: '0',
+              boxSizing: 'border-box',
+            }}
+            ref={(el: HTMLDivElement | null) => {
+              extraPageRefs.current[0] = el;
+            }}
+          >
+            <div className="flex flex-col md:flex-row relative">
+              <div className="hidden md:block absolute left-[70mm] top-0 w-px bg-gray-300" style={{ height: '202mm' }}></div>
+              <aside className="md:w-1/3 bg-white p-6">
+                {pages[0]?.leftSections.map((section) => (
+                  <EditableSection
+                    key={section.id}
+                    sectionKey={section.id}
+                    title={section.title}
+                    content={section.content}
+                    defaultContent="Nội dung"
+                    onContentChange={(key, value) => handleSectionContentChange(section.id, 'left', value, 0)}
+                    onKeyDown={handleKeyDown}
+                    selectedFont={selectedFont}
+                    selectedColor={selectedColor}
+                    onAddSection={() => handleAddSection(section.id, 'left')}
+                    onDeleteSection={() => handleDeleteSection(section.id, 'left', 0)}
+                    setFocusedSection={setFocusedSection}
+                  />
+                ))}
+              </aside>
+              <main className="md:w-2/3 bg-white p-6">
+                {pages[0]?.rightSections.map((section) => (
+                  <EditableSection
+                    key={section.id}
+                    sectionKey={section.id}
+                    title={section.title}
+                    content={section.content}
+                    defaultContent="Nội dung"
+                    onContentChange={(key, value) => handleSectionContentChange(section.id, 'right', value, 0)}
+                    onKeyDown={handleKeyDown}
+                    selectedFont={selectedFont}
+                    selectedColor={selectedColor}
+                    onAddSection={() => handleAddSection(section.id, 'right')}
+                    onDeleteSection={() => handleDeleteSection(section.id, 'right', 0)}
+                    setFocusedSection={setFocusedSection}
+                  />
+                ))}
+              </main>
+            </div>
+          </div>
+        ) : null}
       </div>
 
+      {/* Chỉ render các trang bổ sung từ pages.slice(1) */}
       {pages.slice(1).map((page, index) => renderPage(page.leftSections, page.rightSections, index + 1))}
     </>
   );
