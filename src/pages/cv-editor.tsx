@@ -226,10 +226,8 @@ export default function CVBuilder() {
 							// Set proper list style
 							if (newListType === 'ol') {
 								newList.style.listStyleType = 'decimal'
-								newList.style.paddingLeft = '20px'
 							} else {
 								newList.style.listStyleType = 'disc'
-								newList.style.paddingLeft = '20px'
 							}
 						} else {
 							// Same type, toggle it off
@@ -245,13 +243,11 @@ export default function CVBuilder() {
 						const newList = selection.anchorNode?.parentElement?.closest('ol')
 						if (newList) {
 							newList.style.listStyleType = 'decimal'
-							newList.style.paddingLeft = '20px'
 						}
 					} else {
 						const newList = selection.anchorNode?.parentElement?.closest('ul')
 						if (newList) {
 							newList.style.listStyleType = 'disc'
-							newList.style.paddingLeft = '20px'
 						}
 					}
 				}
@@ -500,6 +496,9 @@ export default function CVBuilder() {
         color: #1F2937 !important;
         border-color: #E5E7EB !important;
       }
+		ul, ol {
+            margin-left: 0 !important;
+        }
     `
 		element.appendChild(style)
 		return style
@@ -616,9 +615,8 @@ export default function CVBuilder() {
 								key={item.id}
 								variant={item.active ? 'default' : 'ghost'}
 								size="sm"
-								className={`flex items-center gap-2 ${item.highlight ? 'bg-red-500 hover:bg-red-600 text-white' : ''} ${
-									item.active ? 'bg-blue-500 hover:bg-blue-600' : ''
-								}`}
+								className={`flex items-center gap-2 ${item.highlight ? 'bg-red-500 hover:bg-red-600 text-white' : ''} ${item.active ? 'bg-blue-500 hover:bg-blue-600' : ''
+									}`}
 								onClick={() => handleNavClick(item.contentType)}
 							>
 								<span>{item.icon}</span>
@@ -753,9 +751,8 @@ export default function CVBuilder() {
 					{/* Main CV Editor */}
 					<div
 						ref={editorRef}
-						className={`flex-1 flex justify-center transition-all duration-300 ${isLeftSidebarOpen ? 'pl-100' : ''} ${
-							isRightSidebarOpen ? 'pr-100' : ''
-						}`}
+						className={`flex-1 flex justify-center transition-all duration-300 ${isLeftSidebarOpen ? 'pl-100' : ''} ${isRightSidebarOpen ? 'pr-100' : ''
+							}`}
 					>
 						<div className="max-w-4xl w-full pb-20">{renderTemplate()}</div>
 					</div>
@@ -785,7 +782,6 @@ export default function CVBuilder() {
 					console.log(selectedImage)
 				}}
 			>
-				Hello
 			</button>
 		</div>
 	)
