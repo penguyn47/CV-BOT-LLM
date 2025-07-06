@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useState } from 'react'
 import {
 	FaPhone,
 	FaFax,
@@ -14,7 +14,6 @@ import {
 } from 'react-icons/fa'
 import { FiPlus, FiTrash2 } from 'react-icons/fi'
 
-// Hàm debounce để trì hoãn cập nhật state
 const debounce = (func, delay) => {
 	let timeoutId
 	return (...args) => {
@@ -25,12 +24,12 @@ const debounce = (func, delay) => {
 
 export default function CVTemplate({ data, onContentChange, selectedFont, selectedColor }) {
 	const [currentPage, setCurrentPage] = useState(1)
+	const [focusedSection, setFocusedSection] = useState(null)
 
 	const togglePage = () => {
 		setCurrentPage(currentPage === 1 ? 2 : 1)
 	}
 
-	// Biểu tượng SVG dưới dạng thành phần nội tuyến để thay thế các import từ Lucide React
 	const MapPin = () => (
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
@@ -84,45 +83,11 @@ export default function CVTemplate({ data, onContentChange, selectedFont, select
 		</svg>
 	)
 
-	// Kiểm tra dữ liệu đầu vào
 	if (!data) {
 		console.error('Dữ liệu CV không tồn tại')
 		return <div className="p-4 text-red-500">Lỗi: Dữ liệu CV không tồn tại</div>
 	}
 
-	// State để theo dõi section đang focus
-	const [focusedSection, setFocusedSection] = useState(null)
-
-	// Ref để lưu vị trí con trỏ
-	const cursorPositions = useRef({})
-
-	// Hàm lưu vị trí con trỏ
-	const saveCursorPosition = (element, key) => {
-		const selection = window.getSelection()
-		if (selection.rangeCount > 0) {
-			const range = selection.getRangeAt(0)
-			cursorPositions.current[key] = { startContainer: range.startContainer, startOffset: range.startOffset }
-		}
-	}
-
-	// Hàm khôi phục vị trí con trỏ
-	const restoreCursorPosition = (element, key) => {
-		const position = cursorPositions.current[key]
-		if (position && element.contains(position.startContainer)) {
-			const range = document.createRange()
-			try {
-				range.setStart(position.startContainer, position.startOffset)
-				range.collapse(true)
-				const selection = window.getSelection()
-				selection.removeAllRanges()
-				selection.addRange(range)
-			} catch (error) {
-				console.warn('Không thể khôi phục vị trí con trỏ:', error)
-			}
-		}
-	}
-
-	// Hàm xử lý keydown để ngăn chặn xóa toàn bộ nội dung
 	const handleKeyDown = (e) => {
 		if (e.ctrlKey && e.key === 'a') {
 			e.preventDefault()
@@ -137,7 +102,6 @@ export default function CVTemplate({ data, onContentChange, selectedFont, select
 		}
 	}
 
-	// Hàm xử lý thay đổi tiêu đề mục
 	const handleTitleChange = (key, e) => {
 		try {
 			const title = e.currentTarget.textContent.trim()
@@ -147,24 +111,27 @@ export default function CVTemplate({ data, onContentChange, selectedFont, select
 		}
 	}
 
-	// Hàm xử lý thay đổi nội dung mụcSMB với debounce
 	const handleContentChange = debounce((key, e) => {
 		try {
-			const content = e.currentTarget.innerHTML
-			const parser = new DOMParser()
-			const doc = parser.parseFromString(content, 'text/html')
-			let newContent = {}
+			if (!e.currentTarget) {
+				console.warn('currentTarget is null, skipping content change');
+				return;
+			}
+			const content = e.currentTarget.innerHTML;
+			const parser = new DOMParser();
+			const doc = parser.parseFromString(content, 'text/html');
+			let newContent = {};
 
 			if (key === 'objective') {
 				const contentElement = doc.querySelector('p') || doc.body
-				const contentText = contentElement.textContent.trim()
+				const contentText = contentElement.textContent.trim() || data[key].content
 				newContent = { ...data[key], content: contentText }
 			} else if (['expertise', 'otherSkills', 'hobbies', 'certificates'].includes(key)) {
 				const listItems = Array.from(doc.querySelectorAll('li'))
 				const items = listItems
 					.map((li) => li.textContent.trim())
 					.filter((text) => text !== '' && text !== '•' && text !== '·' && text !== '-')
-				newContent = { ...data[key], items }
+				newContent = { ...data[key], items: items.length > 0 ? items : data[key].items }
 			} else if (key === 'experiences') {
 				const summaryElement = doc.querySelector('p.font-medium')
 				const additionalNoteElement = doc.querySelector('p.italic')
@@ -179,11 +146,10 @@ export default function CVTemplate({ data, onContentChange, selectedFont, select
 						return { title: itemTitle, details }
 					})
 					.filter((item) => item.title.trim() !== '' || item.details.length > 0)
-
 				newContent = {
 					...data[key],
 					summary: summaryElement ? summaryElement.textContent.trim() : data[key]?.summary || '',
-					items,
+					items: items.length > 0 ? items : data[key].items,
 					additionalNote: additionalNoteElement
 						? additionalNoteElement.textContent.trim()
 						: data[key]?.additionalNote || '',
@@ -200,7 +166,7 @@ export default function CVTemplate({ data, onContentChange, selectedFont, select
 						return { institution, details }
 					})
 					.filter((item) => item.institution.trim() !== '' || item.details.length > 0)
-				newContent = { ...data[key], items }
+				newContent = { ...data[key], items: items.length > 0 ? items : data[key].items }
 			}
 
 			if (Object.keys(newContent).length > 0) {
@@ -224,14 +190,12 @@ export default function CVTemplate({ data, onContentChange, selectedFont, select
 		}
 	}
 
-	// Hàm xử lý focus cho thông tin liên hệ và tiêu đề
 	const handleFocus = (e, sectionKey) => {
 		const element = e.currentTarget
 		element.classList.remove('text-gray-400')
 		setFocusedSection(sectionKey)
 	}
 
-	// Hàm xử lý blur cho thông tin liên hệ, tiêu đề, name và subtitle
 	const handleBlur = (e, defaultText, key, field = null) => {
 		const element = e.currentTarget
 		const text = element.textContent.trim()
@@ -259,7 +223,6 @@ export default function CVTemplate({ data, onContentChange, selectedFont, select
 		}
 	}
 
-	// Hàm xử lý thêm section mới
 	const handleAddSection = (key) => {
 		try {
 			let newItem
@@ -290,7 +253,6 @@ export default function CVTemplate({ data, onContentChange, selectedFont, select
 		}
 	}
 
-	// Hàm xử lý xóa section
 	const handleDeleteSection = (key, index = null) => {
 		try {
 			if (key === 'objective') {
@@ -324,15 +286,13 @@ export default function CVTemplate({ data, onContentChange, selectedFont, select
 		}
 	}
 
-	// Helper function to render lists with proper support for both bullet and numbered lists
 	const renderList = (items, defaultItems, listType = 'ul', className = 'list-disc list-inside text-sm space-y-1 ml-0') => {
-		const listItems = items?.length > 0 ? items : defaultItems;
-		const listTag = listType === 'ol' ? 'ol' : 'ul';
-		const listClass = listType === 'ol' ? 'list-decimal list-inside text-sm space-y-1 ml-0' : className;
-		return `<${listTag} class="${listClass}" style="margin-left: 0;">${listItems.map((item) => `<li>${item}</li>`).join('')}</${listTag}>`;
-	};
+		const listItems = items?.length > 0 ? items : defaultItems
+		const listTag = listType === 'ol' ? 'ol' : 'ul'
+		const listClass = listType === 'ol' ? 'list-decimal list-inside text-sm space-y-1 ml-0' : className
+		return `<${listTag} class="${listClass}" style="margin-left: 0;">${listItems.map((item) => `<li>${item}</li>`).join('')}</${listTag}>`
+	}
 
-	// Helper function to render experience items with proper list support
 	const renderExperienceItems = (items, defaultItems) => {
 		if (items?.length > 0) {
 			return items
@@ -410,7 +370,6 @@ export default function CVTemplate({ data, onContentChange, selectedFont, select
 		}
 	}
 
-	// Helper function to render education items with proper list support
 	const renderEducationItems = (items, defaultItems) => {
 		if (items?.length > 0) {
 			return items
@@ -503,8 +462,7 @@ export default function CVTemplate({ data, onContentChange, selectedFont, select
 
 	return (
 		<>
-			{/* Nhập font Poppins từ Google Fonts */}
-			<style jsx global>{`
+			<style jsx="true" global="true">{`
 				@import url('https://fonts.googleapis.com/css2?family=Poppins:wght300;400;500;600;700&display=swap');
 				body {
 					font-family: 'Poppins', sans-serif;
@@ -515,7 +473,6 @@ export default function CVTemplate({ data, onContentChange, selectedFont, select
 			`}</style>
 			<div className="min-h-[297mm] bg-white w-[210mm] mx-auto shadow-lg print:shadow-none" style={{ aspectRatio: '210 / 297' }}>
 				<div className="flex flex-col md:flex-row w-full h-full">
-					{/* Cột trái */}
 					<div className="w-full md:w-1/3 bg-slate-400 p-6 text-slate-800" style={{ backgroundColor: selectedColor }}>
 						<div className="mb-8">
 							<h1
@@ -530,7 +487,7 @@ export default function CVTemplate({ data, onContentChange, selectedFont, select
 							<div className="border-t-2 border-slate-600 w-12 mt-2"></div>
 						</div>
 
-						<ul className="space-y-2 mb-8 relative ml-0 pl-0" style={{ marginLeft: '0', paddingLeft: '0' }}>
+						<ul className="mb-8 relative ml-0 pl-0" style={{ marginLeft: '0', paddingLeft: '0' }}>
 							{contactItems.map(({ key, icon, placeholder }, index) => (
 								<li
 									key={`contact-${key}`}
@@ -577,11 +534,7 @@ export default function CVTemplate({ data, onContentChange, selectedFont, select
 								contentEditable
 								suppressContentEditableWarning
 								className="text-sm text-gray-700"
-								onInput={(e) => {
-									saveCursorPosition(e.currentTarget, 'education')
-									handleContentChange('education', e)
-									setTimeout(() => restoreCursorPosition(e.currentTarget, 'education'), 0)
-								}}
+								onInput={(e) => handleContentChange('education', e)}
 								onKeyDown={handleKeyDown}
 								onFocus={(e) => handleFocus(e, 'education')}
 							>
@@ -637,11 +590,7 @@ export default function CVTemplate({ data, onContentChange, selectedFont, select
 									suppressContentEditableWarning
 									onKeyDown={handleKeyDown}
 									onFocus={(e) => handleFocus(e, 'certificates')}
-									onInput={(e) => {
-										saveCursorPosition(e.currentTarget, 'certificates')
-										handleContentChange('certificates', e)
-										setTimeout(() => restoreCursorPosition(e.currentTarget, 'certificates'), 0)
-									}}
+									onInput={(e) => handleContentChange('certificates', e)}
 								>
 									{data.certificates.items?.map((language, idx) => (
 										<li key={idx}>{language}</li>
@@ -683,11 +632,7 @@ export default function CVTemplate({ data, onContentChange, selectedFont, select
 									suppressContentEditableWarning
 									onKeyDown={handleKeyDown}
 									onFocus={(e) => handleFocus(e, 'otherSkills')}
-									onInput={(e) => {
-										saveCursorPosition(e.currentTarget, 'otherSkills')
-										handleContentChange('otherSkills', e)
-										setTimeout(() => restoreCursorPosition(e.currentTarget, 'otherSkills'), 0)
-									}}
+									onInput={(e) => handleContentChange('otherSkills', e)}
 								>
 									{data.otherSkills.items?.map((language, idx) => (
 										<li key={idx}>{language}</li>
@@ -729,11 +674,7 @@ export default function CVTemplate({ data, onContentChange, selectedFont, select
 									suppressContentEditableWarning
 									onKeyDown={handleKeyDown}
 									onFocus={(e) => handleFocus(e, 'hobbies')}
-									onInput={(e) => {
-										saveCursorPosition(e.currentTarget, 'hobbies')
-										handleContentChange('hobbies', e)
-										setTimeout(() => restoreCursorPosition(e.currentTarget, 'hobbies'), 0)
-									}}
+									onInput={(e) => handleContentChange('hobbies', e)}
 								>
 									{data.hobbies.items?.map((language, idx) => (
 										<li key={idx}>{language}</li>
@@ -743,7 +684,6 @@ export default function CVTemplate({ data, onContentChange, selectedFont, select
 						</div>
 					</div>
 
-					{/* Cột phải */}
 					<div className="w-full md:w-2/3 bg-gray-50 p-6">
 						<div className="mb-8 relative">
 							<h2
@@ -775,11 +715,7 @@ export default function CVTemplate({ data, onContentChange, selectedFont, select
 							<p
 								contentEditable
 								suppressContentEditableWarning
-								onInput={(e) => {
-									saveCursorPosition(e.currentTarget, 'objective')
-									handleContentChange('objective', e)
-									setTimeout(() => restoreCursorPosition(e.currentTarget, 'objective'), 0)
-								}}
+								onInput={(e) => handleContentChange('objective', e)}
 								onKeyDown={handleKeyDown}
 								onFocus={(e) => handleFocus(e, 'objective')}
 							>
@@ -820,11 +756,7 @@ export default function CVTemplate({ data, onContentChange, selectedFont, select
 								suppressContentEditableWarning
 								onKeyDown={handleKeyDown}
 								onFocus={(e) => handleFocus(e, 'expertise')}
-								onInput={(e) => {
-									saveCursorPosition(e.currentTarget, 'expertise')
-									handleContentChange('expertise', e)
-									setTimeout(() => restoreCursorPosition(e.currentTarget, 'expertise'), 0)
-								}}
+								onInput={(e) => handleContentChange('expertise', e)}
 							>
 								<ul className="list-disc pl-5">
 									{data.expertise.items?.map((skill, idx) =>
@@ -869,11 +801,7 @@ export default function CVTemplate({ data, onContentChange, selectedFont, select
 							<div
 								contentEditable
 								suppressContentEditableWarning
-								onInput={(e) => {
-									saveCursorPosition(e.currentTarget, 'experiences')
-									handleContentChange('experiences', e)
-									setTimeout(() => restoreCursorPosition(e.currentTarget, 'experiences'), 0)
-								}}
+								onInput={(e) => handleContentChange('experiences', e)}
 								onKeyDown={handleKeyDown}
 								onFocus={(e) => handleFocus(e, 'experiences')}
 							>
@@ -932,11 +860,7 @@ export default function CVTemplate({ data, onContentChange, selectedFont, select
 							<div
 								contentEditable
 								suppressContentEditableWarning
-								onInput={(e) => {
-									saveCursorPosition(e.currentTarget, 'publicActivity')
-									handleContentChange('publicActivity', e)
-									setTimeout(() => restoreCursorPosition(e.currentTarget, 'publicActivity'), 0)
-								}}
+								onInput={(e) => handleContentChange('publicActivity', e)}
 								onKeyDown={handleKeyDown}
 								onFocus={(e) => handleFocus(e, 'publicActivity')}
 							>

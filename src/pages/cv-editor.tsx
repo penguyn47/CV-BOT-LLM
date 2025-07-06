@@ -36,9 +36,10 @@ export default function CVBuilder() {
 	const [isPreviewMode, setIsPreviewMode] = useState(false)
 	const [selectedColor, setSelectedColor] = useState('#FF6B35')
 	const [selectedRef, setSelectedRef] = useState('fe')
-	const [selectedImage, setSelectedImage] = useState(3)
+	const [isEditing, setIsEditing] = useState(false) // Theo dõi trạng thái chỉnh sửa
 	const selectedJob = dataRef.find((ref) => ref.code === selectedRef)
 	const templates = [CVTemplate, CVTemplate2, CVTemplate3, CVTemplate4, CVTemplate5]
+	const [selectedImage, setSelectedImage] = useState(3)
 	const SelectedTemplate = templates[selectedImage]
 	const [cvData, setCvData] = useState({
 		name: dataProfile.profile.name,
@@ -57,22 +58,18 @@ export default function CVBuilder() {
 			title: 'Mục tiêu nghề nghiệp',
 			content: selectedJob?.objective.content,
 		},
-
 		expertise: {
 			title: 'Lĩnh vực chuyên môn',
 			items: selectedJob?.expertise.items,
 		},
-
 		otherSkills: {
 			title: 'Kỹ năng khác',
 			items: selectedJob?.otherSkills.items,
 		},
-
 		hobbies: {
 			title: 'Sở thích',
 			items: selectedJob?.hobbies.items,
 		},
-
 		references: {
 			title: 'Người tham chiếu',
 			name: selectedJob?.references.name,
@@ -80,7 +77,6 @@ export default function CVBuilder() {
 			phone: selectedJob?.references.phone,
 			email: selectedJob?.references.email,
 		},
-
 		experiences: [
 			{
 				title: 'Kinh nghiệm làm việc',
@@ -89,88 +85,82 @@ export default function CVBuilder() {
 				additionalNote: selectedJob?.experiences?.[0]?.additionalNote,
 			},
 		],
-
 		education: {
 			title: 'Lịch sử học vấn',
 			items: selectedJob?.education.items,
 		},
-
 		publicActivity: {
 			title: 'Hoạt động xã hội',
 			items: selectedJob?.publicActivity.items,
 		},
-
 		certificates: {
 			items: selectedJob?.certificates.items,
 		},
 	})
-	useEffect(() => {
-		if (!selectedJob) {
-			console.log(selectedJob)
-			return
-		}
 
-		setCvData({
-			name: dataProfile.profile.name,
-			subtitle: dataProfile.target_job.position,
-			photoUrl: 'https://img6.thuthuatphanmem.vn/uploads/2022/11/18/anh-avatar-don-gian-cho-nu_081757692.jpg',
-			contact: {
-				sex: 'Nam',
-				phone: dataProfile.profile.phone,
-				email: dataProfile.profile.email,
-				birthday: '16/10/2003',
-				location: dataProfile.profile.address,
-				website: '',
-				linkedin: '',
-			},
-			objective: {
-				title: 'Mục tiêu nghề nghiệp',
-				content: selectedJob.objective.content,
-			},
-			expertise: {
-				title: 'Lĩnh vực chuyên môn',
-				items: selectedJob.expertise.items,
-			},
-			otherSkills: {
-				title: 'Kỹ năng khác',
-				items: selectedJob.otherSkills.items,
-			},
-			hobbies: {
-				title: 'Sở thích',
-				items: selectedJob.hobbies.items,
-			},
-			references: {
-				title: 'Người tham chiếu',
-				name: selectedJob.references.name,
-				address: selectedJob.references.address,
-				phone: selectedJob.references.phone,
-				email: selectedJob.references.email,
-			},
-			experiences: [
-				{
-					title: 'Kinh nghiệm làm việc',
-					summary: selectedJob.experiences?.[0]?.summary,
-					items: selectedJob.experiences?.[0]?.items,
-					additionalNote: selectedJob.experiences?.[0]?.additionalNote,
+	// Chỉ cập nhật cvData khi người dùng chọn CV tham khảo
+	const handleRefChange = (ref: string) => {
+		setSelectedRef(ref)
+		const newSelectedJob = dataRef.find((r) => r.code === ref)
+		if (newSelectedJob) {
+			setCvData({
+				name: dataProfile.profile.name,
+				subtitle: dataProfile.target_job.position,
+				photoUrl: 'https://img6.thuthuatphanmem.vn/uploads/2022/11/18/anh-avatar-don-gian-cho-nu_081757692.jpg',
+				contact: {
+					sex: 'Nam',
+					phone: dataProfile.profile.phone,
+					email: dataProfile.profile.email,
+					birthday: '16/10/2003',
+					location: dataProfile.profile.address,
+					website: '',
+					linkedin: '',
 				},
-			],
-			education: {
-				title: 'Lịch sử học vấn',
-				items: selectedJob.education.items,
-			},
-			publicActivity: {
-				title: 'Hoạt động xã hội',
-				items: selectedJob.publicActivity.items,
-			},
-			certificates: {
-				items: selectedJob.certificates.items,
-			},
-		})
-	}, [selectedRef])
-
-	// useEffect(() => {
-	// 	console.log('selectedRef changed:', selectedRef)
-	// }, [selectedRef])
+				objective: {
+					title: 'Mục tiêu nghề nghiệp',
+					content: newSelectedJob.objective.content,
+				},
+				expertise: {
+					title: 'Lĩnh vực chuyên môn',
+					items: newSelectedJob.expertise.items,
+				},
+				otherSkills: {
+					title: 'Kỹ năng khác',
+					items: newSelectedJob.otherSkills.items,
+				},
+				hobbies: {
+					title: 'Sở thích',
+					items: newSelectedJob.hobbies.items,
+				},
+				references: {
+					title: 'Người tham chiếu',
+					name: newSelectedJob.references.name,
+					address: newSelectedJob.references.address,
+					phone: newSelectedJob.references.phone,
+					email: newSelectedJob.references.email,
+				},
+				experiences: [
+					{
+						title: 'Kinh nghiệm làm việc',
+						summary: newSelectedJob.experiences?.[0]?.summary,
+						items: newSelectedJob.experiences?.[0]?.items,
+						additionalNote: newSelectedJob.experiences?.[0]?.additionalNote,
+					},
+				],
+				education: {
+					title: 'Lịch sử học vấn',
+					items: newSelectedJob.education.items,
+				},
+				publicActivity: {
+					title: 'Hoạt động xã hội',
+					items: newSelectedJob.publicActivity.items,
+				},
+				certificates: {
+					items: newSelectedJob.certificates.items,
+				},
+			})
+		}
+	}
 
 	const editorRef = useRef<HTMLDivElement>(null)
 	const cvTemplateRef = useRef<HTMLDivElement>(null)
@@ -185,7 +175,6 @@ export default function CVBuilder() {
 		{ id: 'download', label: 'Tải xuống', icon: '⬇️', contentType: null },
 	]
 
-	// Enhanced handleFormat function with better list support
 	const handleFormat = (command: string, value?: string) => {
 		if (editorRef.current) {
 			const selection = window.getSelection()
@@ -194,9 +183,7 @@ export default function CVBuilder() {
 			const range = selection.getRangeAt(0)
 			const container = range.commonAncestorContainer
 
-			// Handle list formatting
 			if (command === 'insertOrderedList' || command === 'insertUnorderedList') {
-				// Check if we're already in a list
 				const listItem =
 					container.nodeType === Node.ELEMENT_NODE
 						? (container as Element).closest('li')
@@ -205,40 +192,32 @@ export default function CVBuilder() {
 				if (listItem) {
 					const currentList = listItem.parentElement
 					if (currentList) {
-						// If we're in a list, convert it to the new type
 						const newListType = command === 'insertOrderedList' ? 'ol' : 'ul'
 						const currentListType = currentList.tagName.toLowerCase()
 
 						if (newListType !== currentListType) {
-							// Convert list type
 							const newList = document.createElement(newListType)
 							newList.className = currentList.className
 							newList.style.cssText = currentList.style.cssText
 
-							// Move all list items to the new list
 							while (currentList.firstChild) {
 								newList.appendChild(currentList.firstChild)
 							}
 
-							// Replace the old list with the new one
 							currentList.parentNode?.replaceChild(newList, currentList)
 
-							// Set proper list style
 							if (newListType === 'ol') {
 								newList.style.listStyleType = 'decimal'
 							} else {
 								newList.style.listStyleType = 'disc'
 							}
 						} else {
-							// Same type, toggle it off
 							document.execCommand('outdent', false)
 						}
 					}
 				} else {
-					// Create new list
 					document.execCommand(command, false)
 
-					// For ordered lists, ensure proper numbering
 					if (command === 'insertOrderedList') {
 						const newList = selection.anchorNode?.parentElement?.closest('ol')
 						if (newList) {
@@ -252,7 +231,6 @@ export default function CVBuilder() {
 					}
 				}
 			} else {
-				// Handle other formatting commands
 				document.execCommand(command, false, value)
 			}
 
@@ -260,19 +238,15 @@ export default function CVBuilder() {
 		}
 	}
 
-	// Enhanced keyboard shortcuts for list formatting
 	const handleKeyDown = (e: KeyboardEvent) => {
-		// Ctrl+Shift+7 for ordered list
 		if (e.ctrlKey && e.shiftKey && e.key === '7') {
 			e.preventDefault()
 			handleFormat('insertOrderedList')
 		}
-		// Ctrl+Shift+8 for unordered list
 		else if (e.ctrlKey && e.shiftKey && e.key === '8') {
 			e.preventDefault()
 			handleFormat('insertUnorderedList')
 		}
-		// Enter to create new list item
 		else if (e.key === 'Enter') {
 			const selection = window.getSelection()
 			if (selection && selection.rangeCount > 0) {
@@ -283,28 +257,22 @@ export default function CVBuilder() {
 						: range.commonAncestorContainer.parentElement?.closest('li')
 
 				if (listItem) {
-					// If we're at the end of a list item, create a new one
 					const listItemText = listItem.textContent || ''
 					const cursorPosition = range.startOffset
 
 					if (cursorPosition >= listItemText.length) {
-						// Create new list item
 						const newLi = document.createElement('li')
 						listItem.parentNode?.insertBefore(newLi, listItem.nextSibling)
-
-						// Move cursor to new list item
 						const newRange = document.createRange()
 						newRange.setStart(newLi, 0)
 						newRange.collapse(true)
 						selection.removeAllRanges()
 						selection.addRange(newRange)
-
 						e.preventDefault()
 					}
 				}
 			}
 		}
-		// Backspace to remove empty list items
 		else if (e.key === 'Backspace') {
 			const selection = window.getSelection()
 			if (selection && selection.rangeCount > 0) {
@@ -317,11 +285,9 @@ export default function CVBuilder() {
 				if (listItem && (listItem.textContent || '').trim() === '') {
 					const list = listItem.parentElement
 					if (list && (list.tagName === 'OL' || list.tagName === 'UL')) {
-						// If this is the only list item, remove the entire list
 						if (list.children.length === 1) {
 							list.remove()
 						} else {
-							// Remove just this list item
 							listItem.remove()
 						}
 						e.preventDefault()
@@ -331,7 +297,6 @@ export default function CVBuilder() {
 		}
 	}
 
-	// Add keyboard event listener
 	useEffect(() => {
 		document.addEventListener('keydown', handleKeyDown)
 		return () => {
@@ -340,21 +305,43 @@ export default function CVBuilder() {
 	}, [])
 
 	const handleNavClick = (contentType: string | null) => {
-		if (contentType) {
-			setIsLeftSidebarOpen(true)
-			setIsRightSidebarOpen(false)
-			setIsPreviewMode(false)
-			setActiveContent(contentType)
-		} else if (contentType === null && navItems.find((item) => item.id === 'preview')) {
-			setIsPreviewMode(true)
-			setIsLeftSidebarOpen(false)
-			setIsRightSidebarOpen(false)
-			setActiveContent(null)
+		if (isEditing) {
+			// Đợi debounce hoàn tất
+			setTimeout(() => {
+				if (contentType) {
+					setIsLeftSidebarOpen(true)
+					setIsRightSidebarOpen(false)
+					setIsPreviewMode(false)
+					setActiveContent(contentType)
+				} else if (contentType === null && navItems.find((item) => item.id === 'preview')) {
+					setIsPreviewMode(true)
+					setIsLeftSidebarOpen(false)
+					setIsRightSidebarOpen(false)
+					setActiveContent(null)
+				} else {
+					setIsLeftSidebarOpen(false)
+					setIsRightSidebarOpen(true)
+					setIsPreviewMode(false)
+					setActiveContent(null)
+				}
+			}, 350) // Đợi lâu hơn thời gian debounce
 		} else {
-			setIsLeftSidebarOpen(false)
-			setIsRightSidebarOpen(true)
-			setIsPreviewMode(false)
-			setActiveContent(null)
+			if (contentType) {
+				setIsLeftSidebarOpen(true)
+				setIsRightSidebarOpen(false)
+				setIsPreviewMode(false)
+				setActiveContent(contentType)
+			} else if (contentType === null && navItems.find((item) => item.id === 'preview')) {
+				setIsPreviewMode(true)
+				setIsLeftSidebarOpen(false)
+				setIsRightSidebarOpen(false)
+				setActiveContent(null)
+			} else {
+				setIsLeftSidebarOpen(false)
+				setIsRightSidebarOpen(true)
+				setIsPreviewMode(false)
+				setActiveContent(null)
+			}
 		}
 	}
 
@@ -401,15 +388,12 @@ export default function CVBuilder() {
 		setSelectedColor(color)
 	}
 
-	const handleRefChange = (ref: string) => {
-		setSelectedRef(ref)
-	}
-
 	const handleImageChange = (id: number) => {
 		setSelectedImage(id)
 	}
 
 	const handleContentChange = (key: string, value: any) => {
+		setIsEditing(true)
 		try {
 			if (key && value !== undefined && value !== null) {
 				setCvData((prev) => ({
@@ -419,6 +403,8 @@ export default function CVBuilder() {
 			}
 		} catch (error) {
 			console.error('Lỗi khi cập nhật nội dung CV:', error)
+		} finally {
+			setTimeout(() => setIsEditing(false), 350) // Đặt lại trạng thái sau khi debounce hoàn tất
 		}
 	}
 
@@ -525,28 +511,24 @@ export default function CVBuilder() {
 				cvTemplateRef.current.className = 'w-[210mm] h-[297mm] bg-white shadow-lg'
 				const tempStyle = overrideOklchColors(cvTemplateRef.current)
 				cleanOklchStyles(cvTemplateRef.current)
-
+				await new Promise((resolve) => setTimeout(resolve, 100)) // Đợi render hoàn tất
 				const canvas = await html2canvas(cvTemplateRef.current, {
 					scale: 2,
 					useCORS: true,
 					backgroundColor: '#FFFFFF',
 					logging: true,
 				})
-
 				tempStyle.remove()
 				cvTemplateRef.current.className = oldClass
-
 				const imgData = canvas.toDataURL('image/png')
 				const pdf = new jsPDF({
 					orientation: 'portrait',
 					unit: 'mm',
 					format: 'a4',
 				})
-
 				const pageWidth = pdf.internal.pageSize.getWidth()
 				const imgWidth = pageWidth
 				const imgHeight = (canvas.height * imgWidth) / canvas.width
-
 				pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight)
 				pdf.save('cv-preview.pdf')
 			} catch (error) {
@@ -555,8 +537,9 @@ export default function CVBuilder() {
 		}
 	}
 
-	// Chọn template dựa trên selectedLayout
 	const renderTemplate = () => {
+		// Log để kiểm tra dữ liệu được truyền
+		console.log('Rendering template with cvData:', cvData)
 		return (
 			<SelectedTemplate
 				data={cvData}
@@ -569,7 +552,6 @@ export default function CVBuilder() {
 
 	return (
 		<div className="min-h-screen bg-gray-50 flex flex-col">
-			{/* Preview Mode */}
 			{isPreviewMode && (
 				<div className="fixed inset-0 z-50 flex flex-col">
 					<div className="bg-black text-white p-4 flex items-center justify-between">
@@ -606,7 +588,6 @@ export default function CVBuilder() {
 				</div>
 			)}
 
-			{/* Navigation Header */}
 			{!isPreviewMode && (
 				<div className="bg-white border-b border-gray-200 px-4 py-3 fixed top-0 left-0 right-0 z-99999">
 					<div className="flex flex-wrap gap-2 items-center justify-center">
@@ -627,7 +608,6 @@ export default function CVBuilder() {
 				</div>
 			)}
 
-			{/* Formatting Toolbar */}
 			{!isPreviewMode && (
 				<div className="bg-white border-b border-gray-200 px-4 py-3 fixed top-[57px] left-0 right-0 z-99999 flex justify-center">
 					<div className="flex items-center gap-2">
@@ -727,10 +707,8 @@ export default function CVBuilder() {
 				</div>
 			)}
 
-			{/* Main Content */}
 			{!isPreviewMode && (
 				<div className="flex min-h-[calc(100vh-120px)] mt-[120px] cv-editor">
-					{/* Left Sidebar */}
 					{isLeftSidebarOpen && (
 						<div className="w-80 fixed left-0 top-[105px] bottom-0 z-10">
 							<LeftSidebar
@@ -748,7 +726,6 @@ export default function CVBuilder() {
 						</div>
 					)}
 
-					{/* Main CV Editor */}
 					<div
 						ref={editorRef}
 						className={`flex-1 flex justify-center transition-all duration-300 ${isLeftSidebarOpen ? 'pl-100' : ''} ${isRightSidebarOpen ? 'pr-100' : ''
@@ -757,14 +734,12 @@ export default function CVBuilder() {
 						<div className="max-w-4xl w-full pb-20">{renderTemplate()}</div>
 					</div>
 
-					{/* Right Sidebar */}
 					{isRightSidebarOpen && (
 						<div className="w-80 fixed right-0 top-[105px] bottom-0 z-10">
 							<RightSidebar />
 						</div>
 					)}
 
-					{/* Arrow Button to Open Right Sidebar */}
 					{!isRightSidebarOpen && (
 						<Button
 							variant="ghost"
