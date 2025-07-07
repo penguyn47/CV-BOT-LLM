@@ -36,69 +36,75 @@ export default function CVBuilder() {
 	const [isPreviewMode, setIsPreviewMode] = useState(false)
 	const [selectedColor, setSelectedColor] = useState('#FF6B35')
 	const [selectedRef, setSelectedRef] = useState('fe')
-	const [isEditing, setIsEditing] = useState(false) // Theo dõi trạng thái chỉnh sửa
+	const [isEditing, setIsEditing] = useState(false)
 	const selectedJob = dataRef.find((ref) => ref.code === selectedRef)
 	const templates = [CVTemplate, CVTemplate2, CVTemplate3, CVTemplate4, CVTemplate5]
 	const [selectedImage, setSelectedImage] = useState(3)
 	const SelectedTemplate = templates[selectedImage]
 	const [cvData, setCvData] = useState({
-		name: dataProfile.profile.name,
-		subtitle: dataProfile.target_job.position,
+		name: dataProfile.profile.name || 'Họ và Tên',
+		subtitle: dataProfile.target_job.position || 'Chức danh công việc',
 		photoUrl: 'https://img6.thuthuatphanmem.vn/uploads/2022/11/18/anh-avatar-don-gian-cho-nu_081757692.jpg',
 		contact: {
 			sex: 'Nam',
-			phone: dataProfile.profile.phone,
-			email: dataProfile.profile.email,
+			phone: dataProfile.profile.phone || '+84 123 456 789',
+			email: dataProfile.profile.email || 'example@gmail.com',
 			birthday: '16/10/2003',
-			location: dataProfile.profile.address,
+			location: dataProfile.profile.address || '123 Đường ABC, Quận 1, TP.HCM',
 			website: '',
 			linkedin: '',
 		},
 		objective: {
 			title: 'Mục tiêu nghề nghiệp',
-			content: selectedJob?.objective.content,
+			content: selectedJob?.objective.content || 'Đặt mục tiêu nghề nghiệp của bạn tại đây.',
 		},
 		expertise: {
 			title: 'Lĩnh vực chuyên môn',
-			items: selectedJob?.expertise.items,
+			items: selectedJob?.expertise.items || ['Kỹ năng 1', 'Kỹ năng 2'],
 		},
 		otherSkills: {
 			title: 'Kỹ năng khác',
-			items: selectedJob?.otherSkills.items,
+			items: selectedJob?.otherSkills.items || ['Kỹ năng mềm 1', 'Kỹ năng mềm 2'],
 		},
 		hobbies: {
 			title: 'Sở thích',
-			items: selectedJob?.hobbies.items,
+			items: selectedJob?.hobbies.items || ['Sở thích 1', 'Sở thích 2'],
 		},
 		references: {
 			title: 'Người tham chiếu',
-			name: selectedJob?.references.name,
-			address: selectedJob?.references.address,
-			phone: selectedJob?.references.phone,
-			email: selectedJob?.references.email,
+			name: selectedJob?.references.name || 'Tên người tham chiếu',
+			address: selectedJob?.references.address || 'Địa chỉ',
+			phone: selectedJob?.references.phone || '+84 123 456 789',
+			email: selectedJob?.references.email || 'example@gmail.com',
 		},
 		experiences: [
 			{
 				title: 'Kinh nghiệm làm việc',
-				summary: selectedJob?.experiences?.[0]?.summary,
-				items: selectedJob?.experiences?.[0]?.items,
-				additionalNote: selectedJob?.experiences?.[0]?.additionalNote,
+				summary: selectedJob?.experiences?.[0]?.summary || 'Tóm tắt kinh nghiệm làm việc',
+				items: selectedJob?.experiences?.[0]?.items || [
+					{ title: 'Nhân viên kinh doanh', details: ['Quản lý danh mục khách hàng', 'Đạt doanh số 500 triệu/tháng'] },
+				],
+				additionalNote: selectedJob?.experiences?.[0]?.additionalNote || '',
 			},
 		],
 		education: {
 			title: 'Lịch sử học vấn',
-			items: selectedJob?.education.items,
+			items: selectedJob?.education.items || [
+				{ institution: 'Đại học Kinh tế Quốc dân', details: ['Cử nhân Quản trị Kinh doanh, 2018-2022', 'GPA 3.5/4.0'] },
+			],
 		},
 		publicActivity: {
 			title: 'Hoạt động xã hội',
-			items: selectedJob?.publicActivity.items,
+			items: selectedJob?.publicActivity.items || [
+				{ name: 'Hoạt động tình nguyện', description: ['Mô tả hoạt động 1', 'Mô tả hoạt động 2'] },
+			],
 		},
 		certificates: {
-			items: selectedJob?.certificates.items,
+			title: 'Chứng chỉ',
+			items: selectedJob?.certificates.items || ['Chứng chỉ 1', 'Chứng chỉ 2'],
 		},
-	})
+	});
 
-	// Chỉ cập nhật cvData khi người dùng chọn CV tham khảo
 	const handleRefChange = (ref: string) => {
 		setSelectedRef(ref)
 		const newSelectedJob = dataRef.find((r) => r.code === ref)
@@ -156,6 +162,7 @@ export default function CVBuilder() {
 					items: newSelectedJob.publicActivity.items,
 				},
 				certificates: {
+					title: 'Chứng chỉ',
 					items: newSelectedJob.certificates.items,
 				},
 			})
@@ -306,7 +313,6 @@ export default function CVBuilder() {
 
 	const handleNavClick = (contentType: string | null) => {
 		if (isEditing) {
-			// Đợi debounce hoàn tất
 			setTimeout(() => {
 				if (contentType) {
 					setIsLeftSidebarOpen(true)
@@ -324,7 +330,7 @@ export default function CVBuilder() {
 					setIsPreviewMode(false)
 					setActiveContent(null)
 				}
-			}, 350) // Đợi lâu hơn thời gian debounce
+			}, 350)
 		} else {
 			if (contentType) {
 				setIsLeftSidebarOpen(true)
@@ -393,20 +399,21 @@ export default function CVBuilder() {
 	}
 
 	const handleContentChange = (key: string, value: any) => {
-		setIsEditing(true)
+		setIsEditing(true);
 		try {
 			if (key && value !== undefined && value !== null) {
+				console.log(`cv-editor.tsx: Updating cvData for ${key}:`, value);
 				setCvData((prev) => ({
 					...prev,
 					[key]: value,
-				}))
+				}));
 			}
 		} catch (error) {
-			console.error('Lỗi khi cập nhật nội dung CV:', error)
+			console.error('Lỗi khi cập nhật nội dung CV:', error);
 		} finally {
-			setTimeout(() => setIsEditing(false), 350) // Đặt lại trạng thái sau khi debounce hoàn tất
+			setTimeout(() => setIsEditing(false), 350);
 		}
-	}
+	};
 
 	const overrideOklchColors = (element: HTMLElement) => {
 		const style = document.createElement('style')
@@ -511,7 +518,7 @@ export default function CVBuilder() {
 				cvTemplateRef.current.className = 'w-[210mm] h-[297mm] bg-white shadow-lg'
 				const tempStyle = overrideOklchColors(cvTemplateRef.current)
 				cleanOklchStyles(cvTemplateRef.current)
-				await new Promise((resolve) => setTimeout(resolve, 100)) // Đợi render hoàn tất
+				await new Promise((resolve) => setTimeout(resolve, 100))
 				const canvas = await html2canvas(cvTemplateRef.current, {
 					scale: 2,
 					useCORS: true,
@@ -538,7 +545,6 @@ export default function CVBuilder() {
 	}
 
 	const renderTemplate = () => {
-		// Log để kiểm tra dữ liệu được truyền
 		console.log('Rendering template with cvData:', cvData)
 		return (
 			<SelectedTemplate
