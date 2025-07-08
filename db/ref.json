@@ -1,0 +1,418 @@
+[
+    {
+        "code": "fe",
+        "name": "Minh Anh",
+        "subtitle": "Lập trình viên Frontend",
+        "contact": {
+            "phone": "0932123456",
+            "fax": "0932123456",
+            "email": "hunglv@shopee.com",
+            "facebook": "facebook.com/minhanh",
+            "instagram": "instagram.com/minhanh",
+            "address": "123 Đường ABC, Quận 1, TP.HCM"
+        },
+        "leftSections": [
+            {
+                "id": "fe-objective",
+                "title": "Mục tiêu nghề nghiệp",
+                "content": "Tôi là Minh Anh, lập trình viên Frontend với 2 năm kinh nghiệm, hướng đến trở thành chuyên gia UI/UX kỹ thuật cao."
+            },
+            {
+                "id": "fe-expertise",
+                "title": "Lĩnh vực chuyên môn",
+                "content": "<ul><li>HTML5, CSS3, JavaScript (ES6+)</li><li>ReactJS, Next.js</li><li>Responsive Design</li><li><li>RESTful API & GraphQL</li><li>Web Performance优化</li></ul>"
+            },
+            {
+                "id": "fe-otherSkills",
+                "title": "Kỹ năng khác",
+                "content": "<ul><li>Debug với DevTools</li><li>Giao tiếp & teamwork</li><li>Quản lý task (Jira, Trello)</li><li>Viết tài liệu kỹ thuật</li></ul>"
+            }
+        ],
+        "rightSections": [
+            {
+                "id": "fe-experiences",
+ "title": "Kính nghiệm làm việc",
+                "content": "<h3>Frontend Developer - Công ty Sendo.vn</h3><ul><li>Phát triển giao diện e-commerce.</li><li><li>Tối ưu hiệu suất trang web.</li></ul><h3>Freelance Frontend Developer</h3><ul><li>Xây dựng landing page.</li><li>Cải thiện SEO & Lighthouse score.</li></ul>"
+            },
+            {
+                "id": "fe-education",
+                "title": "Lịch sử học vấn",
+                "content": "<h3>Cử nhân KHMT – HUTECH</h3><ul><li>2018-2022: GPA 8.2/10.</li></ul><h3>Khóa học ReactJS – Nordic Coder</h3><ul><li>2023: Thực hành Next.js & GraphQL.</li></ul>"
+            },
+            {
+                "id": "fe-publicActivity",
+                "title": "Hoạt động xã hội",
+                "content": "<h3>Mentor – FreeCodeCamp VN</h3><ul><li>2023-nay: Dạy HTML/CSS/JS cơ bản.</li></ul><h3>Women Who Code VN</h3><ul><li>2022-nay: Chia sẻ UI/UX.</li></ul>"
+            },
+            {
+                "id": "fe-certifications",
+                "title": "Chứng chỉ",
+                "content": "<ul><li>Google Mobile Web Specialist</li><li>Meta Front-End Developer</li></ul>"
+            }
+        ]
+    },
+    {
+        "code": "seo",
+        "name": "Quang Huy",
+        "subtitle": "Chuyên viên SEO",
+        "contact": {
+            "phone": "0976123456",
+            "fax": "0976123456",
+            "email": "hai.trinh@gtvseo.com",
+            "facebook": "facebook.com/quanghuy",
+            "instagram": "instagram.com/quanghuy",
+            "address": "456 Đường XYZ, Quận 3, TP.HCM"
+        },
+        "leftSections": [
+            {
+                "id": "seo-objective",
+                "title": "Mục tiêu nghề nghiệp",
+                "content": "Tôi là Quang Huy, chuyên viên SEO với 3 năm kinh nghiệm, hướng đến trở thành SEO Lead để xây dựng chiến lược nội dung hiệu quả."
+            },
+            {
+                "id": "seo-experience",
+                "title": "Lĩnh vực chuyên môn",
+                "content": "<ul><li>SEO Onpage & Offpage</li><li>Keyword Research</li><li><li>Technical SEO</li><li>Google Analytics, Search Console</li><li>Ahrefs, SEMrush</li></ul>"
+            },
+            {
+                "id": "seo-otherSkills",
+                "title": "Kỹ năng khác",
+                "content": "<ul><li>Phân tích dữ liệu từ khóa</li><li>Làm việc nhóm</li><li>Theo dõi thuật toán Google</li><li>Thuyết trình & báo cáo</li></ul>"
+            }
+        ],
+        "rightSections": [
+            {
+                "id": "seo-experiences",
+                "title": "Kinh nghiệm làm việc",
+                "content": "<h3>SEO Executive - Công ty Haravan</h3><ul><li>Audit kỹ thuật cho website.</li><li>Tối ưu tốc độ & UI/UX.</li></ul><h3>SEO Content Specialist - Freelancer</h3><ul><li>Viết bài chuẩn SEO.</li><li>Xây dựng internal link.</li></ul>"
+            },
+            {
+                "id": "seo-education",
+                "title": "Lịch sử học vấn",
+                "content": "<h3>Cử nhân Marketing – ĐH Kinh tế TP.HCM</h3><ul><li>2016-2020: GPA 8.0/10.</li></ul><h3>Khóa học SEO – SEONGON</h3><ul><li>2022: Học Topic Cluster & Entity SEO.</li></ul>"
+            },
+            {
+                "id": "seo-publicActivity",
+                "title": "Hoạt động xã hội",
+                "content": "<h3>Diễn giả – SEO Camp Saigon</h3><ul><li>2023: Chia sẻ case study tăng traffic.</li></ul><h3>SEO Freelancers VN</h3><ul><li>2021-nay: Review công cụ SEO.</li></ul>"
+            },
+            {
+                "id": "seo-certificates",
+                "title": "Chứng chỉ",
+                "content": "<ul><li>Google Analytics Qualification</li><li>SEMrush SEO Toolkit</li></ul>"
+            }
+        ]
+    },
+    {
+        "code": "ac",
+        "name": "Bích Ngọc",
+        "subtitle": "Kế toán viên",
+        "contact": {
+            "phone": "0908001234",
+            "fax": "0908001234",
+            "email": "phuongnt@gohb.com",
+            "facebook": "facebook.com/bichngoc",
+            "instagram": "instagram.com/bichngoc",
+            "address": "789 Đường DEF, Quận 7, TP.HCM"
+        },
+        "leftSections": [
+            {
+                "id": "ac-objective",
+                "title": "Mục tiêu nghề nghiệp",
+                "content": "Tôi là Bích Ngọc, kế toán viên với 3 năm kinh nghiệm, hướng đến trở thành Kế toán trưởng để xây dựng hệ thống kế toán minh bạch."
+            },
+            {
+                "id": "ac-expertise",
+                "title": "Lĩnh vực chuyên môn",
+                "content": "<ul><li>Kế toán tổng hợp</li><li>Báo cáo tài chính</li><li>Kế toán thuế</li><li>Phần mềm MISA, FAST</li><li>Thông tư 200, 133</li></ul>"
+            },
+            {
+                "id": "ac-otherSkills",
+                "title": "Kỹ năng khác",
+                "content": "<ul><li>Tổ chức hồ sơ</li><li>Excel nâng cao</li><li>Chịu áp lực cao</li><li>Giao tiếp với cơ quan thuế</li></ul>"
+            }
+        ],
+        "rightSections": [
+            {
+                "id": "ac-experiences",
+                "title": "Kinh nghiệm làm việc",
+                "content": "<h3>Kế toán tổng hợp - ABC</h3><ul><li>Hạch toán nghiệp vụ.</li><li>Lập báo cáo tài chính.</li></ul><h3>Kế toán thuế - Gia Lộc</h3><ul><li>Kê khai thuế.</li><li>Hỗ trợ kiểm toán.</li></ul>"
+            },
+            {
+                "id": "ac-education",
+                "title": "Lịch sử học vấn",
+                "content": "<h3>Cử nhân Kế toán – ĐH Kinh tế TP.HCM</h3><ul><li>2015-2019: GPA 8.5/10.</li></ul><h3>Kế toán thực hành – Lê Ánh</h3><ul><li>2022: Thực hành chứng từ thực tế.</li></ul>"
+            },
+            {
+                "id": "ac-publicActivity",
+                "title": "Hoạt động xã hội",
+                "content": "<h3>Tình nguyện viên tài chính</h3><ul><li>2021-nay: Tư vấn chi tiêu.</li></ul><h3>Diễn đàn Kế toán VN</h3><ul><li>2020-nay: Chia sẻ kiến thức thuế.</li></ul>"
+            },
+            {
+                "id": "ac-certificates",
+                "title": "Chứng chỉ",
+                "content": "<ul><li>Kế toán trưởng</li><li>Kế toán thuế thực hành</li></ul>"
+            }
+        ]
+    },
+    {
+        "code": "uiux",
+        "name": "Thảo Nhi",
+        "subtitle": "Nhà thiết kế UI/UX",
+        "contact": {
+            "phone": "0912007890",
+            "fax": "0912007890",
+            "email": "ducph@vnpay.vn",
+            "facebook": "facebook.com/thaonhi",
+            "instagram": "instagram.com/thaonhi",
+            "address": "321 Đường GHI, Quận 10, TP.HCM"
+        },
+        "leftSections": [
+            {
+                "id": "uiux-objective",
+                "title": "Mục tiêu nghề nghiệp",
+                "content": "Tôi là Thảo Nhi, nhà thiết kế UI/UX với 2 năm kinh nghiệm, hướng đến tạo sản phẩm thân thiện và hiệu quả."
+            },
+            {
+                "id": "uiux-expertise",
+                "title": "Lĩnh vực chuyên môn",
+                "content": "<ul><li>Thiết kế UI/UX</li><li>Figma, Adobe XD</li><li>Wireframe & Prototype</li><li>Design System</li><li>HTML/CSS cơ bản</li></ul>"
+            },
+            {
+                "id": "uiux-otherSkills",
+                "title": "Kỹ năng khác",
+                "content": "<ul><li>Thấu hiểu người dùng</li><li>Trình bày ý tưởng</li><li>Tiếp nhận phản hồi</li><li>Tư duy lấy người dùng làm trung tâm</li></ul>"
+            }
+        ],
+        "rightSections": [
+            {
+                "id": "uiux-experiences",
+                "title": "Kinh nghiệm làm việc",
+                "content": "<h3>UI/UX Designer - ELSA Speak</h3><ul><li>Thiết kế giao diện app.</li><li>Thực hiện A/B testing.</li></ul><h3>Product Designer - Freelance</h3><ul><li>Phân tích hành vi người dùng.</li><li>Xây dựng style guide.</li></ul>"
+            },
+            {
+                "id": "uiux-education",
+                "title": "Lịch sử học vấn",
+                "content": "<h3>Cử nhân Mỹ thuật ĐPT – Arena Multimedia</h3><ul><li>2019-2022: Tốt nghiệp Giỏi.</li></ul><h3>UX Research – UX Hacker</h3><ul><li>2023: Thực hành usability testing.</li></ul>"
+            },
+            {
+                "id": "uiux-publicActivity",
+                "title": "Hoạt động xã hội",
+                "content": "<h3>Mentor – Designer VN</h3><ul><li>2022-nay: Hướng dẫn thiết kế UI.</li></ul><h3>UX Camp Saigon</h3><ul><li>2023: Tổ chức workshop UX.</li></ul>"
+            },
+            {
+                "id": "uiux-certificates",
+                "title": "Chứng chỉ",
+                "content": "<ul><li>Google UX Design</li><li>Interaction Design – Coursera</li></ul>"
+            }
+        ]
+    },
+    {
+        "code": "be",
+        "name": "Đức Hiếu",
+        "subtitle": "Lập trình viên Backend",
+        "contact": {
+            "phone": "0908777123",
+            "fax": "0908777123",
+            "email": "toanthu@vngcloud.vn",
+            "facebook": "facebook.com/duchieube",
+            "instagram": "instagram.com/duchieube",
+            "address": "101 Đường KLM, Quận 4, TP.HCM"
+        },
+        "leftSections": [
+            {
+                "id": "be-objective",
+                "title": "Mục tiêu nghề nghiệp",
+                "content": "Tôi là Đức Hiếu, lập trình viên Backend với 3 năm kinh nghiệm, hướng đến trở thành kiến trúc sư phần mềm."
+            },
+            {
+                "id": "be-expertise",
+                "title": "Lĩnh vực chuyên môn",
+                "content": "<ul><li>Node.js, Express</li><li>Python (Django)</li><li>REST API & GraphQL</li><li>PostgreSQL, MongoDB</li><li>Docker, CI/CD</li></ul>"
+            },
+            {
+                "id": "be-otherSkills",
+                "title": "Kỹ năng khác",
+                "content": "<ul><li>Debug với ELK Stack</li><li>Unit test (Jest)</li><li>Triển khai Docker</li><li>Giao tiếp kỹ thuật</li></ul>"
+            }
+        ],
+        "rightSections": [
+            {
+                "id": "be-experiences",
+                "title": "Kinh nghiệm làm việc",
+                "content": "<h3>Backend Developer - Tiki.vn</h3><ul><li>Xây dựng microservices.</li><li>Tối ưu cache & queue.</li></ul><h3>Freelance Backend</h3><ul><li>Thiết kế API & database.</li><li>Triển khai Docker.</li></ul>"
+            },
+            {
+                "id": "be-education",
+                "title": "Lịch sử học vấn",
+                "content": "<h3>Cử nhân CNTT – ĐH Bách Khoa</h3><ul><li>2017-2021: GPA 8.5/10.</li></ul><h3>Backend – VTC Academy</h3><ul><li>2022: REST API & Docker.</li></ul>"
+            },
+            {
+                "id": "be-publicActivity",
+                "title": "Hoạt động xã hội",
+                "content": "<h3>Mentor – Code4Fun VN</h3><ul><li>2022-nay: Dạy thiết kế API.</li></ul><h3>DevConf 2023</h3><ul><li>2023: Nói về microservices.</li></ul>"
+            },
+            {
+                "id": "be-certificates",
+                "title": "Chứng chỉ",
+                "content": "<ul><li>AWS Developer Associate</li><li>MongoDB Developer</li></ul>"
+            }
+        ]
+    },
+    {
+        "code": "data",
+        "name": "Đức Hiếu",
+        "subtitle": "Data Analyst",
+        "contact": {
+            "phone": "0988123456",
+            "fax": "0988123456",
+            "email": "vynguyen@shopee.com",
+            "facebook": "facebook.com/duchieudata",
+            "instagram": "instagram.com/duchieudata",
+            "address": "555 Đường NOP, Quận 5, TP.HCM"
+        },
+        "leftSections": [
+            {
+                "id": "data-objective",
+                "title": "Mục tiêu nghề nghiệp",
+                "content": "Tôi là Đức Hiếu, Data Analyst với 2 năm kinh nghiệm, hướng đến trở thành chuyên gia phân tích dữ liệu."
+            },
+            {
+                "id": "data-expertise",
+                "title": "Lĩnh vực chuyên môn",
+                "content": "<ul><li>SQL (PostgreSQL)</li><li>Python (pandas)</li><li>Power BI, Tableau</li><li>ETL & Data Modeling</li><li>A/B Testing</li></ul>"
+            },
+            {
+                "id": "data-otherSkills",
+                "title": "Kỹ năng khác",
+                "content": "<ul><li>Kể chuyện bằng dữ liệu</li><li>Làm việc nhóm</li><li>Hiểu mô hình kinh doanh</li><li>Tư duy phân tích</li></ul>"
+            }
+        ],
+        "rightSections": [
+            {
+                "id": "data-experiences",
+                "title": "Kinh nghiệm làm việc",
+                "content": "<h3>Data Analyst - Haravan</h3><ul><li>Xây dựng báo cáo Power BI.</li><li>Tối ưu pipeline dữ liệu.</li></ul><h3>Freelance Data Analyst</h3><ul><li>Tư vấn KPI.</li><li>Phân tích hành vi người dùng.</li></ul>"
+            },
+            {
+                "id": "data-education",
+                "title": "Lịch sử học vấn",
+                "content": "<h3>Cử nhân Thống kê – ĐH Kinh tế</h3><ul><li>2016-2020: GPA 8.3/10.</li></ul><h3>Data Analyst – Udacity</h3><ul><li>2022: Python & SQL.</li></ul>"
+            },
+            {
+                "id": "data-publicActivity",
+                "title": "Hoạt động xã hội",
+                "content": "<h3>Vietnam Data Stories</h3><ul><li>2023-nay: Phân tích dữ liệu xã hội.</li></ul><h3>Hackathon TP.HCM</h3><ul><li>2022: Top 5 phân tích môi trường.</li></ul>"
+            },
+            {
+                "id": "data-certificates",
+                "title": "Chứng chỉ",
+                "content": "<ul><li>Google Data Analytics</li><li>Tableau Desktop Specialist</li></ul>"
+            }
+        ]
+    },
+    {
+        "code": "pm",
+        "name": "Đức Hiếu",
+        "subtitle": "Project Manager",
+        "contact": {
+            "phone": "0977111222",
+            "fax": "0977111222",
+            "email": "minhpq@fpt.com.vn",
+            "facebook": "facebook.com/duchieupm",
+            "instagram": "instagram.com/duchieupm",
+            "address": "777 Đường QRS, Quận 2, TP.HCM"
+        },
+        "leftSections": [
+            {
+                "id": "pm-objective",
+                "title": "Mục tiêu nghề nghiệp",
+                "content": "Tôi là Đức Hiếu, Project Manager với 4 năm kinh nghiệm, hướng đến trở thành Product Owner hoặc quản lý cấp cao."
+            },
+            {
+                "id": "pm-expertise",
+                "title": "Lĩnh vực chuyên môn",
+                "content": "<ul><li>Agile, Scrum</li><li>Quản lý tiến độ & ngân sách</li><li>Jira, Trello</li><li>Giao tiếp khách hàng</li><li>Phối hợp đa phòng ban</li></ul>"
+            },
+            {
+                "id": "pm-otherSkills",
+                "title": "Kỹ năng khác",
+                "content": "<ul><li>Giao tiếp thuyết phục</li><li>Lãnh đạo nhóm</li><li>Đánh giá hiệu suất</li><li>Lập báo cáo</li></ul>"
+            }
+        ],
+        "rightSections": [
+            {
+                "id": "pm-experiences",
+                "title": "Kinh nghiệm làm việc",
+                "content": "<h3>Project Manager - Orient Software</h3><ul><li>Quản lý dự án web & mobile.</li><li>Triển khai Agile Scrum.</li></ul><h3>Project Coordinator - NashTech</h3><ul><li>Theo dõi backlog.</li><li>Liên hệ khách hàng.</li></ul>"
+            },
+            {
+                "id": "pm-education",
+                "title": "Lịch sử học vấn",
+                "content": "<h3>Cử nhân QTHS – ĐH Ngân hàng</h3><ul><li>2014-2018: GPA 8.2/10.</li></ul><h3>Agile – Agile Academy</h3><ul><li>2021: Học Scrum & Agile.</li></ul>"
+            },
+            {
+                "id": "pm-publicActivity",
+                "title": "Hoạt động xã hội",
+                "content": "<h3>Mentor – Agile VN</h3><ul><li>2022-nay: Hướng dẫn Scrum.</li></ul><h3>PM Day 2023</h3><ul><li>2023: Nói về giao tiếp Scrum.</li></ul>"
+            },
+            {
+                "id": "pm-certificates",
+                "title": "Chứng chỉ",
+                "content": "<ul><li>PSM I</li><li>PMP</li></ul>"
+            }
+        ]
+    },
+    {
+        "code": "qa",
+        "name": "Đức Hiếu",
+        "subtitle": "QA Engineer",
+        "contact": {
+            "phone": "0939777111",
+            "fax": "0939777111",
+            "email": "tranngo@kms.vn",
+            "facebook": "facebook.com/duchieuqa",
+            "instagram": "instagram.com/duchieuqa",
+            "address": "999 Đường TUV, Quận 9, TP.HCM"
+        },
+        "leftSections": [
+            {
+                "id": "qa-objective",
+                "title": "Mục tiêu nghề nghiệp",
+                "content": "Tôi là Đức Hiếu, QA Engineer, hướng đến phát triển kiểm thử tự động để đảm bảo chất lượng phần mềm."
+            },
+            {
+                "id": "qa-expertise",
+                "title": "Lĩnh vực chuyên môn",
+                "content": "<ul><li>Manual & Automation Testing</li><li>Selenium, Cypress</li><li>API Testing (Postman)</li><li>TestRail, Zephyr</li><li>Agile & Scrum</li></ul>"
+            },
+            {
+                "id": "qa-otherSkills",
+                "title": "Kỹ năng khác",
+                "content": "<ul><li>Tư duy chi tiết</li><li>Phân tích lỗi (RCA)</li><li>Phối hợp với Dev</li><li>Giao tiếp nhanh chóng</li></ul>"
+            }
+        ],
+        "rightSections": [
+            {
+                "id": "qa-experiences",
+                "title": "Kinh nghiệm làm việc",
+                "content": "<h3>QA Engineer - TMA Solutions</h3><ul><li>Viết test case & automated tests.</li><li>Tham gia Scrum.</li></ul><h3>Manual Tester - VNG</h3><ul><li>Kiểm thử đa nền tảng.</li><li>Test API với Postman.</li></ul>"
+            },
+            {
+                "id": "qa-education",
+                "title": "Lịch sử học vấn",
+                "content": "<h3>Cử nhân CNTT – ĐH SPKT</h3><ul><li>2015-2019: GPA 8.0/10.</li></ul><h3>ISTQB Foundation</h3><ul><li>2021: Quy trình test chuẩn.</li></ul>"
+            },
+            {
+                "id": "qa-publicActivity",
+                "title": "Hoạt động xã hội",
+                "content": "<h3>Test Mentor</h3><ul><li>2023-nay: Hỗ trợ viết test case.</li></ul><h3>VietTesters</h3><ul><li>2022-nay: Chia sẻ kiểm thử API.</li></ul>"
+            },
+            {
+                "id": "qa-certificates",
+                "title": "Chứng chỉ",
+                "content": "<ul><li>ISTQB Foundation</li><li>Selenium WebDriver</li></ul>"
+            }
+        ]
+    }
+]

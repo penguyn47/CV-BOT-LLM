@@ -12,13 +12,21 @@ interface NavItem {
     contentType: string | null
 }
 
+interface Reference {
+    code: string
+    name: string
+    subtitle: string
+}
+
 interface LeftSidebarProps {
     navItems: NavItem[]
     onClose: () => void
     activeContent: string | null
     handleNavClick: (contentType: string | null) => void
-    selectedColor: string // Thêm prop
-    onColorChange: (color: string) => void // Thêm prop
+    selectedColor: string
+    onColorChange: (color: string) => void
+    onReferenceSelect: (code: string) => void // Thêm prop
+    initialReference?: string
 }
 
 const colors = [
@@ -36,22 +44,26 @@ const templates = [
     { id: 4, name: "Định Xuân Thảo", subtitle: "", bgColor: "bg-gradient-to-br from-purple-500 to-pink-500" },
 ]
 
-interface Language {
-    code: string
-    name: string
-    flag: string
-}
-
-const languages: Language[] = [
+const languages = [
     { code: "en", name: "Tiếng Anh", flag: "🇬🇧" },
     { code: "vi", name: "Tiếng Việt", flag: "🇻🇳" },
 ]
 
-export default function LeftSidebar({ navItems, onClose, activeContent, handleNavClick, selectedColor, onColorChange }: LeftSidebarProps) {
-    // Xóa state cục bộ vì giờ sử dụng prop từ CVBuilder
-    // const [selectedColor, setSelectedColor] = useState("#FF6B35")
+const references: Reference[] = [
+    { code: "fe", name: "Minh Anh", subtitle: "Lập trình viên Frontend" },
+    { code: "seo", name: "Quang Huy", subtitle: "Chuyên viên SEO" },
+    { code: "ac", name: "Bích Ngọc", subtitle: "Kế toán viên" },
+    { code: "uiux", name: "Thảo Nhi", subtitle: "Nhà thiết kế UI/UX" },
+    { code: "be", name: "Đức Hiếu", subtitle: "Lập trình viên Backend" },
+    { code: "data", name: "Đức Hiếu", subtitle: "Data Analyst" },
+    { code: "pm", name: "Đức Hiếu", subtitle: "Project Manager" },
+    { code: "qa", name: "Đức Hiếu", subtitle: "QA Engineer" },
+]
+
+export default function LeftSidebar({ navItems, onClose, activeContent, handleNavClick, selectedColor, onColorChange, onReferenceSelect }: LeftSidebarProps) {
     const [selectedTemplate, setSelectedTemplate] = useState(templates[0].id)
     const [selectedLanguage, setSelectedLanguage] = useState("vi")
+    const [selectedReference, setSelectedReference] = useState("fe")
 
     const renderColorPicker = () => (
         <div className="space-y-3">
@@ -179,13 +191,41 @@ export default function LeftSidebar({ navItems, onClose, activeContent, handleNa
                 <Button
                     key={language.code}
                     variant="outline"
-                    className={`w-full justify-start h-10 px-3 relative bg-white text-gray-900 border-gray-200 hover:bg-gray-50 ${selectedLanguage === language.code ? "border-green-500 bg-green-50" : ""
-                        }`}
+                    className={`w-full justify-start h-10 px-3 relative bg-white text-gray-900 border-gray-200 hover:bg-gray-50 ${selectedLanguage === language.code ? "border-green-500 bg-green-50" : ""}`}
                     onClick={() => setSelectedLanguage(language.code)}
                 >
                     <span className="text-xl mr-2">{language.flag}</span>
                     <span className="text-sm font-medium">{language.name}</span>
                     {selectedLanguage === language.code && <Check className="absolute right-2 h-4 w-4 text-green-600" />}
+                </Button>
+            ))}
+        </div>
+    )
+
+    const renderReferencePicker = () => (
+        <div className="space-y-3">
+            <div className="flex justify-between items-center">
+                <h3 className="text-lg font-medium text-gray-900">Chọn CV tham khảo</h3>
+                <Button
+                    variant="ghost"
+                    className="text-gray-900 p-0 h-auto"
+                    onClick={onClose}
+                >
+                    ✕
+                </Button>
+            </div>
+            {references.map((reference) => (
+                <Button
+                    key={reference.code}
+                    variant="outline"
+                    className={`w-full justify-start h-10 px-3 relative bg-white text-gray-900 border-gray-200 hover:bg-gray-50 ${selectedReference === reference.code ? "border-green-500 bg-green-50" : ""}`}
+                    onClick={() => {
+                        setSelectedReference(reference.code)
+                        onReferenceSelect(reference.code)
+                    }}
+                >
+                    <span className="text-sm font-medium">{reference.name} - {reference.subtitle}</span>
+                    {selectedReference === reference.code && <Check className="absolute right-2 h-4 w-4 text-green-600" />}
                 </Button>
             ))}
         </div>
@@ -198,14 +238,14 @@ export default function LeftSidebar({ navItems, onClose, activeContent, handleNa
                     {activeContent === "color" && renderColorPicker()}
                     {activeContent === "template" && renderTemplatePicker()}
                     {activeContent === "language" && renderLanguageSelector()}
+                    {activeContent === "reference" && renderReferencePicker()}
                     {!activeContent && (
                         <div className="space-y-1">
                             {navItems.map((item) => (
                                 <Button
                                     key={item.id}
                                     variant={item.active ? "default" : "ghost"}
-                                    className={`w-full flex items-center gap-2 justify-start ${item.highlight ? "bg-red-600 hover:bg-red-700 text-white" : ""
-                                        } ${item.active ? "bg-blue-500 hover:bg-blue-600 text-white" : ""}`}
+                                    className={`w-full flex items-center gap-2 justify-start ${item.highlight ? "bg-red-600 hover:bg-red-700 text-white" : ""} ${item.active ? "bg-blue-500 hover:bg-blue-600 text-white" : ""}`}
                                     onClick={() => handleNavClick(item.contentType)}
                                 >
                                     <span>{item.icon}</span>

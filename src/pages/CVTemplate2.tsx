@@ -194,6 +194,7 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
 
   const handleAddSection = (sectionId: string, side: 'left' | 'right') => {
     try {
+      console.log('handleAddSection called', { sectionId, side });
       const newSection = { id: uuidv4(), title: 'Tiêu đề', content: 'Nội dung' };
       let newLeftSections = [...data.leftSections];
       let newRightSections = [...data.rightSections];
@@ -217,6 +218,7 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
 
   const handleDeleteSection = (sectionId: string, side: 'left' | 'right', pageIndex: number) => {
     try {
+      console.log('handleDeleteSection called', { sectionId, side, pageIndex });
       let newLeftSections = [...data.leftSections];
       let newRightSections = [...data.rightSections];
 
@@ -248,6 +250,7 @@ export default function CVTemplate2({ data, onContentChange, selectedFont, selec
 
   const handleSectionContentChange = (sectionId: string, side: 'left' | 'right', value: { title: string; content: string }, pageIndex: number) => {
     try {
+      console.log('handleSectionContentChange:', { sectionId, side, value, pageIndex });
       let newLeftSections = [...data.leftSections];
       let newRightSections = [...data.rightSections];
 
