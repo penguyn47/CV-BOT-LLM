@@ -6,6 +6,7 @@ import StepNavBar from '@/components/StepNavBar'
 import { Resume, WorkExperience, Hint } from '@/lib/types'
 import { useSearchParams } from 'next/navigation'
 import { ChangeEvent, useEffect, useState, useCallback } from 'react'
+import { DiVim } from 'react-icons/di'
 import { FaRobot } from 'react-icons/fa'
 import { MdWork } from 'react-icons/md'
 import { v4 } from 'uuid'
@@ -20,6 +21,7 @@ export default function Page() {
 	const [aiDescription, setAiDescription] = useState<string>('')
 	const [hints, setHints] = useState<Hint[]>([])
 	const [hintsLoading, setHintsLoading] = useState(false)
+	const [isLoading, setIsLoading] = useState(false)
 
 	// Hàm debounce tùy chỉnh
 	const debounce = <T extends (...args: any[]) => void>(func: T, wait: number) => {
@@ -148,6 +150,7 @@ export default function Page() {
 		}
 
 		try {
+			setIsLoading(true)
 			const response = await fetch('/api/openai/experience', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
@@ -171,6 +174,8 @@ export default function Page() {
 		} catch (error) {
 			console.error('Error processing AI description:', error)
 			alert('Đã xảy ra lỗi khi gọi API OpenAI.')
+		} finally {
+			setIsLoading(false)
 		}
 	}
 
@@ -309,20 +314,30 @@ export default function Page() {
 												className="w-full rounded-md border border-gray-800 px-3 py-2 focus:ring-2 focus:ring-gray-500 focus:outline-none"
 												placeholder="Nhập mô tả công việc để AI phân tích..."
 											/>
-											<div className="mt-2 flex gap-2">
-												<button
-													onClick={() => handleAIConfirm(item.id || '')}
-													className="flex items-center justify-center rounded bg-gray-800 px-2 py-1 text-white hover:cursor-pointer hover:bg-gray-600"
-												>
-													Xác nhận
-												</button>
-												<button
-													onClick={() => setShowAIDescription(null)}
-													className="flex items-center justify-center rounded bg-gray-300 px-2 py-1 hover:cursor-pointer hover:bg-gray-200"
-												>
-													Hủy
-												</button>
-											</div>
+											{!isLoading && (
+												<div className="mt-2 flex gap-2">
+													<button
+														onClick={() => handleAIConfirm(item.id || '')}
+														className="flex items-center justify-center rounded bg-gray-800 px-2 py-1 text-white hover:cursor-pointer hover:bg-gray-600"
+													>
+														Xác nhận
+													</button>
+													<button
+														onClick={() => setShowAIDescription(null)}
+														className="flex items-center justify-center rounded bg-gray-300 px-2 py-1 hover:cursor-pointer hover:bg-gray-200"
+													>
+														Hủy
+													</button>
+												</div>
+											)}
+											{isLoading && (
+												<div className="mt-2 flex gap-2">
+													<button className="flex items-center justify-center rounded bg-gray-800 px-2 py-1 text-white hover:cursor-pointer hover:bg-gray-600">
+														<div className="mr-3 h-5 w-5 animate-spin rounded-full border-4 border-white border-t-transparent"></div>
+														Đang xử lý AI
+													</button>
+												</div>
+											)}
 										</div>
 									)}
 									<div

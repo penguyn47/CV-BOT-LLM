@@ -16,6 +16,7 @@ export default function Page() {
 	const [summary, setSummary] = useState<string>('')
 	const [hints, setHints] = useState<Hint[]>([])
 	const [hintsLoading, setHintsLoading] = useState(false)
+	const [isLoading, setIsLoading] = useState(false)
 
 	// Hàm debounce tùy chỉnh
 	const debounce = <T extends (...args: any[]) => void>(func: T, wait: number) => {
@@ -96,6 +97,7 @@ export default function Page() {
 
 	const handleAIConfirm = async () => {
 		try {
+			setIsLoading(true)
 			const response = await fetch('/api/openai/summary', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
@@ -113,6 +115,8 @@ export default function Page() {
 		} catch (error) {
 			console.error('Error processing AI description:', error)
 			alert('Đã xảy ra lỗi khi gọi API OpenAI.')
+		} finally {
+			setIsLoading(false)
 		}
 	}
 
@@ -193,13 +197,23 @@ export default function Page() {
 									placeholder="Nhập tổng quan bản thân..."
 									className="w-full rounded border border-gray-300 px-2 py-1 focus:ring-2 focus:ring-gray-600 focus:outline-none"
 								/>
-								<div
-									onClick={handleAIConfirm}
-									className="flex w-fit items-center justify-center gap-4 rounded bg-gray-800 px-2 py-1 text-white hover:cursor-pointer hover:bg-gray-600"
-								>
-									<FaRobot />
-									<div>Dùng AI</div>
-								</div>
+								{!isLoading && (
+									<div
+										onClick={handleAIConfirm}
+										className="flex w-fit items-center justify-center gap-4 rounded bg-gray-800 px-2 py-1 text-white hover:cursor-pointer hover:bg-gray-600"
+									>
+										<FaRobot />
+										<div>Dùng AI</div>
+									</div>
+								)}
+								{isLoading && (
+									<div className="mt-2 flex gap-2">
+										<button className="flex items-center justify-center rounded bg-gray-800 px-2 py-1 text-white hover:cursor-pointer hover:bg-gray-600">
+											<div className="mr-3 h-5 w-5 animate-spin rounded-full border-4 border-white border-t-transparent"></div>
+											Đang xử lý AI
+										</button>
+									</div>
+								)}
 							</div>
 						</div>
 					</div>

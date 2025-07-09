@@ -47,6 +47,8 @@ export async function POST(request: Request): Promise<NextResponse> {
 		})
 
 		const content = completion.choices[0]?.message.content
+		// console.log('resume: ', resumeData)
+		// console.log('content: ', content)
 		if (!content) {
 			return NextResponse.json({ error: 'Không nhận được nội dung từ OpenAI' }, { status: 500 })
 		}
