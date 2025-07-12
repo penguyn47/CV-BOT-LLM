@@ -158,7 +158,7 @@ export default function Page() {
 
 	return (
 		<div className="flex h-screen min-h-screen items-center justify-center bg-gray-100 p-4">
-			<div className="flex w-full max-w-7xl flex-col gap-6">
+			<div className="flex h-screen w-full max-w-7xl flex-col gap-6">
 				{/* Resume Selection and Preview Section */}
 				<div className="flex flex-col gap-6 md:flex-row">
 					{/* Resume Selection List */}
@@ -314,7 +314,7 @@ export default function Page() {
 				</div>
 			</div>
 			{showChat && (
-				<div className="-mr-20 ml-20 flex h-screen max-h-[96%] w-1/4 flex-col border-l border-gray-300 bg-white shadow-lg">
+				<div className="fixed right-4 bottom-4 flex h-[400px] max-h-[96%] w-[400px] flex-col border-l border-gray-300 bg-white shadow-lg">
 					{/* Header */}
 					<div className="flex items-center justify-between bg-blue-600 px-4 py-3 text-white">
 						<span className="font-semibold">Trợ lý AI</span>
