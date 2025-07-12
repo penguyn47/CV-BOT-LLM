@@ -4,9 +4,9 @@ import { FaUser } from 'react-icons/fa'
 import { IoDocuments } from 'react-icons/io5'
 import { FaRobot } from 'react-icons/fa'
 
-export default function Navbar() {
+export default function Navbar({ className }: { className?: string }) {
 	return (
-		<div className="fixed top-0 left-0 z-50 w-full border-b-3 border-gray-300 bg-white px-4 py-2 shadow-md">
+		<div className={`fixed top-0 left-0 z-50 w-full border-b-3 border-gray-300 bg-white px-4 py-2 shadow-md ${className || ''}`}>
 			<div className="mx-auto flex max-w-7xl items-center justify-between">
 				{/* PAGE ICON SECTION */}
 				<Link className="hover:text-gray-400" href="/">

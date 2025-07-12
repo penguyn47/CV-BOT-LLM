@@ -1,13 +1,58 @@
 @import 'tailwindcss';
 
+/* Print styles - chỉ áp dụng khi in */
 @media print {
+	body {
+		margin: 0;
+		padding: 0;
+	}
+	
 	#resumePreviewContent {
 		zoom: 1 !important;
-		padding: 1.5rem;
+		transform: none !important;
+		padding: 0 !important;
+		margin: 0 !important;
+		width: 210mm !important;
+		height: 297mm !important;
+		overflow: visible !important;
+		background-color: white !important;
+		/* Loại bỏ scroll khi in */
+		overflow-y: visible !important;
+		overflow-x: visible !important;
+	}
+	
+	/* Ẩn các phần tử không cần thiết khi in */
+	.navbar, .no-print {
+		display: none !important;
+	}
+	
+	/* Đảm bảo container CV có kích thước A4 chính xác khi in */
+	.aspect-\[210\/297\] {
+		width: 210mm !important;
+		height: 297mm !important;
+		aspect-ratio: unset !important;
 	}
 }
 
 @page {
 	size: A4;
-	margin: 0px;
+	margin: 0;
+}
+
+/* CV container styles */
+.cv-container {
+	width: 210mm;
+	height: 297mm;
+	max-width: 100%;
+	max-height: 100vh;
+	background: white;
+	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.cv-content {
+	width: 100%;
+	height: 100%;
+	padding: 20mm;
+	box-sizing: border-box;
+	overflow: hidden;
 }

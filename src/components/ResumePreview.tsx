@@ -13,7 +13,6 @@ export default function ResumePreview({
 	contentRef?: React.Ref<HTMLDivElement>
 }) {
 	const containerRef = useRef<HTMLDivElement>(null)
-
 	const { width } = useDimensions(containerRef)
 
 	return (

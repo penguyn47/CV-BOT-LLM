@@ -160,7 +160,7 @@ function EducationSection({ resumeData }: { resumeData: any }) {
 	}
 
 	const educationsNotEmpty = resumeData.educations?.filter(
-		(edu: any) => edu.degree || edu.institution || (edu.startDate && isValidDate(edu.startDate)),
+		(edu: any) => edu.degree || edu.institution || edu.fieldOfStudy || edu.city || (edu.startDate && isValidDate(edu.startDate)),
 	)
 
 	if (!educationsNotEmpty?.length) {
@@ -181,21 +181,38 @@ function EducationSection({ resumeData }: { resumeData: any }) {
 			</p>
 			{educationsNotEmpty.map((edu: any, index: any) => (
 				<div key={index} className="break-inside-avoid space-y-1">
-					{(edu.degree || (edu.startDate && isValidDate(edu.startDate))) && (
+					{/* Dòng 1: Tên trường với Thành phố */}
+					{(edu.institution || edu.city) && (
 						<div className="flex items-center justify-between text-sm font-semibold">
-							{edu.degree && <span style={{ color: resumeData.secondaryColor }}>{edu.degree}</span>}
-							{edu.startDate && isValidDate(edu.startDate) && (
+							{edu.institution && (
+								<span style={{ color: resumeData.secondaryColor }}>{edu.institution}</span>
+							)}
+							{edu.city && (
+								<span style={{ color: resumeData.textColor }}>
+									{edu.city}
+								</span>
+							)}
+						</div>
+					)}
+					{/* Dòng 2: Bằng cấp với Chuyên ngành */}
+					{(edu.degree || edu.fieldOfStudy) && (
+						<div className="flex items-center justify-between text-sm font-semibold">
+							<div className="flex flex-col">
+								{edu.degree && <span style={{ color: resumeData.secondaryColor }}>{edu.degree}</span>}
+								{edu.fieldOfStudy && (
+									<span className="text-xs" style={{ color: resumeData.textColor }}>
+										{edu.fieldOfStudy}
+									</span>
+								)}
+							</div>
+							{/* Dòng 3: Ngày bắt đầu với Ngày kết thúc */}
+							{(edu.startDate && isValidDate(edu.startDate)) && (
 								<span style={{ color: resumeData.textColor }}>
 									{formatDate(edu.startDate, 'MM/yyyy')}
 									{edu.endDate && isValidDate(edu.endDate) ? ` - ${formatDate(edu.endDate, 'MM/yyyy')}` : ''}
 								</span>
 							)}
 						</div>
-					)}
-					{edu.institution && (
-						<p className="text-xs font-semibold" style={{ color: resumeData.secondaryColor }}>
-							{edu.institution}
-						</p>
 					)}
 				</div>
 			))}
@@ -226,7 +243,15 @@ function SkillsSection({ resumeData }: { resumeData: any }) {
 			</p>
 			<div className="flex break-inside-avoid flex-wrap gap-2">
 				{resumeData.skills.map((skill: any, index: any) => (
-					<div key={index} style={{ color: resumeData.textColor }}>
+					<div 
+						key={index} 
+						className="inline-block px-3 py-1 text-sm font-medium"
+						style={{ 
+							color: resumeData.textColor,
+							borderBottom: `2px solid ${resumeData.secondaryColor}`,
+							borderRadius: '0',
+						}}
+					>
 						{skill}
 					</div>
 				))}
