@@ -11,7 +11,7 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body>
-				<Navbar />
+				<Navbar className="no-print" />
 				<br />
 				<br />
 				<Suspense>{children}</Suspense>

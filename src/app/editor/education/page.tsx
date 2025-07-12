@@ -135,6 +135,8 @@ export default function Page() {
 			id: v4(),
 			institution: '',
 			degree: '',
+			fieldOfStudy: '',
+			city: '',
 			startDate: '',
 			endDate: '',
 		}
@@ -191,8 +193,9 @@ export default function Page() {
 						</div>
 						<div className="col-span-4 mt-4 flex flex-col gap-y-4">
 							{educations.map((item, index) => (
-								<div key={item.id} className="relative grid grid-cols-3 gap-x-4 rounded border px-8 py-6">
-									<div className="col-span-1">
+								<div key={item.id} className="relative grid grid-cols-4 gap-x-4 rounded border px-8 py-6">
+									{/* Dòng 1: Tên trường với Thành phố */}
+									<div className="col-span-2">
 										<div>Tên trường/Cơ sở</div>
 										<input
 											value={item.institution}
@@ -202,7 +205,18 @@ export default function Page() {
 											className="w-full rounded-md border border-gray-800 px-3 py-2 focus:ring-2 focus:ring-gray-500 focus:outline-none"
 										/>
 									</div>
-									<div className="col-span-1">
+									<div className="col-span-2">
+										<div>Thành phố</div>
+										<input
+											value={item.city}
+											onChange={(e) => {
+												updateEducation(item.id || '', { city: e.target.value })
+											}}
+											className="w-full rounded-md border border-gray-800 px-3 py-2 focus:ring-2 focus:ring-gray-500 focus:outline-none"
+										/>
+									</div>
+									{/* Dòng 2: Bằng cấp với Chuyên ngành */}
+									<div className="col-span-2">
 										<div>Bằng cấp</div>
 										<input
 											value={item.degree}
@@ -212,8 +226,18 @@ export default function Page() {
 											className="w-full rounded-md border border-gray-800 px-3 py-2 focus:ring-2 focus:ring-gray-500 focus:outline-none"
 										/>
 									</div>
-									<div className="col-span-1" />
-									<div className="col-span-1">
+									<div className="col-span-2">
+										<div>Ngành học</div>
+										<input
+											value={item.fieldOfStudy}
+											onChange={(e) => {
+												updateEducation(item.id || '', { fieldOfStudy: e.target.value })
+											}}
+											className="w-full rounded-md border border-gray-800 px-3 py-2 focus:ring-2 focus:ring-gray-500 focus:outline-none"
+										/>
+									</div>
+									{/* Dòng 3: Ngày bắt đầu với Ngày kết thúc */}
+									<div className="col-span-2">
 										<div>Ngày bắt đầu</div>
 										<input
 											type="date"
@@ -224,7 +248,7 @@ export default function Page() {
 											className="w-full rounded-md border border-gray-800 px-3 py-2 focus:ring-2 focus:ring-gray-500 focus:outline-none"
 										/>
 									</div>
-									<div className="col-span-1">
+									<div className="col-span-2">
 										<div>Ngày kết thúc</div>
 										<input
 											type="date"
