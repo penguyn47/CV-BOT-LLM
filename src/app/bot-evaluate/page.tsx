@@ -140,7 +140,7 @@ export default function Page() {
 			const response = await fetch('/api/openai/chat', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ message: userMessage, resumeData: selectedResume }),
+				body: JSON.stringify({ message: userMessage, resumeData: { ...selectedResume, photoData: '' } }),
 			})
 
 			const data = await response.json()
