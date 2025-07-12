@@ -50,10 +50,10 @@ export async function POST(request: Request): Promise<NextResponse> {
 
       Hãy trích xuất thông tin từ văn bản trên và trả về một đối tượng JSON.
     `
-
+		// gpt-3.5-turbo
 		// Gửi yêu cầu đến OpenAI
 		const completion = await openai.chat.completions.create({
-			model: 'gpt-3.5-turbo',
+			model: 'gpt-4o-mini',
 			messages: [
 				{ role: 'system', content: prompt },
 				{ role: 'user', content: description },

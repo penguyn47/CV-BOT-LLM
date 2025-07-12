@@ -4,6 +4,7 @@ import { ProfileService } from './ProfileService'
 import OpenAI from 'openai'
 import { Resume } from './types'
 import { v4 } from 'uuid'
+import profileData from '../../data/profile.json'
 
 type CurrentState = {
 	success: boolean
@@ -17,9 +18,16 @@ export const createResume = async (currentState: CurrentState, formData: FormDat
 	const newResume = await resumeSerivce.createResume({
 		title: data.title,
 		description: data.description,
-		workExperiences: [],
-		educations: [],
+		workExperiences: profileData.experience,
+		educations: profileData.education,
 		skills: [],
+		lastName: profileData.lastName,
+		firstName: profileData.firstName,
+		phone: profileData.phone,
+		email: profileData.email,
+		city: profileData.city,
+		country: profileData.country,
+		jobTitle: profileData.job,
 	})
 
 	return { success: true, error: false, data: { id: newResume.id } }

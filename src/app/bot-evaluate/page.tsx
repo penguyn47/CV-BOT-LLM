@@ -2,6 +2,7 @@
 
 import { Resume, Hint } from '@/lib/types'
 import { useEffect, useState } from 'react'
+import ReactMarkdown from 'react-markdown'
 import ResumePreview from '@/components/ResumePreview'
 import Link from 'next/link'
 
@@ -14,6 +15,10 @@ export default function Page() {
 	const [evaluationResult, setEvaluationResult] = useState<string | null>(null)
 	const [hints, setHints] = useState<Hint[]>([])
 	const [hintsLoading, setHintsLoading] = useState(false)
+	const [showChat, setShowChat] = useState(false)
+	const [messages, setMessages] = useState<string[]>(['AI: Xin chào! Tôi có thể giúp gì cho bạn hôm nay?'])
+	const [message, setMessage] = useState('')
+	const [loadingChat, setLoadingChat] = useState(false)
 
 	useEffect(() => {
 		const fetchResume = async () => {
@@ -123,8 +128,36 @@ export default function Page() {
 		}
 	}
 
+	const handleSendMessage = async () => {
+		if (!message.trim()) return
+
+		const userMessage = message.trim()
+		setMessages((prev) => [...prev, `USER: ${userMessage}`])
+		setMessage('')
+		setLoadingChat(true)
+
+		try {
+			const response = await fetch('/api/openai/chat', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ message: userMessage, resumeData: selectedResume }),
+			})
+
+			const data = await response.json()
+			if (data.reply) {
+				setMessages((prev) => [...prev, `AI: ${data.reply}`])
+			} else {
+				setMessages((prev) => [...prev, 'AI: Xin lỗi, có lỗi xảy ra.'])
+			}
+		} catch (err) {
+			setMessages((prev) => [...prev, 'AI: Không thể kết nối đến máy chủ.'])
+		} finally {
+			setLoadingChat(false)
+		}
+	}
+
 	return (
-		<div className="flex min-h-screen items-center justify-center bg-gray-100 p-4">
+		<div className="flex h-screen min-h-screen items-center justify-center bg-gray-100 p-4">
 			<div className="flex w-full max-w-7xl flex-col gap-6">
 				{/* Resume Selection and Preview Section */}
 				<div className="flex flex-col gap-6 md:flex-row">
@@ -181,6 +214,15 @@ export default function Page() {
 						)}
 					</div>
 				</div>
+
+				{!showChat && (
+					<button
+						onClick={() => setShowChat(true)}
+						className="fixed right-6 bottom-6 z-50 rounded-full bg-blue-600 px-4 py-2 text-white shadow-lg hover:bg-blue-700"
+					>
+						💬 Chat với AI
+					</button>
+				)}
 
 				{/* Job Description Section */}
 				<div className="w-full rounded-lg bg-white p-6 shadow-lg">
@@ -271,6 +313,65 @@ export default function Page() {
 					)}
 				</div>
 			</div>
+			{showChat && (
+				<div className="-mr-20 ml-20 flex h-screen max-h-[96%] w-1/4 flex-col border-l border-gray-300 bg-white shadow-lg">
+					{/* Header */}
+					<div className="flex items-center justify-between bg-blue-600 px-4 py-3 text-white">
+						<span className="font-semibold">Trợ lý AI</span>
+						<button onClick={() => setShowChat(false)} className="text-lg hover:text-gray-200">
+							✖
+						</button>
+					</div>
+
+					{/* Nội dung chat */}
+					{/* Nội dung chat */}
+					<div className="flex-1 space-y-3 overflow-y-auto p-4 text-sm text-gray-800">
+						{messages.map((msg, idx) => {
+							const isUser = msg.startsWith('USER:')
+							const content = msg.replace(/^(USER|AI):\s*/, '')
+
+							return (
+								<div key={idx} className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-2`}>
+									<div
+										className={`max-w-[70%] rounded-xl px-4 py-3 text-sm leading-relaxed break-words whitespace-pre-wrap ${
+											isUser ? 'bg-blue-100 text-right' : 'bg-gray-100 text-left'
+										}`}
+									>
+										{isUser ? <span>{content}</span> : <ReactMarkdown>{content}</ReactMarkdown>}
+									</div>
+								</div>
+							)
+						})}
+
+						{loadingChat && (
+							<div className="flex justify-start">
+								<div className="rounded-lg bg-gray-200 px-3 py-2 text-left text-sm text-gray-600 italic">
+									Đang soạn phản hồi...
+								</div>
+							</div>
+						)}
+					</div>
+
+					{/* Input */}
+					{/* Input */}
+					<div className="flex items-center border-t p-3">
+						<input
+							type="text"
+							value={message}
+							onChange={(e) => setMessage(e.target.value)}
+							placeholder="Nhập tin nhắn..."
+							className="flex-1 rounded border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+							onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+						/>
+						<button
+							onClick={handleSendMessage}
+							className="ml-3 rounded bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
+						>
+							Gửi
+						</button>
+					</div>
+				</div>
+			)}
 		</div>
 	)
 }
