@@ -3,10 +3,11 @@
 import OneStepNavBar from '@/components/OneStepNavBar'
 import ResumePreview from '@/components/ResumePreview'
 import StepNavBar from '@/components/StepNavBar'
+import ChatBox from '@/components/ChatBox'
 import { Education, Resume, Hint } from '@/lib/types'
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useState, useCallback } from 'react'
-import { FaUserGraduate } from 'react-icons/fa'
+import { FaUserGraduate, FaComments } from 'react-icons/fa'
 import { v4 } from 'uuid'
 
 export default function Page() {
@@ -17,6 +18,7 @@ export default function Page() {
 	const [pendingUpdate, setPendingUpdate] = useState<Partial<Resume> | null>(null)
 	const [hints, setHints] = useState<Hint[]>([])
 	const [hintsLoading, setHintsLoading] = useState(false)
+	const [showChatBox, setShowChatBox] = useState(false)
 
 	// Hàm debounce tùy chỉnh
 	const debounce = <T extends (...args: any[]) => void>(func: T, wait: number) => {
@@ -175,174 +177,193 @@ export default function Page() {
 	}
 
 	return (
-		<div className="mb-8 grid grid-cols-1 lg:grid-cols-2">
-			<div className="col-span-1">
-				<StepNavBar stepName="education" resumeId={resumeId || ''} />
+		<>
+			<div className="mb-8 grid grid-cols-1 lg:grid-cols-2">
+				<div className="col-span-1">
+					<StepNavBar stepName="education" resumeId={resumeId || ''} />
 
-				{/* FORM BODY */}
-				<div className="p-4">
-					<div className="grid grid-cols-4 gap-x-4 gap-y-1">
-						<div className="col-span-2 flex flex-col justify-center gap-4">
-							<div
-								onClick={addNewEducation}
-								className="flex items-center justify-center gap-2 rounded bg-gray-800 px-2 py-1 text-white hover:cursor-pointer hover:bg-gray-600"
-							>
-								<FaUserGraduate />
-								<div>Thêm Học vấn</div>
+					{/* FORM BODY */}
+					<div className="p-4">
+						<div className="grid grid-cols-4 gap-x-4 gap-y-1">
+							<div className="col-span-2 flex flex-col justify-center gap-4">
+								<div
+									onClick={addNewEducation}
+									className="flex items-center justify-center gap-2 rounded bg-gray-800 px-2 py-1 text-white hover:cursor-pointer hover:bg-gray-600"
+								>
+									<FaUserGraduate />
+									<div>Thêm Học vấn</div>
+								</div>
 							</div>
-						</div>
-						<div className="col-span-4 mt-4 flex flex-col gap-y-4">
-							{educations.map((item, index) => (
-								<div key={item.id} className="relative grid grid-cols-4 gap-x-4 rounded border px-8 py-6">
-									{/* Dòng 1: Tên trường với Thành phố */}
-									<div className="col-span-2">
-										<div>Tên trường/Cơ sở</div>
-										<input
-											value={item.institution}
-											onChange={(e) => {
-												updateEducation(item.id || '', { institution: e.target.value })
-											}}
-											className="w-full rounded-md border border-gray-800 px-3 py-2 focus:ring-2 focus:ring-gray-500 focus:outline-none"
-										/>
-									</div>
-									<div className="col-span-2">
-										<div>Thành phố</div>
-										<input
-											value={item.city}
-											onChange={(e) => {
-												updateEducation(item.id || '', { city: e.target.value })
-											}}
-											className="w-full rounded-md border border-gray-800 px-3 py-2 focus:ring-2 focus:ring-gray-500 focus:outline-none"
-										/>
-									</div>
-									{/* Dòng 2: Bằng cấp với Chuyên ngành */}
-									<div className="col-span-2">
-										<div>Bằng cấp</div>
-										<input
-											value={item.degree}
-											onChange={(e) => {
-												updateEducation(item.id || '', { degree: e.target.value })
-											}}
-											className="w-full rounded-md border border-gray-800 px-3 py-2 focus:ring-2 focus:ring-gray-500 focus:outline-none"
-										/>
-									</div>
-									<div className="col-span-2">
-										<div>Ngành học</div>
-										<input
-											value={item.fieldOfStudy}
-											onChange={(e) => {
-												updateEducation(item.id || '', { fieldOfStudy: e.target.value })
-											}}
-											className="w-full rounded-md border border-gray-800 px-3 py-2 focus:ring-2 focus:ring-gray-500 focus:outline-none"
-										/>
-									</div>
-									{/* Dòng 3: Ngày bắt đầu với Ngày kết thúc */}
-									<div className="col-span-2">
-										<div>Ngày bắt đầu</div>
-										<input
-											type="date"
-											value={item.startDate}
-											onChange={(e) => {
-												updateEducation(item.id || '', { startDate: e.target.value })
-											}}
-											className="w-full rounded-md border border-gray-800 px-3 py-2 focus:ring-2 focus:ring-gray-500 focus:outline-none"
-										/>
-									</div>
-									<div className="col-span-2">
-										<div>Ngày kết thúc</div>
-										<input
-											type="date"
-											value={item.endDate}
-											onChange={(e) => {
-												updateEducation(item.id || '', { endDate: e.target.value })
-											}}
-											className="w-full rounded-md border border-gray-800 px-3 py-2 focus:ring-2 focus:ring-gray-500 focus:outline-none"
-										/>
-									</div>
-									<div
-										onClick={() => {
-											deleteEducation(item.id || '')
-										}}
-										className="absolute top-2 right-2 flex h-5 w-5 items-center justify-center rounded bg-gray-800 text-white hover:cursor-pointer hover:bg-gray-600"
-									>
-										x
-									</div>
-								</div>
-							))}
-						</div>
-					</div>
-				</div>
+							<div className="col-span-4 mt-4 flex flex-col gap-y-4">
+								{educations.map((item, index) => (
+									<div key={item.id} className="relative grid grid-cols-4 gap-x-4 rounded border px-8 py-6">
+										{/* Dòng 1: Tên trường với Thành phố */}
+										<div className="col-span-2">
+											<div>Tên trường/Cơ sở</div>
+											<input
+												value={item.institution}
+												onChange={(e) => {
+													updateEducation(item.id || '', { institution: e.target.value })
+												}}
+												className="w-full rounded-md border border-gray-800 px-3 py-2 focus:ring-2 focus:ring-gray-500 focus:outline-none"
+											/>
+										</div>
+										<div className="col-span-2">
+											<div>Thành phố</div>
+											<input
+												value={item.city}
+												onChange={(e) => {
+													updateEducation(item.id || '', { city: e.target.value })
+												}}
+												className="w-full rounded-md border border-gray-800 px-3 py-2 focus:ring-2 focus:ring-gray-500 focus:outline-none"
+											/>
+										</div>
+										{/* Dòng 2: Bằng cấp với Chuyên ngành */}
+										<div className="col-span-2">
+											<div>Ngành học</div>
+											<input
+												value={item.fieldOfStudy}
+												onChange={(e) => {
+													updateEducation(item.id || '', { fieldOfStudy: e.target.value })
+												}}
+												className="w-full rounded-md border border-gray-800 px-3 py-2 focus:ring-2 focus:ring-gray-500 focus:outline-none"
+											/>
+										</div>
+										<div className="col-span-2">
+											<div>Bằng cấp</div>
+											<input
+												value={item.degree}
+												onChange={(e) => {
+													updateEducation(item.id || '', { degree: e.target.value })
+												}}
+												className="w-full rounded-md border border-gray-800 px-3 py-2 focus:ring-2 focus:ring-gray-500 focus:outline-none"
+											/>
 
-				{/* Hints Section */}
-				<div className="p-4">
-					<h2 className="mb-4 text-lg font-semibold text-gray-800">Gợi ý cải thiện học vấn</h2>
-					{hintsLoading ? (
-						// Skeleton Loading
-						Array(3)
-							.fill(0)
-							.map((_, index) => (
-								<div
-									key={index}
-									className="mb-3 flex animate-pulse items-center justify-between rounded-lg bg-gray-200 p-3"
-								>
-									<div className="h-6 w-3/4 rounded bg-gray-300"></div>
-								</div>
-							))
-					) : hints.length > 0 ? (
-						<div className="max-h-64 space-y-3 overflow-y-auto">
-							{hints.map((hint) => (
-								<div
-									key={hint.id}
-									className={`rounded-lg p-3 ${
-										hint.type === 'success'
-											? 'border border-green-400 bg-green-100'
-											: 'border border-yellow-400 bg-yellow-100'
-									}`}
-								>
-									<div className="flex items-center justify-between">
-										<span className="font-medium text-gray-800">Học vấn</span>
-										<div className="flex items-center space-x-2">
-											<span
-												className={`text-sm font-semibold ${
-													hint.type === 'success' ? 'text-green-600' : 'text-yellow-600'
-												}`}
-											>
-												{hint.type === 'success' ? 'Thành công' : 'Gợi ý chỉnh sửa'}
-											</span>
-											{hint.type === 'notice' && (
-												<button
-													onClick={() => handleImproveHint(hint)}
-													className="rounded-md bg-blue-600 px-2 py-1 text-sm font-medium text-white hover:bg-blue-700"
-													title="Cải thiện học vấn"
-												>
-													Cải thiện ngay
-												</button>
-											)}
-											<button
-												onClick={() => handleDeleteHint(hint.id)}
-												className="rounded-md bg-red-600 px-2 py-1 text-sm font-medium text-white hover:bg-red-700"
-											>
-												Ẩn đi
-											</button>
+										</div>
+										{/* Dòng 3: Ngày bắt đầu với Ngày kết thúc */}
+										<div className="col-span-2">
+											<div>Ngày bắt đầu</div>
+											<input
+												type="date"
+												value={item.startDate}
+												onChange={(e) => {
+													updateEducation(item.id || '', { startDate: e.target.value })
+												}}
+												className="w-full rounded-md border border-gray-800 px-3 py-2 focus:ring-2 focus:ring-gray-500 focus:outline-none"
+											/>
+										</div>
+										<div className="col-span-2">
+											<div>Ngày kết thúc</div>
+											<input
+												type="date"
+												value={item.endDate}
+												onChange={(e) => {
+													updateEducation(item.id || '', { endDate: e.target.value })
+												}}
+												className="w-full rounded-md border border-gray-800 px-3 py-2 focus:ring-2 focus:ring-gray-500 focus:outline-none"
+											/>
+										</div>
+										<div
+											onClick={() => {
+												deleteEducation(item.id || '')
+											}}
+											className="absolute top-2 right-2 flex h-5 w-5 items-center justify-center rounded bg-gray-800 text-white hover:cursor-pointer hover:bg-gray-600"
+										>
+											x
 										</div>
 									</div>
-									<p className="mt-2 text-gray-600">{hint.content}</p>
-								</div>
-							))}
+								))}
+							</div>
 						</div>
-					) : (
-						<div className="text-center text-gray-500">Chưa có gợi ý nào cho học vấn</div>
-					)}
-				</div>
+					</div>
 
-				<OneStepNavBar
-					linkPrev={`/editor/generalInfo?resumeId=${resumeId}`}
-					linkNext={`/editor/experience?resumeId=${resumeId}`}
-				/>
+					{/* Hints Section */}
+					<div className="p-4">
+						<div className="mb-4 flex items-center justify-between">
+							<h2 className="text-lg font-semibold text-gray-800">Gợi ý cải thiện học vấn</h2>
+							<button
+								onClick={() => setShowChatBox(!showChatBox)}
+								className="flex items-center gap-2 rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700"
+							>
+								<FaComments />
+								{showChatBox ? 'Ẩn Chat' : 'Chat AI'}
+							</button>
+						</div>
+						{hintsLoading ? (
+							// Skeleton Loading
+							Array(3)
+								.fill(0)
+								.map((_, index) => (
+									<div
+										key={index}
+										className="mb-3 flex animate-pulse items-center justify-between rounded-lg bg-gray-200 p-3"
+									>
+										<div className="h-6 w-3/4 rounded bg-gray-300"></div>
+									</div>
+								))
+						) : hints.length > 0 ? (
+							<div className="max-h-64 space-y-3 overflow-y-auto">
+								{hints.map((hint) => (
+									<div
+										key={hint.id}
+										className={`rounded-lg p-3 ${hint.type === 'success'
+												? 'border border-green-400 bg-green-100'
+												: 'border border-yellow-400 bg-yellow-100'
+											}`}
+									>
+										<div className="flex items-center justify-between">
+											<span className="font-medium text-gray-800">Học vấn</span>
+											<div className="flex items-center space-x-2">
+												<span
+													className={`text-sm font-semibold ${hint.type === 'success' ? 'text-green-600' : 'text-yellow-600'
+														}`}
+												>
+													{hint.type === 'success' ? 'Thành công' : 'Gợi ý chỉnh sửa'}
+												</span>
+												{hint.type === 'notice' && (
+													<button
+														onClick={() => handleImproveHint(hint)}
+														className="rounded-md bg-blue-600 px-2 py-1 text-sm font-medium text-white hover:bg-blue-700"
+														title="Cải thiện học vấn"
+													>
+														Cải thiện ngay
+													</button>
+												)}
+												<button
+													onClick={() => handleDeleteHint(hint.id)}
+													className="rounded-md bg-red-600 px-2 py-1 text-sm font-medium text-white hover:bg-red-700"
+												>
+													Ẩn đi
+												</button>
+											</div>
+										</div>
+										<p className="mt-2 text-gray-600">{hint.content}</p>
+									</div>
+								))}
+							</div>
+						) : (
+							<div className="text-center text-gray-500">Chưa có gợi ý nào cho học vấn</div>
+						)}
+					</div>
+
+					<OneStepNavBar
+						linkPrev={`/editor/generalInfo?resumeId=${resumeId}`}
+						linkNext={`/editor/experience?resumeId=${resumeId}`}
+					/>
+				</div>
+				<div className="col-span-1 mx-10 flex h-full flex-col">
+					<ResumePreview resumeData={resumeData} />
+				</div>
 			</div>
-			<div className="col-span-1 mx-10 flex h-full flex-col">
-				<ResumePreview resumeData={resumeData} />
-			</div>
-		</div>
+
+					{/* ChatBox */}
+		{showChatBox && (
+			<ChatBox 
+				resumeData={resumeData} 
+				onClose={() => setShowChatBox(false)}
+				chatType="education"
+			/>
+		)}
+		</>
 	)
 }

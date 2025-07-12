@@ -3,10 +3,11 @@
 import OneStepNavBar from '@/components/OneStepNavBar'
 import ResumePreview from '@/components/ResumePreview'
 import StepNavBar from '@/components/StepNavBar'
+import ChatBox from '@/components/ChatBox'
 import { Resume, Hint } from '@/lib/types'
 import { useSearchParams } from 'next/navigation'
 import { ChangeEvent, useEffect, useState, useCallback, KeyboardEvent } from 'react'
-import { FaUserGraduate } from 'react-icons/fa'
+import { FaUserGraduate, FaComments } from 'react-icons/fa'
 
 export default function Page() {
 	const params = useSearchParams()
@@ -17,6 +18,7 @@ export default function Page() {
 	const [newSkill, setNewSkill] = useState<string>('')
 	const [hints, setHints] = useState<Hint[]>([])
 	const [hintsLoading, setHintsLoading] = useState(false)
+	const [showChatBox, setShowChatBox] = useState(false)
 
 	// Hàm debounce tùy chỉnh
 	const debounce = <T extends (...args: any[]) => void>(func: T, wait: number) => {
@@ -170,7 +172,8 @@ export default function Page() {
 	}
 
 	return (
-		<div className="mb-8 grid grid-cols-1 lg:grid-cols-2">
+		<>
+			<div className="mb-8 grid grid-cols-1 lg:grid-cols-2">
 			<div className="col-span-1">
 				<StepNavBar stepName="skill" resumeId={resumeId || ''} />
 
@@ -227,7 +230,16 @@ export default function Page() {
 
 				{/* Hints Section */}
 				<div className="p-4">
-					<h2 className="mb-4 text-lg font-semibold text-gray-800">Gợi ý cải thiện kỹ năng</h2>
+					<div className="mb-4 flex items-center justify-between">
+						<h2 className="text-lg font-semibold text-gray-800">Gợi ý cải thiện kỹ năng</h2>
+						<button
+							onClick={() => setShowChatBox(!showChatBox)}
+							className="flex items-center gap-2 rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700"
+						>
+							<FaComments />
+							{showChatBox ? 'Ẩn Chat' : 'Chat AI'}
+						</button>
+					</div>
 					{hintsLoading ? (
 						// Skeleton Loading
 						Array(3)
@@ -295,5 +307,15 @@ export default function Page() {
 				<ResumePreview resumeData={resumeData} />
 			</div>
 		</div>
+		
+		{/* ChatBox */}
+		{showChatBox && (
+			<ChatBox 
+				resumeData={resumeData} 
+				onClose={() => setShowChatBox(false)}
+				chatType="skills"
+			/>
+		)}
+	</>
 	)
 }
